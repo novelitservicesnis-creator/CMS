@@ -11,6 +11,7 @@ namespace AgamEstates.Web.Services
     public class FileStorageService : IFileStorageService
     {
         private const string ManagedSystemUrlPrefix = "/uploads/system/";
+        private const string ManagedBlogUrlPrefix = "/uploads/blog/";
         private const string DefaultFallbackLogoPath = "/images/logo.png";
 
         private readonly IConfiguration _configuration;
@@ -65,6 +66,19 @@ namespace AgamEstates.Web.Services
             return systemUploadDirectory;
         }
 
+        public string GetBlogUploadDirectory()
+        {
+            var uploadRoot = GetUploadRootPath();
+            var blogUploadDirectory = Path.GetFullPath(Path.Combine(uploadRoot, "blog"));
+
+            if (!Directory.Exists(blogUploadDirectory))
+            {
+                Directory.CreateDirectory(blogUploadDirectory);
+            }
+
+            return blogUploadDirectory;
+        }
+
         public async Task<string> SaveSystemLogoAsync(IFormFile file, string extension)
         {
             if (file == null || file.Length == 0)
@@ -98,7 +112,54 @@ namespace AgamEstates.Web.Services
             return $"{ManagedSystemUrlPrefix}{safeFileName}";
         }
 
+        public async Task<string> SaveBlogImageAsync(IFormFile file, string extension)
+        {
+            if (file == null || file.Length == 0)
+            {
+                throw new ArgumentException("Uploaded file cannot be empty.", nameof(file));
+            }
+
+            var ext = (extension ?? string.Empty).Trim().ToLowerInvariant();
+            if (!ext.StartsWith("."))
+            {
+                ext = "." + ext;
+            }
+
+            var safeFileName = $"blog-{Guid.NewGuid():N}{ext}";
+            var blogUploadDirectory = GetBlogUploadDirectory();
+
+            var physicalPath = Path.GetFullPath(Path.Combine(blogUploadDirectory, safeFileName));
+            var normalizedDirWithSep = blogUploadDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                                       + Path.DirectorySeparatorChar;
+
+            if (!physicalPath.StartsWith(normalizedDirWithSep, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Resolved upload path is outside the managed blog upload directory.");
+            }
+
+            using (var stream = new FileStream(physicalPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return $"{ManagedBlogUrlPrefix}{safeFileName}";
+        }
+
         public bool TryResolveManagedSystemFilePath(string? relativeUrlPath, out string physicalPath)
+        {
+            return TryResolveManagedSubfolderFilePath(relativeUrlPath, ManagedSystemUrlPrefix, "system", out physicalPath);
+        }
+
+        public bool TryResolveManagedBlogFilePath(string? relativeUrlPath, out string physicalPath)
+        {
+            return TryResolveManagedSubfolderFilePath(relativeUrlPath, ManagedBlogUrlPrefix, "blog", out physicalPath);
+        }
+
+        private bool TryResolveManagedSubfolderFilePath(
+            string? relativeUrlPath,
+            string requiredUrlPrefix,
+            string subfolderName,
+            out string physicalPath)
         {
             physicalPath = string.Empty;
 
@@ -109,9 +170,9 @@ namespace AgamEstates.Web.Services
 
             var normalizedUrl = relativeUrlPath.Trim().Replace('\\', '/');
 
-            // Never resolve the default fallback logo or anything outside /uploads/system/
+            // Never resolve the default fallback logo or anything outside the required prefix
             if (string.Equals(normalizedUrl, DefaultFallbackLogoPath, StringComparison.OrdinalIgnoreCase) ||
-                !normalizedUrl.StartsWith(ManagedSystemUrlPrefix, StringComparison.OrdinalIgnoreCase))
+                !normalizedUrl.StartsWith(requiredUrlPrefix, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }
@@ -122,7 +183,7 @@ namespace AgamEstates.Web.Services
                 return false;
             }
 
-            var fileName = normalizedUrl.Substring(ManagedSystemUrlPrefix.Length).Trim();
+            var fileName = normalizedUrl.Substring(requiredUrlPrefix.Length).Trim();
             if (string.IsNullOrWhiteSpace(fileName) ||
                 fileName.Contains('/') ||
                 fileName.Contains('\\') ||
@@ -135,17 +196,17 @@ namespace AgamEstates.Web.Services
             try
             {
                 var uploadRoot = GetUploadRootPath();
-                var systemUploadDirectory = Path.GetFullPath(Path.Combine(uploadRoot, "system"));
+                var targetUploadDirectory = Path.GetFullPath(Path.Combine(uploadRoot, subfolderName));
                 var normalizedRootWithSep = uploadRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                                             + Path.DirectorySeparatorChar;
-                var normalizedSystemWithSep = systemUploadDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                var normalizedTargetWithSep = targetUploadDirectory.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
                                               + Path.DirectorySeparatorChar;
 
-                var candidatePath = Path.GetFullPath(Path.Combine(systemUploadDirectory, fileName));
+                var candidatePath = Path.GetFullPath(Path.Combine(targetUploadDirectory, fileName));
 
-                // Verify candidate path is strictly inside both uploadRoot and systemUploadDirectory
+                // Verify candidate path is strictly inside both uploadRoot and targetUploadDirectory
                 if (!candidatePath.StartsWith(normalizedRootWithSep, StringComparison.OrdinalIgnoreCase) ||
-                    !candidatePath.StartsWith(normalizedSystemWithSep, StringComparison.OrdinalIgnoreCase))
+                    !candidatePath.StartsWith(normalizedTargetWithSep, StringComparison.OrdinalIgnoreCase))
                 {
                     return false;
                 }
@@ -179,6 +240,29 @@ namespace AgamEstates.Web.Services
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Unable to delete old managed system file at '{PhysicalPath}'.", physicalPath);
+                return false;
+            }
+        }
+
+        public bool TryDeleteManagedBlogFile(string? relativeUrlPath)
+        {
+            if (!TryResolveManagedBlogFilePath(relativeUrlPath, out var physicalPath))
+            {
+                return false;
+            }
+
+            try
+            {
+                if (File.Exists(physicalPath))
+                {
+                    File.Delete(physicalPath);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Unable to delete managed blog image at '{PhysicalPath}'.", physicalPath);
                 return false;
             }
         }

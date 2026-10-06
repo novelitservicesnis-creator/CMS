@@ -560,12 +560,22 @@
     }
 }
 
+@@media (max-width: 768px) {
+    .privacy-hero {
+        height: auto;
+        min-height: 0;
+        padding: 184px 0 50px;
+    }
+}
+
 @@media (max-width: 600px) {
     .privacy-glance-grid {
         grid-template-columns: 1fr;
     }
     .privacy-hero {
-        padding: 140px 0 50px;
+        height: auto;
+        min-height: 0;
+        padding: 184px 0 50px;
     }
     .privacy-rights-panel {
         padding: 28px 20px;

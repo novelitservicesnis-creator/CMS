@@ -21,6 +21,8 @@ namespace AgamEstates.Core
         public virtual DbSet<SystemContactNumber> SystemContactNumbers { get; set; } = null!;
         public virtual DbSet<SystemBusinessHour> SystemBusinessHours { get; set; } = null!;
         public virtual DbSet<SystemAnnouncement> SystemAnnouncements { get; set; } = null!;
+        public virtual DbSet<BlogCategory> BlogCategories { get; set; } = null!;
+        public virtual DbSet<BlogPost> BlogPosts { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -251,6 +253,48 @@ namespace AgamEstates.Core
                 entity.Property(e => e.LinkUrl).HasMaxLength(500);
                 entity.Property(e => e.IsActive).HasDefaultValue(false);
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            });
+
+            // BlogCategories table configuration
+            modelBuilder.Entity<BlogCategory>(entity =>
+            {
+                entity.ToTable("BlogCategories");
+                entity.HasKey(e => e.BlogCategoryId);
+                entity.Property(e => e.BlogCategoryId).ValueGeneratedOnAdd();
+                entity.Property(e => e.CategoryName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Slug).IsRequired().HasMaxLength(120);
+                entity.HasIndex(e => e.Slug).IsUnique();
+                entity.Property(e => e.Description).HasMaxLength(300);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+                entity.Property(e => e.SortOrder).HasDefaultValue(0);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            });
+
+            // BlogPosts table configuration
+            modelBuilder.Entity<BlogPost>(entity =>
+            {
+                entity.ToTable("BlogPosts");
+                entity.HasKey(e => e.BlogPostId);
+                entity.Property(e => e.BlogPostId).ValueGeneratedOnAdd();
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Slug).IsRequired().HasMaxLength(220);
+                entity.HasIndex(e => e.Slug).IsUnique();
+                entity.Property(e => e.ShortDescription).HasMaxLength(600);
+                entity.Property(e => e.Content).IsRequired();
+                entity.Property(e => e.FeaturedImage).HasMaxLength(500);
+                entity.Property(e => e.AuthorName).HasMaxLength(150);
+                entity.Property(e => e.IsPublished).HasDefaultValue(false);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.BlogPosts)
+                    .HasForeignKey(d => d.BlogCategoryId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasOne(d => d.Author)
+                    .WithMany()
+                    .HasForeignKey(d => d.AuthorUserId)
+                    .OnDelete(DeleteBehavior.SetNull);
             });
         }
     }

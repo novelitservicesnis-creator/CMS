@@ -1,0 +1,489 @@
+@model AgamEstates.Web.Models.AdminBlogCategoriesPageViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Blog Categories";
+
+    string JsEncode(string? val) => System.Web.HttpUtility.JavaScriptStringEncode(val ?? string.Empty);
+}
+
+@section Styles {
+<style>
+    .cat-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    .blog-alert {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 18px;
+        border-radius: 4px;
+        margin-bottom: 22px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .blog-alert-success {
+        background: #F0FDF4;
+        color: #166534;
+        border: 1px solid #BBF7D0;
+    }
+    .blog-alert-error {
+        background: #FEF2F2;
+        color: #991B1B;
+        border: 1px solid #FECACA;
+    }
+
+    .responsive-cat-card {
+        background: var(--white);
+        border: 1px solid var(--border-light);
+        border-radius: 4px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(6, 37, 69, 0.04);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+    }
+    .rcc-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(6, 37, 69, 0.06);
+    }
+    .rcc-name {
+        font-family: var(--serif);
+        font-size: 1.08rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        word-break: break-word;
+    }
+    .rcc-slug {
+        font-size: 0.78rem;
+        color: var(--fade);
+        word-break: break-all;
+    }
+    .rcc-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(6, 37, 69, 0.06);
+    }
+    .rcc-actions form {
+        margin: 0;
+        width: 100%;
+    }
+    .rcc-actions .full-span {
+        grid-column: 1 / -1;
+    }
+
+    @@media (max-width: 640px) {
+        .cat-head-actions {
+            width: 100%;
+        }
+        .cat-head-actions .btn {
+            flex: 1 1 100%;
+            justify-content: center;
+        }
+    }
+    @@media (max-width: 360px) {
+        .rcc-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+}
+
+@if (TempData["SuccessMessage"] is string successMsg && !string.IsNullOrWhiteSpace(successMsg))
+{
+    <div class="blog-alert blog-alert-success" role="status">
+        <span>@successMsg</span>
+        <button type="button" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:inherit;" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+}
+@if (TempData["ErrorMessage"] is string errorMsg && !string.IsNullOrWhiteSpace(errorMsg))
+{
+    <div class="blog-alert blog-alert-error" role="alert">
+        <span>@errorMsg</span>
+        <button type="button" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:inherit;" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-title">Blog Categories</h1>
+        <p class="page-subtitle">Organize blog articles into clear editorial topics and manage public visibility.</p>
+    </div>
+    <div class="cat-head-actions">
+        <a href="/Admin/Blogs" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to Blogs</span>
+        </a>
+        <button type="button" class="btn btn-gold" onclick="openAddCategoryModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Category</span>
+        </button>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); margin-bottom: 24px;">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Total Categories</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count">@Model.TotalCategories</div>
+        <div class="kpi-subtext">Configured topics</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Active</span>
+            <div class="kpi-icon" style="color: #16A34A;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #16A34A;">@Model.ActiveCategories</div>
+        <div class="kpi-subtext">Visible in public filter</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Inactive</span>
+            <div class="kpi-icon" style="color: #DC2626;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #DC2626;">@Model.InactiveCategories</div>
+        <div class="kpi-subtext">Hidden from public</div>
+    </div>
+</div>
+
+<!-- Categories Table / Mobile Cards -->
+<div class="luxury-card" style="padding: 0; overflow: hidden;">
+    <!-- Desktop Table View (> 768px) -->
+    <div class="table-responsive desktop-table-view">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">Order</th>
+                    <th>Category Name &amp; Slug</th>
+                    <th>Description</th>
+                    <th>Blogs</th>
+                    <th>Status</th>
+                    <th style="text-align: right; min-width: 240px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Categories.Any())
+                {
+                    foreach (var c in Model.Categories)
+                    {
+                        <tr>
+                            <td style="font-weight: 600; color: var(--fade);">#@c.SortOrder</td>
+                            <td>
+                                <div style="font-weight: 600; color: var(--primary-dark);">@c.CategoryName</div>
+                                <div class="lead-cell-sub">/Blog?category=@c.Slug</div>
+                            </td>
+                            <td style="max-width: 300px; font-size: 0.85rem; color: var(--text-muted);">
+                                @(string.IsNullOrWhiteSpace(c.Description) ? "—" : c.Description)
+                            </td>
+                            <td>
+                                <a href="/Admin/Blogs?categoryId=@c.BlogCategoryId" class="lead-link" style="font-weight: 600;">
+                                    @c.TotalBlogsCount Total (@c.PublishedBlogsCount Published)
+                                </a>
+                            </td>
+                            <td>
+                                @if (c.IsActive)
+                                {
+                                    <span class="badge" style="background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0;">● Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge" style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">○ Inactive</span>
+                                }
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                    <button type="button" class="btn btn-sm btn-outline"
+                                            onclick="openEditCategoryModal(@c.BlogCategoryId, '@JsEncode(c.CategoryName)', '@JsEncode(c.Slug)', '@JsEncode(c.Description)', @c.SortOrder, @(c.IsActive ? "true" : "false"))">
+                                        Edit
+                                    </button>
+                                    <form method="post" action="/Admin/BlogCategories/ToggleStatus/@c.BlogCategoryId" style="display: inline; margin: 0;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-sm @(c.IsActive ? "btn-outline" : "btn-gold")">
+                                            @(c.IsActive ? "Deactivate" : "Activate")
+                                        </button>
+                                    </form>
+                                    <button type="button" class="btn btn-sm btn-outline"
+                                            style="color: #DC2626; border-color: rgba(220,38,38,0.3);"
+                                            onclick="openDeleteCategoryModal(@c.BlogCategoryId, '@JsEncode(c.CategoryName)', @c.TotalBlogsCount)">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 48px 20px; color: var(--fade);">
+                            No categories created yet.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View (<= 768px) -->
+    <div class="mobile-card-view">
+        @if (Model.Categories.Any())
+        {
+            foreach (var c in Model.Categories)
+            {
+                <div class="responsive-cat-card">
+                    <div class="rcc-head">
+                        <div>
+                            <div class="rcc-name">@c.CategoryName</div>
+                            <div class="rcc-slug">/Blog?category=@c.Slug</div>
+                        </div>
+                        @if (c.IsActive)
+                        {
+                            <span class="badge" style="background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0;">● Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge" style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">○ Inactive</span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(c.Description))
+                    {
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">@c.Description</div>
+                    }
+
+                    <div class="ruc-grid">
+                        <div class="ruc-item">
+                            <span class="ruc-label">Sort Order</span>
+                            <span class="ruc-val">#@c.SortOrder</span>
+                        </div>
+                        <div class="ruc-item">
+                            <span class="ruc-label">Assigned Blogs</span>
+                            <span class="ruc-val">@c.TotalBlogsCount (@c.PublishedBlogsCount live)</span>
+                        </div>
+                    </div>
+
+                    <div class="rcc-actions">
+                        <button type="button" class="btn btn-sm btn-outline ruc-btn"
+                                onclick="openEditCategoryModal(@c.BlogCategoryId, '@JsEncode(c.CategoryName)', '@JsEncode(c.Slug)', '@JsEncode(c.Description)', @c.SortOrder, @(c.IsActive ? "true" : "false"))">
+                            Edit
+                        </button>
+                        <form method="post" action="/Admin/BlogCategories/ToggleStatus/@c.BlogCategoryId">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm @(c.IsActive ? "btn-outline" : "btn-gold") ruc-btn">
+                                @(c.IsActive ? "Deactivate" : "Activate")
+                            </button>
+                        </form>
+                        <button type="button" class="btn btn-sm btn-outline ruc-btn full-span"
+                                style="color: #DC2626; border-color: rgba(220,38,38,0.3);"
+                                onclick="openDeleteCategoryModal(@c.BlogCategoryId, '@JsEncode(c.CategoryName)', @c.TotalBlogsCount)">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Add Category
+     ======================================================== -->
+<div id="add-category-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Blog Category</h3>
+            <button type="button" class="modal-close" onclick="closeModal('add-category-modal')">&times;</button>
+        </div>
+        <form method="post" action="/Admin/BlogCategories/Create">
+            @Html.AntiForgeryToken()
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Category Name <span class="required">*</span></label>
+                    <input type="text" name="CategoryName" id="add-cat-name" class="form-control" maxlength="100" required placeholder="e.g. Market Insights" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Slug</label>
+                    <input type="text" name="Slug" id="add-cat-slug" class="form-control" maxlength="120" placeholder="market-insights" />
+                    <span style="font-size: 0.75rem; color: var(--fade); margin-top: 4px; display: block;">Auto-generated from name if left blank.</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="Description" class="form-control" rows="2" maxlength="300" placeholder="Brief description of this category..."></textarea>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Sort Order</label>
+                        <input type="number" name="SortOrder" class="form-control" value="1" min="0" max="999" />
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Status</label>
+                        <select name="IsActive" class="form-select">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('add-category-modal')">Cancel</button>
+                <button type="submit" class="btn btn-gold">Create Category</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Edit Category
+     ======================================================== -->
+<div id="edit-category-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 480px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Blog Category</h3>
+            <button type="button" class="modal-close" onclick="closeModal('edit-category-modal')">&times;</button>
+        </div>
+        <form method="post" action="/Admin/BlogCategories/Edit">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="BlogCategoryId" id="edit-cat-id" />
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Category Name <span class="required">*</span></label>
+                    <input type="text" name="CategoryName" id="edit-cat-name" class="form-control" maxlength="100" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Slug</label>
+                    <input type="text" name="Slug" id="edit-cat-slug" class="form-control" maxlength="120" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea name="Description" id="edit-cat-desc" class="form-control" rows="2" maxlength="300"></textarea>
+                </div>
+                <div class="form-row-2">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Sort Order</label>
+                        <input type="number" name="SortOrder" id="edit-cat-order" class="form-control" min="0" max="999" />
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label">Status</label>
+                        <select name="IsActive" id="edit-cat-active" class="form-select">
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('edit-category-modal')">Cancel</button>
+                <button type="submit" class="btn btn-navy">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Delete Category
+     ======================================================== -->
+<div id="delete-category-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 450px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Delete Category?</h3>
+            <button type="button" class="modal-close" onclick="closeModal('delete-category-modal')">&times;</button>
+        </div>
+        <form id="delete-cat-form" method="post" action="">
+            @Html.AntiForgeryToken()
+            <div class="modal-body">
+                <p id="delete-cat-message" style="font-size: 0.94rem; color: var(--text-dark); line-height: 1.55;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('delete-category-modal')">Cancel</button>
+                <button type="submit" id="delete-cat-submit-btn" class="btn btn-danger">Delete Category</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const addName = document.getElementById('add-cat-name');
+    const addSlug = document.getElementById('add-cat-slug');
+    if (addName && addSlug) {
+        addName.addEventListener('input', function () {
+            addSlug.value = (this.value || '')
+                .trim()
+                .toLowerCase()
+                .replace(/&/g, ' and ')
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/[\s-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        });
+    }
+
+    function openAddCategoryModal() {
+        document.getElementById('add-cat-name').value = '';
+        document.getElementById('add-cat-slug').value = '';
+        openModal('add-category-modal');
+    }
+
+    function openEditCategoryModal(id, name, slug, desc, sortOrder, isActive) {
+        document.getElementById('edit-cat-id').value = id;
+        document.getElementById('edit-cat-name').value = name || '';
+        document.getElementById('edit-cat-slug').value = slug || '';
+        document.getElementById('edit-cat-desc').value = desc || '';
+        document.getElementById('edit-cat-order').value = sortOrder || 0;
+        document.getElementById('edit-cat-active').value = isActive ? 'true' : 'false';
+        openModal('edit-category-modal');
+    }
+
+    function openDeleteCategoryModal(id, name, blogCount) {
+        const msgEl = document.getElementById('delete-cat-message');
+        const submitBtn = document.getElementById('delete-cat-submit-btn');
+        document.getElementById('delete-cat-form').action = '/Admin/BlogCategories/Delete/' + id;
+
+        if (blogCount > 0) {
+            msgEl.innerHTML = 'Category <strong>&ldquo;' + name + '&rdquo;</strong> currently contains <strong>' + blogCount + ' blog article(s)</strong> and cannot be deleted. You can deactivate it instead so existing articles remain intact.';
+            submitBtn.style.display = 'none';
+        } else {
+            msgEl.innerHTML = 'Are you sure you want to permanently delete category <strong>&ldquo;' + name + '&rdquo;</strong>?';
+            submitBtn.style.display = 'inline-flex';
+        }
+
+        openModal('delete-category-modal');
+    }
+</script>
+}

@@ -55,17 +55,24 @@
     background:var(--text-dark); color:#D6DEEB; font-size:0.82rem;
     border-bottom:1px solid rgba(221,174,69,0.18);
     overflow:hidden; transition:max-height .35s ease, opacity .3s ease, padding .3s ease;
-    max-height:42px;
+    max-height:46px;
   }
   .topbar .wrap{
     display:flex; align-items:center; justify-content:space-between; gap:20px;
-    padding:10px 0; flex-wrap:wrap;
+    padding:9px 28px; flex-wrap:wrap;
   }
-  .topbar-loc{ display:flex; align-items:center; gap:7px; white-space:nowrap; }
+  .topbar-loc{ display:flex; align-items:center; gap:7px; white-space:nowrap; min-width:0; }
   .topbar-loc svg{ width:13px; height:13px; flex-shrink:0; }
-  .topbar-right{ display:flex; align-items:center; gap:26px; flex-wrap:wrap; }
-  .topbar-call{ white-space:nowrap; }
-  .topbar-call a{ color:var(--gold-soft); font-weight:500; }
+  .topbar-right{ display:flex; align-items:center; gap:26px; flex-wrap:wrap; min-width:0; }
+  .topbar-call{ display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
+  .topbar-call-lbl-mobile{ display:none; }
+  .topbar-call a.topbar-call-link{ color:var(--gold-soft); font-weight:600; }
+  .topbar-call-now-btn{
+    display:none; align-items:center; justify-content:center;
+    padding:2px 9px; border:1px solid rgba(221,174,69,0.55); border-radius:2px;
+    color:var(--gold-soft) !important; font-size:0.68rem; font-weight:600;
+    letter-spacing:0.06em; text-transform:uppercase; background:rgba(221,174,69,0.1);
+  }
   .topbar-right a{ color:#D6DEEB; white-space:nowrap; }
   .topbar-right a:hover{ color:var(--gold-soft); }
   .topbar-social{ display:flex; gap:10px; }
@@ -77,10 +84,23 @@
   .topbar-social svg{ width:11px; height:11px; }
   header.scrolled .topbar{ max-height:0; opacity:0; border-bottom-color:transparent; }
   header.scrolled .topbar .wrap{ padding:0; }
-  @@media (max-width:760px){
-    .topbar-right a:not(.topbar-social-wrap){ display:none; }
-    .topbar-social{ display:none; }
-    .topbar .wrap{ justify-content:center; }
+  @@media (max-width:768px){
+    .topbar{ max-height:96px; }
+    .topbar .wrap{
+      display:grid; grid-template-columns:1fr; gap:3px; padding:6px 18px;
+      justify-items:center; text-align:center;
+    }
+    .topbar-loc{ justify-content:center; font-size:0.78rem; line-height:1.35; }
+    .topbar-right{ justify-content:center; gap:10px; width:100%; }
+    .topbar-link-enquire, .topbar-social{ display:none !important; }
+    .topbar-call-lbl-desktop{ display:none; }
+    .topbar-call-lbl-mobile{ display:inline; }
+    .topbar-call{
+      display:inline-flex; align-items:center; justify-content:center; flex-wrap:wrap;
+      gap:6px; font-size:0.78rem; line-height:1.4; white-space:normal;
+    }
+    .topbar-call a.topbar-call-link{ display:inline !important; color:var(--gold-soft); font-weight:600; }
+    .topbar-call-now-btn{ display:inline-flex !important; }
     .announcement-strip { height: 36px; }
     .announcement-item,
     .announcement-group { font-size: 0.78rem; gap: 10px; padding: 0 48px 0 0; }
@@ -90,6 +110,11 @@
     .announcement-strip { height: 34px; }
     .announcement-item,
     .announcement-group { font-size: 0.75rem; gap: 8px; padding: 0 36px 0 0; }
+  }
+  @@media (max-width:430px){
+    .topbar{ font-size:0.76rem; line-height:1.4; }
+    .topbar .wrap{ padding:6px 14px; gap:2px; }
+    .topbar-loc, .topbar-call{ font-size:0.76rem; line-height:1.4; }
   }
 
   /* ---------- Announcement Ticker Strip ---------- */
@@ -1209,6 +1234,9 @@
     .footer-grid{ grid-template-columns:1fr 1fr; }
     .form-row{ grid-template-columns:1fr; }
   }
+  @@media (max-width:768px){
+    .hero{ padding-top:184px; height:auto; min-height:0; }
+  }
   @@media (max-width:560px){
     .amenity-grid{ grid-template-columns:1fr; }
     .footer-grid{ display: flex; flex-direction: column; gap: 32px; }
@@ -1218,7 +1246,7 @@
     .footer-col-social { order: 4; }
     .hero-top-copy{ font-size: 0.70rem; letter-spacing: 0.11em; margin-bottom: 16px; }
     section{ padding:70px 0; }
-    .hero{ padding-top:140px; }
+    .hero{ padding-top:182px; height:auto; min-height:0; }
     .hero-stats div{ padding-right:18px; margin-right:18px; }
     .partner-card{ padding:26px 20px; }
     .pillar{ padding:30px 22px; }
@@ -1255,7 +1283,8 @@
 
 <section class="hero" id="top">
   <div class="hero-art-bg">
-    <img src="https://sales-test1.process360.us/images/5startower.png" alt="">
+    @* <img src="https://sales-test1.process360.us/images/5startower.png" alt=""> *@
+     <img src=" /images/five-star-luxury-residence-at-dusk.png" alt=""> 
     <svg viewBox="0 0 1400 900" preserveAspectRatio="xMidYMax slice" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute; inset:0;">
       <defs>
         <linearGradient id="towerGrad2" x1="0" y1="0" x2="0" y2="1">
@@ -1638,7 +1667,7 @@
     </div>
     <div class="gallery-grid">
       <div class="gallery-item big">
-        <img src="https://sales-test1.process360.us/images/5startower.png" alt="Tower exterior, sample">
+                    <   <img src=" /images/five-star-luxury-residence-at-dusk.png" alt="">
         <div class="cap">Tower Exterior</div>
       </div>
       <div class="gallery-item">

@@ -1,0 +1,962 @@
+@model AgamEstates.Repository.ViewModel.PublicBlogListingDto
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = !string.IsNullOrWhiteSpace(Model.ActiveCategoryName)
+        ? $"{Model.ActiveCategoryName} — Insights & Journal | Agam Estates"
+        : "Insights & Journal — Agam Estates";
+    ViewData["MetaDescription"] = "Explore market insights, project updates, home-buying guidance, and thoughtful perspectives on luxury living in the Panchkula–Chandigarh–Mohali Tricity from Agam Estates.";
+    ViewData["ActiveNav"] = "Blog";
+
+    string GetFallbackImage(int id)
+    {
+        var images = new[]
+        {
+            "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        };
+        return images[Math.Abs(id) % images.Length];
+    }
+
+    string FormatAuthor(string? authorName)
+    {
+        return !string.IsNullOrWhiteSpace(authorName) ? authorName.Trim() : "Agam Estates Editorial Team";
+    }
+
+    string BuildPageUrl(int targetPage)
+    {
+        var queryParts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(Model.ActiveCategorySlug))
+        {
+            queryParts.Add($"category={Uri.EscapeDataString(Model.ActiveCategorySlug)}");
+        }
+        if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+        {
+            queryParts.Add($"search={Uri.EscapeDataString(Model.SearchQuery)}");
+        }
+        if (targetPage > 1)
+        {
+            queryParts.Add($"page={targetPage}");
+        }
+        return queryParts.Count > 0 ? "/Blog?" + string.Join("&", queryParts) : "/Blog";
+    }
+
+    var hasFilter = !string.IsNullOrWhiteSpace(Model.ActiveCategorySlug) || !string.IsNullOrWhiteSpace(Model.SearchQuery);
+}
+
+@section Styles {
+<style>
+    /* ============================================================
+       PART 1 — PREMIUM EDITORIAL BLOG HERO (Desktop + Mobile)
+    ============================================================ */
+    .blog-journal-hero {
+        position: relative;
+        background-color: #041A33;
+        color: var(--light);
+        padding: 195px 0 76px;
+        min-height: 440px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(221, 174, 69, 0.24);
+    }
+
+    .blog-journal-hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+    }
+
+    .blog-journal-hero-bg img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 40%;
+        display: block;
+    }
+
+    .blog-journal-hero-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        background: linear-gradient(180deg, rgba(4, 26, 51, 0.80) 0%, rgba(4, 26, 51, 0.68) 100%);
+    }
+
+    .blog-journal-hero-gridlines {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    .blog-journal-hero-content {
+        position: relative;
+        z-index: 2;
+        max-width: 780px;
+        width: 100%;
+    }
+
+    .blog-hero-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin-bottom: 16px;
+    }
+
+    .blog-hero-eyebrow::before {
+        content: "";
+        display: inline-block;
+        width: 28px;
+        height: 1px;
+        background: var(--gold);
+    }
+
+    .blog-hero-heading {
+        font-family: var(--serif);
+        font-size: clamp(2.35rem, 4.6vw, 3.85rem);
+        font-weight: 400;
+        line-height: 1.08;
+        color: var(--light);
+        margin-bottom: 18px;
+        letter-spacing: -0.01em;
+    }
+
+    .blog-hero-heading em {
+        color: var(--gold-soft);
+        font-style: italic;
+    }
+
+    .blog-hero-divider {
+        width: 72px;
+        height: 1px;
+        background: rgba(221, 174, 69, 0.55);
+        margin-bottom: 18px;
+    }
+
+    .blog-hero-lead {
+        font-size: 1.04rem;
+        line-height: 1.68;
+        color: #DCE3EE;
+        max-width: 600px;
+        font-weight: 300;
+    }
+
+    /* ============================================================
+       PART 2 — EDITORIAL FLOW (Featured Article + Filter Toolbar)
+    ============================================================ */
+    .blog-editorial-flow {
+        display: flex;
+        flex-direction: column;
+        background: var(--light);
+    }
+
+    /* Desktop order: 1. Featured Article, 2. Insights Filter Toolbar */
+    .blog-featured-sec {
+        order: 1;
+        padding: 64px 0 28px;
+        background: var(--light);
+    }
+
+    .blog-toolbar-sec {
+        order: 2;
+        padding: 28px 0 12px;
+        background: var(--light);
+    }
+
+    /* Featured Article Split Card */
+    .blog-featured-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1.18fr) minmax(0, 1fr);
+        background: #FFFFFF;
+        border: 1px solid rgba(6, 37, 69, 0.12);
+        box-shadow: 0 14px 36px rgba(4, 26, 51, 0.06);
+        overflow: hidden;
+        transition: border-color 220ms ease, box-shadow 220ms ease;
+    }
+
+    .blog-featured-card:hover {
+        border-color: rgba(221, 174, 69, 0.55);
+        box-shadow: 0 18px 44px rgba(4, 26, 51, 0.10);
+    }
+
+    .blog-featured-media {
+        position: relative;
+        overflow: hidden;
+        background: #041A33;
+        min-height: 380px;
+        display: block;
+    }
+
+    .blog-featured-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 240ms ease;
+    }
+
+    .blog-featured-card:hover .blog-featured-media img {
+        transform: scale(1.03);
+    }
+
+    .blog-featured-content {
+        padding: 46px 48px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-width: 0;
+    }
+
+    .blog-featured-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--gold-dark);
+        margin-bottom: 14px;
+    }
+
+    .blog-featured-kicker::before {
+        content: "";
+        width: 18px;
+        height: 1px;
+        background: var(--gold);
+    }
+
+    .blog-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 0.74rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+    }
+
+    .blog-meta-cat {
+        color: var(--primary);
+        background: rgba(221, 174, 69, 0.16);
+        border: 1px solid rgba(221, 174, 69, 0.38);
+        padding: 3px 10px;
+        border-radius: 2px;
+    }
+
+    .blog-meta-date {
+        color: var(--fade);
+    }
+
+    .blog-featured-title {
+        font-family: var(--serif);
+        font-size: clamp(1.55rem, 2.4vw, 2.15rem);
+        font-weight: 500;
+        color: #041A33;
+        line-height: 1.24;
+        margin-bottom: 16px;
+        overflow-wrap: break-word;
+    }
+
+    .blog-featured-title a {
+        color: inherit;
+        transition: color 200ms ease;
+    }
+
+    .blog-featured-title a:hover {
+        color: var(--gold-dark);
+    }
+
+    .blog-featured-desc {
+        font-size: 0.98rem;
+        color: var(--fade);
+        line-height: 1.7;
+        margin-bottom: 24px;
+        overflow-wrap: break-word;
+    }
+
+    .blog-featured-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        padding-top: 18px;
+        border-top: 1px solid rgba(6, 37, 69, 0.08);
+        margin-top: auto;
+    }
+
+    .blog-author-byline {
+        font-size: 0.84rem;
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    .blog-author-byline span {
+        color: var(--fade);
+        font-weight: 400;
+    }
+
+    .blog-read-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 0.82rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #041A33;
+        transition: color 180ms ease;
+    }
+
+    .blog-read-link .arrow {
+        color: var(--gold-dark);
+        transition: transform 180ms ease;
+    }
+
+    .blog-read-link:hover {
+        color: var(--gold-dark);
+    }
+
+    .blog-read-link:hover .arrow {
+        transform: translateX(3px);
+    }
+
+    /* ============================================================
+       CATEGORY FILTER CHIPS & COMPACT SEARCH BAR
+    ============================================================ */
+    .blog-toolbar-card {
+        background: #FFFFFF;
+        border: 1px solid rgba(6, 37, 69, 0.10);
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .blog-cat-pills {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .blog-cat-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--primary);
+        background: var(--light);
+        border: 1px solid rgba(6, 37, 69, 0.14);
+        border-radius: 2px;
+        transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+        white-space: nowrap;
+    }
+
+    .blog-cat-pill:hover {
+        border-color: var(--gold);
+        color: #041A33;
+        background: #FFFFFF;
+    }
+
+    .blog-cat-pill.active {
+        background: var(--primary);
+        color: var(--gold-soft);
+        border-color: var(--primary);
+        font-weight: 600;
+    }
+
+    .blog-search-form {
+        display: flex;
+        align-items: stretch;
+        gap: 8px;
+        width: 320px;
+        max-width: 100%;
+        flex-shrink: 0;
+    }
+
+    .blog-search-input {
+        flex: 1;
+        min-width: 0;
+        padding: 9px 13px;
+        font-family: var(--sans);
+        font-size: 0.86rem;
+        color: #041A33;
+        background: var(--light);
+        border: 1px solid rgba(6, 37, 69, 0.16);
+        border-radius: 2px;
+        outline: none;
+        transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+    }
+
+    .blog-search-input:focus {
+        background: #FFFFFF;
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(221, 174, 69, 0.15);
+    }
+
+    .blog-search-btn {
+        padding: 9px 18px;
+        background: var(--primary);
+        color: var(--gold-soft);
+        border: 1px solid var(--primary);
+        border-radius: 2px;
+        font-family: var(--sans);
+        font-size: 0.76rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+        white-space: nowrap;
+    }
+
+    .blog-search-btn:hover {
+        background: var(--secondary);
+        color: #FFFFFF;
+        transform: translateY(-1px);
+    }
+
+    .blog-search-btn:active {
+        transform: translateY(0);
+    }
+
+    /* ============================================================
+       LATEST ARTICLES GRID & LUXURY CARDS
+    ============================================================ */
+    .blog-grid-sec {
+        padding: 40px 0 84px;
+        background: var(--light);
+    }
+
+    .blog-sec-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(6, 37, 69, 0.10);
+    }
+
+    .blog-sec-title {
+        font-family: var(--serif);
+        font-size: clamp(1.5rem, 2.4vw, 2.05rem);
+        color: #041A33;
+        font-weight: 500;
+    }
+
+    .blog-sec-count {
+        font-size: 0.85rem;
+        color: var(--fade);
+    }
+
+    .blog-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 28px;
+    }
+
+    .blog-card {
+        background: #FFFFFF;
+        border: 1px solid rgba(6, 37, 69, 0.10);
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        overflow: hidden;
+        transition: border-color 210ms ease, box-shadow 210ms ease, transform 210ms ease;
+    }
+
+    .blog-card:hover {
+        border-color: rgba(221, 174, 69, 0.55);
+        box-shadow: 0 12px 30px rgba(4, 26, 51, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .blog-card-media {
+        position: relative;
+        aspect-ratio: 16 / 10;
+        width: 100%;
+        overflow: hidden;
+        background: #041A33;
+        display: block;
+    }
+
+    .blog-card-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 220ms ease;
+    }
+
+    .blog-card:hover .blog-card-media img {
+        transform: scale(1.03);
+    }
+
+    .blog-card-body {
+        padding: 26px 24px 22px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .blog-card-title {
+        font-family: var(--serif);
+        font-size: 1.28rem;
+        font-weight: 500;
+        color: #041A33;
+        line-height: 1.32;
+        margin-bottom: 12px;
+        overflow-wrap: break-word;
+    }
+
+    .blog-card-title a {
+        color: inherit;
+        transition: color 200ms ease;
+    }
+
+    .blog-card:hover .blog-card-title a {
+        color: var(--gold-dark);
+    }
+
+    .blog-card-excerpt {
+        font-size: 0.92rem;
+        color: var(--fade);
+        line-height: 1.65;
+        margin-bottom: 20px;
+        flex: 1;
+        overflow-wrap: break-word;
+    }
+
+    .blog-card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-top: 14px;
+        border-top: 1px solid rgba(6, 37, 69, 0.08);
+        margin-top: auto;
+    }
+
+    .blog-card-author {
+        font-size: 0.8rem;
+        color: var(--primary);
+        font-weight: 500;
+    }
+
+    .blog-card-author span {
+        color: var(--fade);
+        font-weight: 400;
+    }
+
+    /* Empty state */
+    .blog-empty-card {
+        background: #FFFFFF;
+        border: 1px solid rgba(6, 37, 69, 0.12);
+        padding: 56px 24px;
+        text-align: center;
+        max-width: 620px;
+        margin: 16px auto;
+    }
+
+    /* Public Pagination */
+    .blog-pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 48px;
+    }
+
+    .blog-page-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        height: 40px;
+        padding: 0 14px;
+        background: #FFFFFF;
+        color: var(--primary);
+        border: 1px solid rgba(6, 37, 69, 0.15);
+        border-radius: 2px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease;
+    }
+
+    .blog-page-link:hover {
+        border-color: var(--gold);
+        color: var(--gold-dark);
+    }
+
+    .blog-page-link.active {
+        background: var(--primary);
+        color: var(--gold-soft);
+        border-color: var(--primary);
+        font-weight: 600;
+    }
+
+    .blog-page-link.disabled {
+        opacity: 0.45;
+        pointer-events: none;
+    }
+
+    /* ============================================================
+       RESPONSIVE BREAKPOINTS (Tablet & Mobile)
+    ============================================================ */
+    @@media (max-width: 1024px) {
+        .blog-cards-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+        .blog-featured-content {
+            padding: 34px 32px;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .blog-featured-card {
+            grid-template-columns: 1fr;
+        }
+        .blog-featured-media {
+            min-height: 0;
+            aspect-ratio: 16 / 10;
+            width: 100%;
+        }
+        .blog-toolbar-card {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .blog-search-form {
+            width: 100%;
+        }
+    }
+
+    /* PART 1 & PART 10 — Mobile Hero & Mobile Editorial Flow (<= 768px) */
+    @@media (max-width: 768px) {
+        .blog-journal-hero {
+            height: auto;
+            min-height: 0;
+            padding: 162px 0 0;
+            align-items: stretch;
+        }
+
+        .blog-journal-hero .wrap {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        .blog-journal-hero-content {
+            width: 100%;
+            min-width: 0;
+            padding: 30px 18px 36px;
+        }
+
+        .blog-hero-heading {
+            max-width: 100%;
+            font-size: clamp(2rem, 8vw, 3rem);
+            line-height: 1.08;
+            margin-bottom: 14px;
+            overflow-wrap: normal;
+            word-break: normal;
+        }
+
+        .blog-hero-lead {
+            font-size: 0.96rem;
+            line-height: 1.6;
+            max-width: 100%;
+        }
+
+        /* On mobile: Category chips + Search directly below Hero, then Featured Article */
+        .blog-toolbar-sec {
+            order: 1;
+            padding: 20px 0 8px;
+        }
+
+        .blog-featured-sec {
+            order: 2;
+            padding: 20px 0 12px;
+        }
+
+        .blog-toolbar-card {
+            padding: 16px;
+            gap: 14px;
+        }
+
+        .blog-search-form {
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .blog-search-btn {
+            width: 100%;
+            min-height: 40px;
+        }
+
+        .blog-featured-content {
+            padding: 24px 18px;
+        }
+
+        .blog-grid-sec {
+            padding: 28px 0 64px;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .blog-cards-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .blog-card-body {
+            padding: 22px 18px 18px;
+        }
+        .blog-cat-pill {
+            padding: 7px 13px;
+            font-size: 0.74rem;
+        }
+    }
+</style>
+}
+
+<!-- 1. BLOG HERO -->
+<section class="blog-journal-hero">
+    <div class="blog-journal-hero-bg">
+        <img src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1400"
+             alt="Agam Estates Insights and Journal" />
+    </div>
+    <div class="blog-journal-hero-overlay" aria-hidden="true"></div>
+    <div class="blog-journal-hero-gridlines" aria-hidden="true">
+        <svg viewBox="0 0 1400 700" fill="none" preserveAspectRatio="xMidYMax slice" style="width:100%; height:100%;">
+            <line x1="0" y1="220" x2="1400" y2="220" stroke="#DDAE45" stroke-opacity="0.18"/>
+            <line x1="0" y1="500" x2="1400" y2="500" stroke="#DDAE45" stroke-opacity="0.12"/>
+            <line x1="450" y1="0" x2="450" y2="700" stroke="#DDAE45" stroke-opacity="0.12"/>
+            <line x1="950" y1="0" x2="950" y2="700" stroke="#DDAE45" stroke-opacity="0.12"/>
+        </svg>
+    </div>
+
+    <div class="wrap">
+        <div class="blog-journal-hero-content">
+            <div class="blog-hero-eyebrow">INSIGHTS &amp; JOURNAL</div>
+            <h1 class="blog-hero-heading">
+                Stories about property,<br>
+                <em>place &amp; investment.</em>
+            </h1>
+            <div class="blog-hero-divider" aria-hidden="true"></div>
+            <p class="blog-hero-lead">
+                Explore market insights, project updates, home-buying guidance, and thoughtful perspectives from Agam Estates.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- 2 & 3. FEATURED ARTICLE + INSIGHTS NAVIGATION/FILTER -->
+<div class="blog-editorial-flow">
+    @if (Model.FeaturedPost != null && Model.CurrentPage == 1 && !hasFilter)
+    {
+        var fp = Model.FeaturedPost;
+        var fpImage = !string.IsNullOrWhiteSpace(fp.FeaturedImage) ? fp.FeaturedImage : GetFallbackImage(fp.BlogPostId);
+
+        <section class="blog-featured-sec">
+            <div class="wrap">
+                <article class="blog-featured-card">
+                    <a href="/Blog/@fp.Slug" class="blog-featured-media" aria-label="@fp.Title">
+                        <img src="@fpImage" alt="@fp.Title" />
+                    </a>
+                    <div class="blog-featured-content">
+                        <div class="blog-featured-kicker">Featured Article</div>
+                        <div class="blog-meta-row">
+                            <span class="blog-meta-cat">@(fp.CategoryName ?? "Insights")</span>
+                            <span class="blog-meta-date">@((fp.PublishedAt ?? fp.CreatedAt).ToString("dd MMM yyyy"))</span>
+                        </div>
+                        <h2 class="blog-featured-title">
+                            <a href="/Blog/@fp.Slug">@fp.Title</a>
+                        </h2>
+                        <p class="blog-featured-desc">@fp.ShortDescription</p>
+                        <div class="blog-featured-foot">
+                            <div class="blog-author-byline">
+                                <span>By</span> @FormatAuthor(fp.AuthorName)
+                            </div>
+                            <a href="/Blog/@fp.Slug" class="blog-read-link">
+                                <span>Read Article</span>
+                                <span class="arrow" aria-hidden="true">&rarr;</span>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+    }
+
+    <!-- Insights Filter & Search Bar -->
+    <section class="blog-toolbar-sec" aria-label="Filter and search articles">
+        <div class="wrap">
+            <div class="blog-toolbar-card">
+                <div class="blog-cat-pills" role="navigation" aria-label="Article categories">
+                    <a href="/Blog" class="blog-cat-pill @(string.IsNullOrWhiteSpace(Model.ActiveCategorySlug) ? "active" : "")">
+                        All Insights
+                    </a>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        var isActive = string.Equals(Model.ActiveCategorySlug, cat.Slug, StringComparison.OrdinalIgnoreCase);
+                        <a href="/Blog?category=@cat.Slug" class="blog-cat-pill @(isActive ? "active" : "")">
+                            @cat.CategoryName
+                        </a>
+                    }
+                </div>
+
+                <form method="get" action="/Blog" class="blog-search-form" role="search">
+                    @if (!string.IsNullOrWhiteSpace(Model.ActiveCategorySlug))
+                    {
+                        <input type="hidden" name="category" value="@Model.ActiveCategorySlug" />
+                    }
+                    <input type="search"
+                           name="search"
+                           class="blog-search-input"
+                           placeholder="Search articles..."
+                           value="@Model.SearchQuery"
+                           aria-label="Search articles" />
+                    <button type="submit" class="blog-search-btn">Search</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- 4. LATEST ARTICLES GRID -->
+<section class="blog-grid-sec">
+    <div class="wrap">
+        <div class="blog-sec-header">
+            <div>
+                <span class="eyebrow">EDITORIAL ARCHIVE</span>
+                <h2 class="blog-sec-title">
+                    @if (!string.IsNullOrWhiteSpace(Model.ActiveCategoryName))
+                    {
+                        @Model.ActiveCategoryName
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                    {
+                        @:Search Results for &ldquo;@Model.SearchQuery&rdquo;
+                    }
+                    else
+                    {
+                        @:Latest Insights
+                    }
+                </h2>
+            </div>
+            <div class="blog-sec-count">
+                Showing @Model.Posts.Count of @Model.TotalPosts article@(Model.TotalPosts == 1 ? "" : "s")
+                @if (hasFilter)
+                {
+                    <text> &bull; <a href="/Blog" style="color: var(--gold-dark); font-weight: 600;">Reset Filter</a></text>
+                }
+            </div>
+        </div>
+
+        @if (Model.Posts.Any())
+        {
+            <div class="blog-cards-grid">
+                @foreach (var post in Model.Posts)
+                {
+                    var cardImg = !string.IsNullOrWhiteSpace(post.FeaturedImage) ? post.FeaturedImage : GetFallbackImage(post.BlogPostId);
+                    <article class="blog-card">
+                        <a href="/Blog/@post.Slug" class="blog-card-media" aria-label="@post.Title">
+                            <img src="@cardImg" alt="@post.Title" loading="lazy" />
+                        </a>
+                        <div class="blog-card-body">
+                            <div class="blog-meta-row">
+                                <span class="blog-meta-cat">@(post.CategoryName ?? "Insights")</span>
+                                <span class="blog-meta-date">@((post.PublishedAt ?? post.CreatedAt).ToString("dd MMM yyyy"))</span>
+                            </div>
+                            <h3 class="blog-card-title">
+                                <a href="/Blog/@post.Slug">@post.Title</a>
+                            </h3>
+                            <p class="blog-card-excerpt">@post.ShortDescription</p>
+                            <div class="blog-card-foot">
+                                <span class="blog-card-author">
+                                    <span>By</span> @FormatAuthor(post.AuthorName)
+                                </span>
+                                <a href="/Blog/@post.Slug" class="blog-read-link">
+                                    <span>Read More</span>
+                                    <span class="arrow" aria-hidden="true">&rarr;</span>
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+
+            @if (Model.TotalPages > 1)
+            {
+                <nav class="blog-pagination" aria-label="Blog pagination">
+                    <a href="@BuildPageUrl(Model.CurrentPage - 1)"
+                       class="blog-page-link @(Model.CurrentPage <= 1 ? "disabled" : "")">
+                        &larr; Prev
+                    </a>
+                    @for (int p = 1; p <= Model.TotalPages; p++)
+                    {
+                        <a href="@BuildPageUrl(p)"
+                           class="blog-page-link @(p == Model.CurrentPage ? "active" : "")">
+                            @p
+                        </a>
+                    }
+                    <a href="@BuildPageUrl(Model.CurrentPage + 1)"
+                       class="blog-page-link @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
+                        Next &rarr;
+                    </a>
+                </nav>
+            }
+        }
+        else
+        {
+            <div class="blog-empty-card">
+                <h3 style="font-family: var(--serif); font-size: 1.5rem; color: #041A33; margin-bottom: 10px;">
+                    No matching articles found
+                </h3>
+                <p style="color: var(--fade); font-size: 0.94rem; margin-bottom: 22px;">
+                    We could not find any published articles matching your current filter or search criteria.
+                </p>
+                <a href="/Blog" class="btn btn-gold">View All Insights</a>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- 5. EDITORIAL CTA -->
+<section class="cta-banner">
+    <div class="wrap">
+        <div class="cta-inner">
+            <div class="cta-text">
+                <span class="eyebrow" style="color: #DDAE45;">PRIVATE CONSULTATION</span>
+                <h2>Interested in Sector 20, Panchkula Extension?</h2>
+                <p>Schedule a private site walkthrough or speak directly with our residential advisory team.</p>
+            </div>
+            <div class="cta-actions">
+                <a href="/#contact" class="btn btn-gold">Request a Site Visit &rarr;</a>
+                <a href="/Project" class="btn btn-outline-gold">Explore the Project</a>
+            </div>
+        </div>
+    </div>
+</section>

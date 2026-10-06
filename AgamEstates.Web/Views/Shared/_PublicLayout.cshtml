@@ -9,6 +9,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@(ViewData["Title"] ?? $"{siteSettings.CompanyName} — Sector 20, Panchkula Extension")</title>
+    @if (ViewData["MetaDescription"] is string metaDesc && !string.IsNullOrWhiteSpace(metaDesc))
+    {
+        <meta name="description" content="@metaDesc">
+    }
     <link rel="icon" type="image/png" href="@siteSettings.LogoPath">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -160,6 +164,7 @@
             toggle.setAttribute('aria-expanded', 'false');
         }
         if (backdrop) backdrop.classList.remove('open');
+        document.body.classList.remove('nav-open');
     }
 
     if (toggle) {
@@ -168,6 +173,7 @@
             toggle.classList.toggle('active', isOpen);
             toggle.setAttribute('aria-expanded', isOpen);
             if (backdrop) backdrop.classList.toggle('open', isOpen);
+            document.body.classList.toggle('nav-open', isOpen);
         });
     }
 

@@ -1,0 +1,648 @@
+@model AgamEstates.Web.Models.PublicBlogDetailViewModel
+@{
+    Layout = "_PublicLayout";
+    var post = Model.Post;
+    ViewData["Title"] = $"{post.Title} — Agam Estates";
+    ViewData["MetaDescription"] = post.ShortDescription;
+    ViewData["ActiveNav"] = "Blog";
+
+    string GetFallbackImage(int id)
+    {
+        var images = new[]
+        {
+            "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=1200",
+            "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1200"
+        };
+        return images[Math.Abs(id) % images.Length];
+    }
+
+    var heroImage = !string.IsNullOrWhiteSpace(post.FeaturedImage) ? post.FeaturedImage : GetFallbackImage(post.BlogPostId);
+    var authorDisplay = !string.IsNullOrWhiteSpace(post.AuthorName) ? post.AuthorName.Trim() : "Agam Estates Editorial Team";
+    var pubDateDisplay = (post.PublishedAt ?? post.CreatedAt).ToString("dd MMM yyyy").ToUpperInvariant();
+}
+
+@section Styles {
+<style>
+    /* ============================================================
+       PART 5 — BLOG DETAIL EDITORIAL HERO
+    ============================================================ */
+    .blog-detail-hero {
+        background: #041A33;
+        color: var(--light);
+        padding: 195px 0 64px;
+        position: relative;
+        overflow: hidden;
+        border-bottom: 1px solid rgba(221, 174, 69, 0.24);
+    }
+
+    .blog-detail-hero-pattern {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.4;
+    }
+
+    .blog-detail-hero-inner {
+        position: relative;
+        z-index: 2;
+        max-width: 840px;
+    }
+
+    .blog-preview-banner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: rgba(221, 174, 69, 0.16);
+        border: 1px solid rgba(221, 174, 69, 0.55);
+        color: var(--gold-soft);
+        padding: 10px 16px;
+        border-radius: 3px;
+        margin-bottom: 22px;
+        font-size: 0.82rem;
+    }
+
+    .blog-preview-banner a {
+        color: #FFFFFF;
+        font-weight: 600;
+        text-decoration: underline;
+    }
+
+    .blog-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 500;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #C6D0E0;
+        margin-bottom: 22px;
+        transition: color 180ms ease;
+    }
+
+    .blog-back-link:hover {
+        color: var(--gold-soft);
+    }
+
+    .blog-detail-meta-top {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .blog-detail-cat-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gold-soft);
+        background: rgba(221, 174, 69, 0.14);
+        border: 1px solid rgba(221, 174, 69, 0.42);
+        border-radius: 2px;
+        transition: background-color 180ms ease, color 180ms ease;
+    }
+
+    .blog-detail-cat-badge:hover {
+        background: var(--gold);
+        color: #041A33;
+    }
+
+    .blog-detail-date {
+        font-size: 0.76rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #B8C7DC;
+    }
+
+    .blog-detail-title {
+        font-family: var(--serif);
+        font-size: clamp(2rem, 4.2vw, 3.35rem);
+        font-weight: 400;
+        line-height: 1.12;
+        color: var(--light);
+        margin-bottom: 22px;
+        overflow-wrap: break-word;
+    }
+
+    .blog-detail-byline {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+        color: #D2DCEB;
+        padding-top: 16px;
+        border-top: 1px solid rgba(221, 174, 69, 0.22);
+    }
+
+    .blog-detail-byline strong {
+        color: var(--gold-soft);
+        font-weight: 500;
+    }
+
+    /* ============================================================
+       MAIN EDITORIAL LAYOUT (800px Reading Column + Sidebar)
+    ============================================================ */
+    .blog-detail-sec {
+        padding: 56px 0 88px;
+        background: var(--light);
+    }
+
+    .blog-detail-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 820px) minmax(280px, 1fr);
+        gap: 48px;
+        align-items: start;
+        justify-content: space-between;
+    }
+
+    .blog-article-column {
+        min-width: 0;
+        max-width: 820px;
+        width: 100%;
+    }
+
+    .blog-detail-featured-img {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        overflow: hidden;
+        background: #041A33;
+        border: 1px solid rgba(221, 174, 69, 0.32);
+        margin-bottom: 32px;
+        box-shadow: 0 12px 32px rgba(4, 26, 51, 0.08);
+    }
+
+    .blog-detail-featured-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .blog-article-card {
+        background: #FFFFFF;
+        border: 1px solid rgba(6, 37, 69, 0.10);
+        padding: 46px 48px;
+        box-shadow: 0 6px 24px rgba(4, 26, 51, 0.04);
+    }
+
+    .blog-article-standfirst {
+        font-family: var(--serif);
+        font-size: 1.24rem;
+        line-height: 1.65;
+        color: var(--primary);
+        padding-bottom: 26px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid rgba(221, 174, 69, 0.28);
+        overflow-wrap: break-word;
+    }
+
+    /* Rich Text Reading Typography (760-840px reading width) */
+    .blog-rich-content {
+        font-family: var(--sans);
+        font-size: 1.06rem;
+        line-height: 1.84;
+        color: #1E293B;
+        max-width: 780px;
+        overflow-wrap: break-word;
+    }
+
+    .blog-rich-content p {
+        margin: 0 0 1.35rem;
+    }
+
+    .blog-rich-content h2 {
+        font-family: var(--serif);
+        font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+        font-weight: 500;
+        color: #041A33;
+        line-height: 1.28;
+        margin: 2.2rem 0 0.95rem;
+    }
+
+    .blog-rich-content h3,
+    .blog-rich-content h4 {
+        font-family: var(--serif);
+        font-size: clamp(1.2rem, 1.8vw, 1.42rem);
+        font-weight: 500;
+        color: var(--primary);
+        line-height: 1.34;
+        margin: 1.8rem 0 0.75rem;
+    }
+
+    .blog-rich-content ul,
+    .blog-rich-content ol {
+        margin: 0 0 1.45rem 1.4rem;
+        padding-left: 0.4rem;
+    }
+
+    .blog-rich-content li {
+        margin-bottom: 0.6rem;
+        line-height: 1.78;
+    }
+
+    .blog-rich-content blockquote {
+        margin: 1.85rem 0;
+        padding: 22px 26px;
+        background: var(--light);
+        border-left: 3px solid var(--gold);
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 1.15rem;
+        line-height: 1.68;
+        color: #041A33;
+    }
+
+    .blog-rich-content a {
+        color: var(--primary);
+        text-decoration: underline;
+        text-decoration-color: var(--gold);
+        text-underline-offset: 3px;
+        transition: color 180ms ease;
+    }
+
+    .blog-rich-content a:hover {
+        color: var(--gold-dark);
+    }
+
+    .blog-rich-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 1.5rem 0;
+    }
+
+    .blog-article-footer {
+        margin-top: 38px;
+        padding-top: 24px;
+        border-top: 1px solid rgba(6, 37, 69, 0.10);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    /* ============================================================
+       SIDEBAR WIDGETS
+    ============================================================ */
+    .blog-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        min-width: 0;
+    }
+
+    .blog-sidebar-box {
+        background: #FFFFFF;
+        border: 1px solid rgba(6, 37, 69, 0.10);
+        border-top: 2px solid var(--gold);
+        padding: 26px 24px;
+    }
+
+    .blog-sidebar-title {
+        font-family: var(--serif);
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #041A33;
+        margin-bottom: 16px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(6, 37, 69, 0.08);
+    }
+
+    .sidebar-search-form {
+        display: flex;
+        gap: 8px;
+    }
+
+    .sidebar-search-input {
+        flex: 1;
+        min-width: 0;
+        padding: 9px 12px;
+        border: 1px solid rgba(6, 37, 69, 0.18);
+        border-radius: 2px;
+        font-family: var(--sans);
+        font-size: 0.86rem;
+        background: var(--light);
+        outline: none;
+    }
+
+    .sidebar-search-input:focus {
+        background: #FFFFFF;
+        border-color: var(--gold);
+    }
+
+    .sidebar-search-btn {
+        padding: 9px 15px;
+        background: var(--primary);
+        color: var(--gold-soft);
+        border: 1px solid var(--primary);
+        border-radius: 2px;
+        font-size: 0.76rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        cursor: pointer;
+    }
+
+    .sidebar-cat-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .sidebar-cat-link {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 9px 12px;
+        background: var(--light);
+        border: 1px solid rgba(6, 37, 69, 0.08);
+        border-radius: 2px;
+        font-size: 0.86rem;
+        font-weight: 500;
+        color: var(--primary);
+        transition: border-color 180ms ease, color 180ms ease;
+    }
+
+    .sidebar-cat-link:hover,
+    .sidebar-cat-link.active {
+        border-color: var(--gold);
+        color: var(--gold-dark);
+    }
+
+    .sidebar-cat-count {
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--fade);
+        background: #FFFFFF;
+        padding: 2px 8px;
+        border-radius: 2px;
+        border: 1px solid rgba(6, 37, 69, 0.1);
+    }
+
+    .sidebar-recent-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .sidebar-recent-item {
+        display: grid;
+        grid-template-columns: 76px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+        padding-bottom: 14px;
+        border-bottom: 1px solid rgba(6, 37, 69, 0.07);
+    }
+
+    .sidebar-recent-item:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .sidebar-recent-thumb {
+        width: 76px;
+        height: 54px;
+        border-radius: 2px;
+        overflow: hidden;
+        background: var(--primary);
+        border: 1px solid rgba(221, 174, 69, 0.28);
+        display: block;
+    }
+
+    .sidebar-recent-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .sidebar-recent-title {
+        font-family: var(--serif);
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--primary);
+        line-height: 1.3;
+        display: block;
+        margin-bottom: 4px;
+        overflow-wrap: break-word;
+    }
+
+    .sidebar-recent-title:hover {
+        color: var(--gold-dark);
+    }
+
+    .sidebar-recent-date {
+        font-size: 0.73rem;
+        color: var(--fade);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    @@media (max-width: 1024px) {
+        .blog-detail-layout {
+            grid-template-columns: 1fr;
+            gap: 36px;
+        }
+        .blog-article-column {
+            max-width: 100%;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .blog-detail-hero {
+            height: auto;
+            min-height: 0;
+            padding: 162px 0 0;
+        }
+        .blog-detail-hero .wrap {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .blog-detail-hero-inner {
+            width: 100%;
+            min-width: 0;
+            padding: 30px 18px 36px;
+        }
+        .blog-detail-title {
+            max-width: 100%;
+            font-size: clamp(1.85rem, 7.2vw, 2.6rem);
+            line-height: 1.12;
+        }
+        .blog-detail-sec {
+            padding: 28px 0 64px;
+        }
+        .blog-article-card {
+            padding: 24px 18px;
+        }
+        .blog-sidebar-box {
+            padding: 20px 18px;
+        }
+        .blog-article-footer {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        .blog-article-footer .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+}
+
+<!-- Blog Detail Hero -->
+<section class="blog-detail-hero">
+    <div class="blog-detail-hero-pattern" aria-hidden="true">
+        <svg viewBox="0 0 1400 600" fill="none" preserveAspectRatio="xMidYMax slice" style="width:100%; height:100%;">
+            <line x1="0" y1="180" x2="1400" y2="180" stroke="#DDAE45" stroke-opacity="0.18"/>
+            <line x1="0" y1="420" x2="1400" y2="420" stroke="#DDAE45" stroke-opacity="0.12"/>
+            <line x1="420" y1="0" x2="420" y2="600" stroke="#DDAE45" stroke-opacity="0.12"/>
+            <line x1="980" y1="0" x2="980" y2="600" stroke="#DDAE45" stroke-opacity="0.12"/>
+        </svg>
+    </div>
+
+    <div class="wrap">
+        <div class="blog-detail-hero-inner">
+            @if (Model.IsPreviewMode)
+            {
+                <div class="blog-preview-banner">
+                    <span>
+                        <strong>ADMIN PREVIEW MODE</strong> &bull; Status: @(post.IsPublished ? "Published" : "Draft (Hidden from public)")
+                    </span>
+                    <a href="/Admin/Blogs/Edit/@post.BlogPostId">&larr; Return to Editor</a>
+                </div>
+            }
+
+            <a href="/Blog" class="blog-back-link">
+                <span aria-hidden="true">&larr;</span>
+                <span>Back to Insights &amp; Journal</span>
+            </a>
+
+            <div class="blog-detail-meta-top">
+                @if (!string.IsNullOrWhiteSpace(post.CategorySlug))
+                {
+                    <a href="/Blog?category=@post.CategorySlug" class="blog-detail-cat-badge">@(post.CategoryName ?? "Insights")</a>
+                }
+                else
+                {
+                    <span class="blog-detail-cat-badge">@(post.CategoryName ?? "Insights")</span>
+                }
+                <span class="blog-detail-date">@pubDateDisplay</span>
+            </div>
+
+            <h1 class="blog-detail-title">@post.Title</h1>
+
+            <div class="blog-detail-byline">
+                <span>By <strong>@authorDisplay</strong></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Detail Content & Sidebar -->
+<section class="blog-detail-sec">
+    <div class="wrap">
+        <div class="blog-detail-layout">
+            <!-- Left Main Article Column -->
+            <article class="blog-article-column">
+                <div class="blog-detail-featured-img">
+                    <img src="@heroImage" alt="@post.Title" />
+                </div>
+
+                <div class="blog-article-card">
+                    @if (!string.IsNullOrWhiteSpace(post.ShortDescription))
+                    {
+                        <p class="blog-article-standfirst">@post.ShortDescription</p>
+                    }
+
+                    <div class="blog-rich-content">
+                        @Html.Raw(post.Content)
+                    </div>
+
+                    @* <div class="blog-article-footer">
+                        <a href="/Blog" class="btn btn-outline-dark">&larr; Back to All Insights</a>
+                        <a href="/#contact" class="btn btn-gold">Schedule a Private Site Visit &rarr;</a>
+                    </div> *@
+                </div>
+            </article>
+
+            <!-- Right Editorial Sidebar -->
+            <aside class="blog-sidebar" aria-label="Blog sidebar">
+                <!-- Search Box -->
+                <div class="blog-sidebar-box">
+                    <h3 class="blog-sidebar-title">Search Journal</h3>
+                    <form method="get" action="/Blog" class="sidebar-search-form">
+                        <input type="search" name="search" class="sidebar-search-input" placeholder="Search articles..." aria-label="Search articles" />
+                        <button type="submit" class="sidebar-search-btn">Go</button>
+                    </form>
+                </div>
+
+                <!-- Categories -->
+                @if (Model.Categories.Any())
+                {
+                    <div class="blog-sidebar-box">
+                        <h3 class="blog-sidebar-title">Categories</h3>
+                        <ul class="sidebar-cat-list">
+                            @foreach (var cat in Model.Categories)
+                            {
+                                var isCurrentCat = string.Equals(cat.Slug, post.CategorySlug, StringComparison.OrdinalIgnoreCase);
+                                <li>
+                                    <a href="/Blog?category=@cat.Slug" class="sidebar-cat-link @(isCurrentCat ? "active" : "")">
+                                        <span>@cat.CategoryName</span>
+                                        <span class="sidebar-cat-count">@cat.PublishedBlogsCount</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <!-- Recent Posts -->
+                @if (Model.RecentPosts.Any())
+                {
+                    <div class="blog-sidebar-box">
+                        <h3 class="blog-sidebar-title">Recent Articles</h3>
+                        <div class="sidebar-recent-list">
+                            @foreach (var rp in Model.RecentPosts)
+                            {
+                                var rpImg = !string.IsNullOrWhiteSpace(rp.FeaturedImage) ? rp.FeaturedImage : GetFallbackImage(rp.BlogPostId);
+                                <div class="sidebar-recent-item">
+                                    <a href="/Blog/@rp.Slug" class="sidebar-recent-thumb" aria-label="@rp.Title">
+                                        <img src="@rpImg" alt="@rp.Title" loading="lazy" />
+                                    </a>
+                                    <div>
+                                        <a href="/Blog/@rp.Slug" class="sidebar-recent-title">@rp.Title</a>
+                                        <div class="sidebar-recent-date">@((rp.PublishedAt ?? rp.CreatedAt).ToString("dd MMM yyyy"))</div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Private Enquiry Card -->
+                <div class="blog-sidebar-box" style="background: var(--primary); color: var(--light); border-top-color: var(--gold);">
+                    <span class="eyebrow" style="color: var(--gold); margin-bottom: 8px; display: block;">SECTOR 20 · PANCHKULA EXT.</span>
+                    <h3 style="font-family: var(--serif); font-size: 1.3rem; color: var(--light); margin-bottom: 10px;">
+                        Explore Agam Estates Residences
+                    </h3>
+                    <p style="font-size: 0.88rem; color: #C6D0E0; line-height: 1.65; margin-bottom: 18px;">
+                        Low-density 3 &amp; 4 BHK residences crafted around natural light, expansive balconies, and enduring value.
+                    </p>
+                    <a href="/#contact" class="btn btn-gold" style="width: 100%; justify-content: center;">Request Brochure &amp; Visit</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>

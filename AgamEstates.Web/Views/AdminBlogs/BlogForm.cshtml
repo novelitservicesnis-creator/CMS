@@ -1,0 +1,1672 @@
+@model AgamEstates.Web.Models.BlogFormViewModel
+@{
+    Layout = "_AdminLayout";
+    var pageTitle = Model.IsEditMode ? "Edit Blog" : "Create Blog";
+    ViewData["Title"] = pageTitle;
+    var authorDisplay = !string.IsNullOrWhiteSpace(Model.AuthorName) ? Model.AuthorName : "Agam Estates Editorial Team";
+}
+
+@section Styles {
+<style>
+    /* ============================================================
+       PART 11 — ADMIN BLOG CREATE/EDIT EDITORIAL WORKSPACE
+    ============================================================ */
+    .blog-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .blog-alert {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 18px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+        font-size: 0.88rem;
+        font-weight: 500;
+    }
+
+    .blog-alert-error {
+        background: #FEF2F2;
+        color: #991B1B;
+        border: 1px solid #FECACA;
+    }
+
+    .blog-alert-success {
+        background: #F0FDF4;
+        color: #166534;
+        border: 1px solid #BBF7D0;
+    }
+
+    /* Two-column Desktop Layout (minmax(0, 1.7fr) minmax(300px, 0.8fr)) */
+    .blog-workspace-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(300px, 0.8fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .workspace-main,
+    .workspace-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+        min-width: 0;
+    }
+
+    .workspace-card {
+        background: var(--white);
+        border: 1px solid var(--border-light);
+        border-radius: 4px;
+        padding: 24px 26px;
+        box-shadow: var(--shadow-sm);
+        min-width: 0;
+        transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .workspace-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        padding-bottom: 14px;
+        margin-bottom: 18px;
+        border-bottom: 1px solid rgba(6, 37, 69, 0.08);
+    }
+
+    .workspace-card-title {
+        font-family: var(--serif);
+        font-size: 1.18rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        margin: 0;
+    }
+
+    /* Slug Input & Live URL Preview */
+    .slug-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+    }
+
+    .slug-regen-btn {
+        background: none;
+        border: none;
+        color: var(--gold-dark);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 0;
+        transition: color 180ms ease;
+    }
+
+    .slug-regen-btn:hover {
+        color: var(--primary-dark);
+        text-decoration: underline;
+    }
+
+    .slug-input-group {
+        display: flex;
+        align-items: stretch;
+        border: 1px solid rgba(6, 37, 69, 0.18);
+        border-radius: 3px;
+        overflow: hidden;
+        background: var(--white);
+        transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .slug-input-group:focus-within {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(221, 174, 69, 0.16);
+    }
+
+    .slug-prefix {
+        background: var(--light);
+        color: var(--fade);
+        padding: 10px 12px;
+        font-size: 0.84rem;
+        font-weight: 600;
+        border-right: 1px solid rgba(6, 37, 69, 0.12);
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        user-select: none;
+    }
+
+    .slug-input-group input {
+        border: none !important;
+        box-shadow: none !important;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .slug-preview-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 6px;
+        font-size: 0.76rem;
+        color: var(--fade);
+    }
+
+    .slug-preview-url {
+        font-family: Consolas, Monaco, 'Courier New', monospace;
+        color: var(--primary);
+        background: rgba(6, 37, 69, 0.04);
+        padding: 2px 7px;
+        border-radius: 2px;
+        overflow-wrap: anywhere;
+    }
+
+    /* Short Description Counter */
+    .desc-counter-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+    }
+
+    .char-counter-badge {
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--fade);
+        transition: color 180ms ease;
+    }
+
+    .char-counter-badge.near-limit {
+        color: #B45309;
+    }
+
+    .char-counter-badge.over-limit {
+        color: #DC2626;
+    }
+
+    /* ============================================================
+       EDITOR HEADER, STICKY GROUPED TOOLBAR & WRITING CANVAS
+    ============================================================ */
+    .editor-status-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+        font-size: 0.8rem;
+        color: var(--fade);
+    }
+
+    .editor-status-left {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
+
+    .editor-status-right {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .editor-reading-stats {
+        font-weight: 500;
+        color: var(--primary);
+    }
+
+    .save-state-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.74rem;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 2px;
+    }
+
+    .save-state-pill.unsaved {
+        color: #B45309;
+        background: #FEF3C7;
+        border: 1px solid #FDE68A;
+    }
+
+    .save-state-pill.saved {
+        color: #166534;
+        background: #DCFCE7;
+        border: 1px solid #BBF7D0;
+    }
+
+    .html-mode-indicator {
+        display: none;
+        font-family: Consolas, Monaco, monospace;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--gold-soft);
+        background: var(--primary-dark);
+        padding: 2px 8px;
+        border-radius: 2px;
+        letter-spacing: 0.05em;
+    }
+
+    .html-mode-indicator.active {
+        display: inline-flex;
+    }
+
+    .rich-editor-shell {
+        border: 1px solid rgba(6, 37, 69, 0.18);
+        border-radius: 4px;
+        background: #FFFFFF;
+        transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .rich-editor-shell:focus-within {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 3px rgba(221, 174, 69, 0.14);
+    }
+
+    .rich-toolbar {
+        position: sticky;
+        top: 68px;
+        z-index: 12;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 8px 10px;
+        background: var(--light);
+        border-bottom: 1px solid rgba(6, 37, 69, 0.12);
+        border-radius: 3px 3px 0 0;
+    }
+
+    .toolbar-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-divider {
+        width: 1px;
+        height: 22px;
+        background: rgba(6, 37, 69, 0.14);
+        margin: 0 4px;
+    }
+
+    .rt-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        min-height: 36px;
+        padding: 0 8px;
+        background: #FFFFFF;
+        border: 1px solid rgba(6, 37, 69, 0.14);
+        border-radius: 3px;
+        color: var(--primary-dark);
+        font-family: var(--sans);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+        user-select: none;
+    }
+
+    .rt-btn svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+        flex-shrink: 0;
+    }
+
+    .rt-btn:hover {
+        border-color: var(--gold);
+        color: var(--gold-dark);
+        background: #FFFDF7;
+        transform: translateY(-1px);
+    }
+
+    .rt-btn:active {
+        transform: translateY(0);
+    }
+
+    .rt-btn.is-active {
+        background: var(--primary);
+        color: var(--gold-soft);
+        border-color: var(--primary);
+    }
+
+    /* Editorial Writing Canvas */
+    .rich-editor-canvas {
+        min-height: 560px;
+        padding: 28px 32px;
+        outline: none;
+        font-family: var(--sans);
+        font-size: 1.02rem;
+        line-height: 1.76;
+        color: #1E293B;
+        background: #FFFFFF;
+        overflow-wrap: break-word;
+        border-radius: 0 0 3px 3px;
+    }
+
+    .rich-editor-canvas:empty::before {
+        content: attr(data-placeholder);
+        color: #94A3B8;
+        pointer-events: none;
+        display: block;
+    }
+
+    .rich-editor-canvas p {
+        margin: 0 0 1.15rem;
+    }
+
+    .rich-editor-canvas h2 {
+        font-family: var(--serif);
+        font-size: 1.55rem;
+        font-weight: 500;
+        color: var(--primary-dark);
+        line-height: 1.3;
+        margin: 1.65rem 0 0.75rem;
+    }
+
+    .rich-editor-canvas h3 {
+        font-family: var(--serif);
+        font-size: 1.26rem;
+        font-weight: 500;
+        color: var(--primary);
+        line-height: 1.35;
+        margin: 1.35rem 0 0.6rem;
+    }
+
+    .rich-editor-canvas ul,
+    .rich-editor-canvas ol {
+        margin: 0 0 1.15rem 1.4rem;
+    }
+
+    .rich-editor-canvas li {
+        margin-bottom: 0.4rem;
+    }
+
+    .rich-editor-canvas blockquote {
+        margin: 1.35rem 0;
+        padding: 16px 22px;
+        background: var(--light);
+        border-left: 3px solid var(--gold);
+        font-family: var(--serif);
+        font-style: italic;
+        font-size: 1.08rem;
+        color: var(--primary-dark);
+    }
+
+    .rich-editor-canvas a {
+        color: var(--primary);
+        text-decoration: underline;
+        text-decoration-color: var(--gold);
+    }
+
+    .rich-source-textarea {
+        display: none;
+        width: 100%;
+        min-height: 560px;
+        padding: 22px 24px;
+        border: none;
+        outline: none;
+        font-family: Consolas, Monaco, 'Courier New', monospace;
+        font-size: 0.88rem;
+        line-height: 1.65;
+        background: #0F172A;
+        color: #E2E8F0;
+        resize: vertical;
+        border-radius: 0 0 3px 3px;
+    }
+
+    /* ============================================================
+       RIGHT SIDEBAR CARDS (Publishing, Image, Checklist, SEO)
+    ============================================================ */
+    .author-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+    }
+
+    .author-helper-text {
+        font-size: 0.74rem;
+        color: var(--fade);
+        line-height: 1.45;
+        margin-top: 5px;
+    }
+
+    .publish-btn-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid rgba(6, 37, 69, 0.08);
+    }
+
+    .publish-btn-stack .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Featured Image Preview Box */
+    .featured-image-stage {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 3px;
+        overflow: hidden;
+        background: var(--primary-dark);
+        border: 1px dashed rgba(221, 174, 69, 0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        margin-bottom: 12px;
+    }
+
+    .featured-image-stage img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .featured-image-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        color: #C6D0E0;
+        text-align: center;
+        padding: 16px;
+        font-size: 0.8rem;
+    }
+
+    .featured-image-specs {
+        font-size: 0.75rem;
+        color: var(--fade);
+        line-height: 1.55;
+        margin-bottom: 12px;
+    }
+
+    /* Article Quality Checklist */
+    .checklist-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.84rem;
+        color: var(--fade);
+        transition: color 180ms ease;
+    }
+
+    .checklist-item.is-done {
+        color: var(--primary-dark);
+        font-weight: 500;
+    }
+
+    .checklist-icon {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1px solid rgba(6, 37, 69, 0.22);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+        color: transparent;
+        background: var(--light);
+        flex-shrink: 0;
+        transition: all 180ms ease;
+    }
+
+    .checklist-item.is-done .checklist-icon {
+        background: #DCFCE7;
+        border-color: #22C55E;
+        color: #15803D;
+    }
+
+    /* SEO Search Preview */
+    .seo-preview-box {
+        background: var(--light);
+        border: 1px solid rgba(6, 37, 69, 0.10);
+        border-radius: 3px;
+        padding: 14px 16px;
+    }
+
+    .seo-preview-title {
+        font-family: var(--serif);
+        font-size: 1.02rem;
+        font-weight: 600;
+        color: #1A0DAB;
+        line-height: 1.3;
+        margin-bottom: 4px;
+        overflow-wrap: break-word;
+    }
+
+    .seo-preview-url {
+        font-family: Consolas, Monaco, monospace;
+        font-size: 0.75rem;
+        color: #006621;
+        margin-bottom: 6px;
+        overflow-wrap: anywhere;
+    }
+
+    .seo-preview-desc {
+        font-size: 0.81rem;
+        color: #475569;
+        line-height: 1.5;
+        overflow-wrap: break-word;
+    }
+
+    .field-validation-error {
+        display: block;
+        color: #DC2626;
+        font-size: 0.78rem;
+        margin-top: 4px;
+    }
+
+    /* ============================================================
+       RESPONSIVE ONE-COLUMN STACKING (<= 1024px & <= 900px)
+       Order: 1. Basics, 2. Editor, 3. Image, 4. Publishing, 5. Checklist, 6. SEO
+    ============================================================ */
+    @@media (max-width: 1024px) {
+        .blog-workspace-grid {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 20px;
+        }
+
+        .workspace-main,
+        .workspace-sidebar {
+            display: contents;
+        }
+
+        .workspace-card {
+            width: 100%;
+        }
+
+        .card-order-basics { order: 1; }
+        .card-order-editor { order: 2; }
+        .card-order-image { order: 3; }
+        .card-order-publish { order: 4; }
+        .card-order-checklist { order: 5; }
+        .card-order-seo { order: 6; }
+
+        .rich-toolbar {
+            position: static;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .workspace-card {
+            padding: 18px 16px;
+        }
+
+        .blog-head-actions {
+            width: 100%;
+        }
+
+        .blog-head-actions .btn {
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+
+        .rich-editor-canvas {
+            min-height: 380px;
+            padding: 16px 14px;
+            font-size: 0.98rem;
+            line-height: 1.7;
+        }
+
+        .rich-source-textarea {
+            min-height: 380px;
+            padding: 14px;
+        }
+
+        .toolbar-divider {
+            display: none;
+        }
+    }
+</style>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="blog-alert blog-alert-error" role="alert">
+        <span>@TempData["ErrorMessage"]</span>
+        <button type="button" style="background:none;border:none;color:inherit;font-size:1.2rem;cursor:pointer;" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="blog-alert blog-alert-success" role="status">
+        <span>@TempData["SuccessMessage"]</span>
+        <button type="button" style="background:none;border:none;color:inherit;font-size:1.2rem;cursor:pointer;" onclick="this.parentElement.remove()">&times;</button>
+    </div>
+}
+
+<!-- Page Header -->
+<div class="page-head">
+    <div>
+        <h1 class="page-title">@pageTitle</h1>
+        <p class="page-subtitle">Write, format and publish editorial content for the Agam Estates website.</p>
+    </div>
+    <div class="blog-head-actions">
+        @if (Model.IsEditMode && Model.BlogPostId > 0)
+        {
+            <a href="/Admin/Blogs/Preview/@Model.BlogPostId" target="_blank" class="btn btn-outline">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                <span>Preview Article</span>
+            </a>
+        }
+        <a href="/Blog" target="_blank" class="btn btn-outline">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+            <span>View Public Blog</span>
+        </a>
+        <a href="/Admin/Blogs" class="btn btn-outline js-confirm-leave">
+            <span>&larr; Back to Blogs</span>
+        </a>
+    </div>
+</div>
+
+<form id="blog-editor-form"
+      method="post"
+      action="@(Model.IsEditMode ? $"/Admin/Blogs/Edit/{Model.BlogPostId}" : "/Admin/Blogs/Create")"
+      enctype="multipart/form-data"
+      novalidate>
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="BlogPostId" />
+    <input type="hidden" asp-for="ExistingFeaturedImage" />
+
+    <div class="blog-workspace-grid">
+        <!-- LEFT COLUMN: Article Basics + Content Editor -->
+        <div class="workspace-main">
+            <!-- 1. Article Basics Card -->
+            <div class="workspace-card card-order-basics">
+                <div class="workspace-card-head">
+                    <h2 class="workspace-card-title">Article Content</h2>
+                    <span class="save-state-pill @(TempData["SuccessMessage"] != null ? "saved" : "unsaved")" id="save-state-indicator" style="@(TempData["SuccessMessage"] != null ? "" : "display:none;")">
+                        @(TempData["SuccessMessage"] != null ? "Saved" : "Unsaved changes")
+                    </span>
+                </div>
+
+                <!-- Title -->
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label">Title <span class="required">*</span></label>
+                    <input asp-for="Title"
+                           id="blog-title"
+                           class="form-control"
+                           placeholder="e.g. Why Low-Density Living Matters in Panchkula Extension"
+                           maxlength="200"
+                           required />
+                    <span asp-validation-for="Title" class="field-validation-error" id="err-title"></span>
+                </div>
+
+                <!-- Slug -->
+                <div class="form-group">
+                    <div class="slug-label-row">
+                        <label asp-for="Slug" class="form-label" style="margin-bottom: 0;">Slug (SEO URL)</label>
+                        <button type="button" class="slug-regen-btn" id="btn-regenerate-slug">Auto-generate from Title</button>
+                    </div>
+                    <div class="slug-input-group">
+                        <span class="slug-prefix">/Blog/</span>
+                        <input asp-for="Slug"
+                               id="blog-slug"
+                               class="form-control"
+                               placeholder="why-low-density-living-matters-in-tricity"
+                               maxlength="220" />
+                    </div>
+                    <div class="slug-preview-row">
+                        <span>Preview URL: <code class="slug-preview-url" id="slug-live-preview">/Blog/@(string.IsNullOrWhiteSpace(Model.Slug) ? "your-article-slug" : Model.Slug)</code></span>
+                        <span id="slug-validation-msg" style="color: #DC2626; display: none;">Use lowercase letters, numbers, and hyphens only.</span>
+                    </div>
+                    <span asp-validation-for="Slug" class="field-validation-error"></span>
+                </div>
+
+                <!-- Short Description -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <div class="desc-counter-row">
+                        <label asp-for="ShortDescription" class="form-label" style="margin-bottom: 0;">Short Description <span class="required">*</span></label>
+                        <span class="char-counter-badge" id="short-desc-counter">0 / 600</span>
+                    </div>
+                    <textarea asp-for="ShortDescription"
+                              id="blog-short-desc"
+                              class="form-control"
+                              rows="3"
+                              maxlength="600"
+                              placeholder="Write a concise editorial summary (approx. 150–600 characters) displayed on blog cards and search engine previews..."
+                              required></textarea>
+                    <span id="short-desc-limit-note" class="field-validation-error" style="display: none;"></span>
+                    <span asp-validation-for="ShortDescription" class="field-validation-error" id="err-short-desc"></span>
+                </div>
+            </div>
+
+            <!-- 2. Rich Text Editor Workspace Card -->
+            <div class="workspace-card card-order-editor">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" for="rich-editor-canvas">Content <span class="required">*</span></label>
+                    <div class="editor-status-bar">
+                        <span class="editor-status-left">
+                            <span>Article body</span>
+                            <span class="html-mode-indicator" id="html-mode-badge">HTML SOURCE MODE</span>
+                        </span>
+                        <span class="editor-status-right">
+                            <span class="editor-reading-stats" id="editor-word-stats">0 words &bull; 1 min read</span>
+                        </span>
+                    </div>
+
+                    <div class="rich-editor-shell" id="rich-editor-shell">
+                        <div class="rich-toolbar" id="rich-toolbar" role="toolbar" aria-label="Article formatting toolbar">
+                            <!-- Group 1: Text -->
+                            <div class="toolbar-group">
+                                <button type="button" class="rt-btn" data-cmd="bold" title="Bold (Ctrl+B)" aria-label="Bold">
+                                    <strong>B</strong>
+                                </button>
+                                <button type="button" class="rt-btn" data-cmd="italic" title="Italic (Ctrl+I)" aria-label="Italic">
+                                    <em>I</em>
+                                </button>
+                                <button type="button" class="rt-btn" data-cmd="underline" title="Underline (Ctrl+U)" aria-label="Underline">
+                                    <u>U</u>
+                                </button>
+                            </div>
+
+                            <span class="toolbar-divider" aria-hidden="true"></span>
+
+                            <!-- Group 2: Structure -->
+                            <div class="toolbar-group">
+                                <button type="button" class="rt-btn" data-block="P" title="Paragraph" aria-label="Paragraph">P</button>
+                                <button type="button" class="rt-btn" data-block="H2" title="Heading 2" aria-label="Heading 2">H2</button>
+                                <button type="button" class="rt-btn" data-block="H3" title="Heading 3" aria-label="Heading 3">H3</button>
+                            </div>
+
+                            <span class="toolbar-divider" aria-hidden="true"></span>
+
+                            <!-- Group 3: Blocks -->
+                            <div class="toolbar-group">
+                                <button type="button" class="rt-btn" data-block="BLOCKQUOTE" title="Block Quote" aria-label="Block Quote">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+                                </button>
+                                <button type="button" class="rt-btn" data-cmd="insertUnorderedList" title="Bulleted List" aria-label="Bulleted List">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                                </button>
+                                <button type="button" class="rt-btn" data-cmd="insertOrderedList" title="Numbered List" aria-label="Numbered List">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+                                </button>
+                            </div>
+
+                            <span class="toolbar-divider" aria-hidden="true"></span>
+
+                            <!-- Group 4: Alignment -->
+                            <div class="toolbar-group">
+                                <button type="button" class="rt-btn" data-cmd="justifyLeft" title="Align Left" aria-label="Align Left">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                                </button>
+                                <button type="button" class="rt-btn" data-cmd="justifyCenter" title="Align Center" aria-label="Align Center">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="10" x2="6" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="18" y1="18" x2="6" y2="18"/></svg>
+                                </button>
+                            </div>
+
+                            <span class="toolbar-divider" aria-hidden="true"></span>
+
+                            <!-- Group 5: Insert Link -->
+                            <div class="toolbar-group">
+                                <button type="button" class="rt-btn" id="btn-open-link-modal" title="Insert Link" aria-label="Insert Link">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                                </button>
+                            </div>
+
+                            <span class="toolbar-divider" aria-hidden="true"></span>
+
+                            <!-- Group 6: Utilities -->
+                            <div class="toolbar-group">
+                                <button type="button" class="rt-btn" data-cmd="removeFormat" title="Clear Formatting" aria-label="Clear Formatting">
+                                    Clear
+                                </button>
+                                <button type="button" class="rt-btn" id="btn-toggle-html" title="HTML Source" aria-label="HTML Source">
+                                    &lt;/&gt; HTML
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="rich-editor-canvas"
+                             class="rich-editor-canvas"
+                             contenteditable="true"
+                             data-placeholder="Start writing your article...">@Html.Raw(Model.Content)</div>
+
+                        <textarea asp-for="Content"
+                                  id="blog-content-hidden"
+                                  class="rich-source-textarea"
+                                  placeholder="<h2>Section Heading</h2><p>Write your article content here...</p>"></textarea>
+                    </div>
+                    <span asp-validation-for="Content" class="field-validation-error" id="err-content"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR: Publishing, Featured Image, Article Checklist, SEO Preview -->
+        <div class="workspace-sidebar">
+            <!-- 4. Publishing Card -->
+            <div class="workspace-card card-order-publish">
+                <div class="workspace-card-head">
+                    <h2 class="workspace-card-title">Publishing</h2>
+                    @if (string.Equals(Model.PublishStatus, "Published", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <span class="badge" style="background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;">● Published</span>
+                    }
+                    else
+                    {
+                        <span class="badge" style="background:#FEF3C7;color:#B45309;border:1px solid #FDE68A;">○ Draft</span>
+                    }
+                </div>
+
+                <!-- Status -->
+                <div class="form-group">
+                    <label asp-for="PublishStatus" class="form-label">Status</label>
+                    <select asp-for="PublishStatus" id="blog-publish-status" class="form-select">
+                        <option value="Draft">Draft (Hidden from public)</option>
+                        <option value="Published">Published (Live on website)</option>
+                    </select>
+                </div>
+
+                <!-- Category -->
+                <div class="form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                        <label asp-for="BlogCategoryId" class="form-label" style="margin-bottom: 0;">Category <span class="required">*</span></label>
+                        <a href="/Admin/BlogCategories" class="slug-regen-btn js-confirm-leave">+ Manage Categories</a>
+                    </div>
+                    <select asp-for="BlogCategoryId" id="blog-category" class="form-select" required>
+                        <option value="">-- Select Category --</option>
+                        @foreach (var c in Model.Categories)
+                        {
+                            <option value="@c.BlogCategoryId">@c.CategoryName @(!c.IsActive ? "(Inactive)" : "")</option>
+                        }
+                    </select>
+                    <span asp-validation-for="BlogCategoryId" class="field-validation-error" id="err-category"></span>
+                </div>
+
+                <!-- Author (Default to current Admin, editable) -->
+                <div class="form-group">
+                    <div class="author-label-row">
+                        <label asp-for="AuthorName" class="form-label" style="margin-bottom: 0;">Author</label>
+                        <button type="button"
+                                class="slug-regen-btn"
+                                id="btn-reset-author"
+                                data-default-author="@Model.DefaultAdminAuthorName">Use My Name</button>
+                    </div>
+                    <input asp-for="AuthorName"
+                           id="blog-author-name"
+                           class="form-control"
+                           maxlength="150"
+                           placeholder="@Model.DefaultAdminAuthorName" />
+                    <div class="author-helper-text">
+                        Defaults to the current Admin. You may enter a different public author name.
+                    </div>
+                    <span asp-validation-for="AuthorName" class="field-validation-error" id="err-author"></span>
+                </div>
+
+                <!-- Published Date -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label asp-for="PublishedAt" class="form-label">Published Date</label>
+                    <input type="datetime-local"
+                           name="PublishedAt"
+                           id="blog-published-at"
+                           class="form-control"
+                           value="@(Model.PublishedAt.HasValue ? Model.PublishedAt.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                    <div style="font-size: 0.74rem; color: var(--fade); margin-top: 4px;">
+                        Leave blank to use current server time when published.
+                    </div>
+                </div>
+
+                <!-- Action Buttons Hierarchy -->
+                <div class="publish-btn-stack">
+                    <button type="submit" name="submitAction" value="Publish" class="btn btn-gold" id="btn-save-publish">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <span>Save &amp; Publish</span>
+                    </button>
+                    <button type="submit" name="submitAction" value="Draft" class="btn btn-navy" id="btn-save-draft">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        <span>Save as Draft</span>
+                    </button>
+                    <a href="/Admin/Blogs" class="btn btn-outline js-confirm-leave">Cancel</a>
+                </div>
+            </div>
+
+            <!-- 3. Featured Image Card -->
+            <div class="workspace-card card-order-image">
+                <div class="workspace-card-head">
+                    <h2 class="workspace-card-title">Featured Image</h2>
+                </div>
+
+                <div class="featured-image-stage" id="image-preview-stage">
+                    @if (!string.IsNullOrWhiteSpace(Model.ExistingFeaturedImage))
+                    {
+                        <img src="@Model.ExistingFeaturedImage" alt="Featured image preview" id="image-preview-el" />
+                    }
+                    else
+                    {
+                        <img src="" alt="Featured image preview" id="image-preview-el" style="display: none;" />
+                        <div class="featured-image-placeholder" id="image-placeholder-el">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#DDAE45" stroke-width="1.6">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            <span>No featured image selected</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="featured-image-specs">
+                    <strong>Recommended:</strong> 1200 &times; 630 px (16:9)<br />
+                    <strong>Allowed:</strong> PNG, JPG, JPEG, WEBP &bull; <strong>Maximum:</strong> 5 MB
+                </div>
+
+                <input type="file"
+                       asp-for="FeaturedImageFile"
+                       id="blog-image-input"
+                       accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+                       style="display: none;" />
+
+                <button type="button" class="btn btn-outline" style="width: 100%; justify-content: center;" onclick="document.getElementById('blog-image-input').click()">
+                    <span id="btn-image-label">@(!string.IsNullOrWhiteSpace(Model.ExistingFeaturedImage) ? "Change Image" : "Select Featured Image")</span>
+                </button>
+                <div id="selected-file-info" style="font-size: 0.76rem; color: #166534; margin-top: 6px; display: none; overflow-wrap: anywhere;"></div>
+                <span asp-validation-for="FeaturedImageFile" class="field-validation-error" id="err-image"></span>
+            </div>
+
+            <!-- 5. Article Quality Checklist Card -->
+            <div class="workspace-card card-order-checklist">
+                <div class="workspace-card-head">
+                    <h2 class="workspace-card-title">Article Checklist</h2>
+                </div>
+                <ul class="checklist-list" id="article-checklist">
+                    <li class="checklist-item" id="chk-title">
+                        <span class="checklist-icon">&#10003;</span>
+                        <span>Title added</span>
+                    </li>
+                    <li class="checklist-item" id="chk-slug">
+                        <span class="checklist-icon">&#10003;</span>
+                        <span>Slug valid</span>
+                    </li>
+                    <li class="checklist-item" id="chk-category">
+                        <span class="checklist-icon">&#10003;</span>
+                        <span>Category selected</span>
+                    </li>
+                    <li class="checklist-item" id="chk-desc">
+                        <span class="checklist-icon">&#10003;</span>
+                        <span>Short description added</span>
+                    </li>
+                    <li class="checklist-item" id="chk-image">
+                        <span class="checklist-icon">&#10003;</span>
+                        <span>Featured image added</span>
+                    </li>
+                    <li class="checklist-item" id="chk-content">
+                        <span class="checklist-icon">&#10003;</span>
+                        <span>Content added</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 6. SEO Search Preview Card -->
+            <div class="workspace-card card-order-seo">
+                <div class="workspace-card-head">
+                    <h2 class="workspace-card-title">Search Preview</h2>
+                </div>
+                <div class="seo-preview-box">
+                    <div class="seo-preview-title" id="seo-preview-title">
+                        @(string.IsNullOrWhiteSpace(Model.Title) ? "Article Title — Agam Estates" : $"{Model.Title} — Agam Estates")
+                    </div>
+                    <div class="seo-preview-url" id="seo-preview-url">
+                        /Blog/@(string.IsNullOrWhiteSpace(Model.Slug) ? "article-slug" : Model.Slug)
+                    </div>
+                    <div class="seo-preview-desc" id="seo-preview-desc">
+                        @(string.IsNullOrWhiteSpace(Model.ShortDescription) ? "Your short description will appear here in search engine results and social previews." : Model.ShortDescription)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- Branded Insert Link Modal -->
+<div class="modal-backdrop" id="insert-link-modal" role="dialog" aria-modal="true" aria-labelledby="insert-link-modal-title">
+    <div class="modal-card" style="max-width: 460px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="insert-link-modal-title">Insert Link</h3>
+            <button type="button" class="modal-close-btn" id="close-link-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label" for="link-modal-url">URL <span class="required">*</span></label>
+                <input type="url" id="link-modal-url" class="form-control" placeholder="https://example.com or /Project" />
+                <span class="field-validation-error" id="link-modal-error" style="display: none;">Please enter a valid URL starting with https://, http://, mailto:, or /</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="link-modal-text">Display Text</label>
+                <input type="text" id="link-modal-text" class="form-control" placeholder="Optional link text" />
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; cursor: pointer;">
+                    <input type="checkbox" id="link-modal-blank" checked />
+                    <span>Open link in a new tab</span>
+                </label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" id="cancel-link-modal">Cancel</button>
+            <button type="button" class="btn btn-gold" id="confirm-insert-link">Insert Link</button>
+        </div>
+    </div>
+</div>
+
+<!-- Unsaved Changes Confirmation Modal -->
+<div class="modal-backdrop" id="unsaved-changes-modal" role="dialog" aria-modal="true" aria-labelledby="unsaved-modal-title">
+    <div class="modal-card" style="max-width: 420px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="unsaved-modal-title">Unsaved Changes</h3>
+            <button type="button" class="modal-close-btn" id="close-unsaved-modal" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 0.94rem; color: var(--text-dark); margin: 0;">
+                You have unsaved changes in this article. Would you like to stay and save your progress, or leave without saving?
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-navy" id="btn-stay-on-page">Stay</button>
+            <a href="/Admin/Blogs" class="btn btn-outline" id="btn-leave-page" style="color: #DC2626; border-color: rgba(220,38,38,0.35);">Leave</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        const form = document.getElementById('blog-editor-form');
+        const titleInput = document.getElementById('blog-title');
+        const slugInput = document.getElementById('blog-slug');
+        const slugRegenBtn = document.getElementById('btn-regenerate-slug');
+        const slugPreviewEl = document.getElementById('slug-live-preview');
+        const slugValidationMsg = document.getElementById('slug-validation-msg');
+
+        const categorySelect = document.getElementById('blog-category');
+        const shortDescInput = document.getElementById('blog-short-desc');
+        const shortDescCounter = document.getElementById('short-desc-counter');
+        const shortDescLimitNote = document.getElementById('short-desc-limit-note');
+
+        const canvas = document.getElementById('rich-editor-canvas');
+        const hiddenTextarea = document.getElementById('blog-content-hidden');
+        const toggleHtmlBtn = document.getElementById('btn-toggle-html');
+        const htmlModeBadge = document.getElementById('html-mode-badge');
+        const wordStatsEl = document.getElementById('editor-word-stats');
+        const saveStateEl = document.getElementById('save-state-indicator');
+
+        const imageInput = document.getElementById('blog-image-input');
+        const imagePreviewEl = document.getElementById('image-preview-el');
+        const imagePlaceholderEl = document.getElementById('image-placeholder-el');
+        const btnImageLabel = document.getElementById('btn-image-label');
+        const selectedFileInfo = document.getElementById('selected-file-info');
+
+        const seoTitleEl = document.getElementById('seo-preview-title');
+        const seoUrlEl = document.getElementById('seo-preview-url');
+        const seoDescEl = document.getElementById('seo-preview-desc');
+
+        let isSourceMode = false;
+        let isDirty = false;
+        let isSubmitting = false;
+        let hasExistingOrSelectedImage = @((!string.IsNullOrWhiteSpace(Model.ExistingFeaturedImage)).ToString().ToLowerInvariant());
+        let currentObjectUrl = null;
+        let savedRange = null;
+
+        let slugManuallyEdited = @((Model.IsEditMode || !string.IsNullOrWhiteSpace(Model.Slug)).ToString().ToLowerInvariant());
+
+        function markDirty() {
+            if (isSubmitting) return;
+            isDirty = true;
+            if (saveStateEl) {
+                saveStateEl.style.display = 'inline-flex';
+                saveStateEl.className = 'save-state-pill unsaved';
+                saveStateEl.textContent = 'Unsaved changes';
+            }
+        }
+
+        function toSlug(str) {
+            if (!str) return '';
+            return str
+                .toString()
+                .trim()
+                .toLowerCase()
+                .replace(/&/g, ' and ')
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/[\s-]+/g, '-')
+                .replace(/^-+|-+$/g, '')
+                .substring(0, 200);
+        }
+
+        function isValidSlugFormat(val) {
+            if (!val) return false;
+            return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(val);
+        }
+
+        function getEditorHtml() {
+            return isSourceMode ? hiddenTextarea.value : canvas.innerHTML;
+        }
+
+        function getPlainText(html) {
+            const temp = document.createElement('div');
+            temp.innerHTML = html || '';
+            return (temp.textContent || temp.innerText || '').replace(/\u00a0/g, ' ').trim();
+        }
+
+        function updateWordStatsAndSync() {
+            if (!isSourceMode) {
+                hiddenTextarea.value = canvas.innerHTML;
+            }
+            const plain = getPlainText(getEditorHtml());
+            const words = plain ? plain.split(/\s+/).filter(Boolean).length : 0;
+            const mins = Math.max(1, Math.ceil(words / 220));
+            if (wordStatsEl) {
+                wordStatsEl.innerHTML = `${words.toLocaleString()} word${words === 1 ? '' : 's'} &bull; ${mins} min read`;
+            }
+            return plain.length > 0;
+        }
+
+        function updateShortDescCounter() {
+            const len = shortDescInput ? shortDescInput.value.length : 0;
+            if (!shortDescCounter) return;
+            shortDescCounter.textContent = `${len} / 600`;
+            shortDescCounter.classList.remove('near-limit', 'over-limit');
+
+            if (len > 600) {
+                shortDescCounter.classList.add('over-limit');
+                if (shortDescLimitNote) {
+                    shortDescLimitNote.style.display = 'block';
+                    shortDescLimitNote.textContent = 'Short description exceeds the 600-character limit.';
+                }
+            } else if (len >= 520) {
+                shortDescCounter.classList.add('near-limit');
+                if (shortDescLimitNote) {
+                    shortDescLimitNote.style.display = 'block';
+                    shortDescLimitNote.style.color = '#B45309';
+                    shortDescLimitNote.textContent = `${600 - len} characters remaining.`;
+                }
+            } else {
+                if (shortDescLimitNote) {
+                    shortDescLimitNote.style.display = 'none';
+                }
+            }
+        }
+
+        function updateChecklistAndSeo() {
+            const titleVal = titleInput ? titleInput.value.trim() : '';
+            const slugVal = slugInput ? slugInput.value.trim() : '';
+            const catVal = categorySelect ? categorySelect.value : '';
+            const descVal = shortDescInput ? shortDescInput.value.trim() : '';
+            const hasContent = updateWordStatsAndSync();
+
+            const slugOk = isValidSlugFormat(slugVal);
+            if (slugValidationMsg) {
+                slugValidationMsg.style.display = (slugVal.length > 0 && !slugOk) ? 'inline' : 'none';
+            }
+
+            if (slugPreviewEl) {
+                slugPreviewEl.textContent = '/Blog/' + (slugVal || 'your-article-slug');
+            }
+
+            // Update SEO Preview
+            if (seoTitleEl) {
+                seoTitleEl.textContent = titleVal ? `${titleVal} — Agam Estates` : 'Article Title — Agam Estates';
+            }
+            if (seoUrlEl) {
+                seoUrlEl.textContent = '/Blog/' + (slugVal || 'article-slug');
+            }
+            if (seoDescEl) {
+                seoDescEl.textContent = descVal || 'Your short description will appear here in search engine results and social previews.';
+            }
+
+            // Update Checklist Items
+            setChecklistState('chk-title', titleVal.length > 0);
+            setChecklistState('chk-slug', slugOk);
+            setChecklistState('chk-category', !!catVal);
+            setChecklistState('chk-desc', descVal.length >= 20 && descVal.length <= 600);
+            setChecklistState('chk-image', hasExistingOrSelectedImage);
+            setChecklistState('chk-content', hasContent);
+        }
+
+        function setChecklistState(id, done) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.toggle('is-done', !!done);
+        }
+
+        // Title & Slug events
+        if (titleInput && slugInput) {
+            titleInput.addEventListener('input', function () {
+                markDirty();
+                if (!slugManuallyEdited) {
+                    slugInput.value = toSlug(titleInput.value);
+                }
+                updateChecklistAndSeo();
+            });
+
+            slugInput.addEventListener('input', function () {
+                markDirty();
+                slugManuallyEdited = slugInput.value.trim().length > 0;
+                updateChecklistAndSeo();
+            });
+
+            slugInput.addEventListener('blur', function () {
+                if (slugInput.value.trim().length > 0) {
+                    slugInput.value = toSlug(slugInput.value);
+                } else if (titleInput.value.trim().length > 0) {
+                    slugInput.value = toSlug(titleInput.value);
+                    slugManuallyEdited = false;
+                }
+                updateChecklistAndSeo();
+            });
+        }
+
+        if (slugRegenBtn) {
+            slugRegenBtn.addEventListener('click', function () {
+                slugInput.value = toSlug(titleInput.value);
+                slugManuallyEdited = false;
+                markDirty();
+                updateChecklistAndSeo();
+            });
+        }
+
+        if (shortDescInput) {
+            shortDescInput.addEventListener('input', function () {
+                markDirty();
+                updateShortDescCounter();
+                updateChecklistAndSeo();
+            });
+        }
+
+        if (categorySelect) {
+            categorySelect.addEventListener('change', function () {
+                markDirty();
+                updateChecklistAndSeo();
+            });
+        }
+
+        const authorInput = document.getElementById('blog-author-name');
+        const resetAuthorBtn = document.getElementById('btn-reset-author');
+
+        if (authorInput) {
+            authorInput.addEventListener('input', function () {
+                markDirty();
+            });
+            authorInput.addEventListener('blur', function () {
+                authorInput.value = authorInput.value.trim();
+            });
+        }
+
+        if (resetAuthorBtn && authorInput) {
+            resetAuthorBtn.addEventListener('click', function () {
+                const defaultAuthor = resetAuthorBtn.getAttribute('data-default-author') || 'Agam Estates Editorial Team';
+                authorInput.value = defaultAuthor;
+                markDirty();
+                authorInput.focus();
+            });
+        }
+
+        // Toolbar commands & Active selection state
+        function updateToolbarActiveStates() {
+            if (isSourceMode) return;
+            document.querySelectorAll('.rt-btn[data-cmd]').forEach(btn => {
+                const cmd = btn.getAttribute('data-cmd');
+                try {
+                    const active = document.queryCommandState(cmd);
+                    btn.classList.toggle('is-active', !!active);
+                } catch (e) {}
+            });
+
+            let currentBlock = '';
+            try {
+                currentBlock = (document.queryCommandValue('formatBlock') || '').toUpperCase();
+            } catch (e) {}
+            document.querySelectorAll('.rt-btn[data-block]').forEach(btn => {
+                const blk = btn.getAttribute('data-block').toUpperCase();
+                btn.classList.toggle('is-active', currentBlock === blk || currentBlock === `<${blk}>`);
+            });
+        }
+
+        document.querySelectorAll('.rt-btn[data-cmd]').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (isSourceMode) return;
+                const cmd = this.getAttribute('data-cmd');
+                canvas.focus();
+                document.execCommand(cmd, false, null);
+                markDirty();
+                updateChecklistAndSeo();
+                updateToolbarActiveStates();
+            });
+        });
+
+        document.querySelectorAll('.rt-btn[data-block]').forEach(btn => {
+            btn.addEventListener('click', function () {
+                if (isSourceMode) return;
+                const block = this.getAttribute('data-block');
+                canvas.focus();
+                document.execCommand('formatBlock', false, block);
+                markDirty();
+                updateChecklistAndSeo();
+                updateToolbarActiveStates();
+            });
+        });
+
+        // Branded Insert Link Dialog
+        const linkModal = document.getElementById('insert-link-modal');
+        const linkUrlInput = document.getElementById('link-modal-url');
+        const linkTextInput = document.getElementById('link-modal-text');
+        const linkBlankInput = document.getElementById('link-modal-blank');
+        const linkErrorEl = document.getElementById('link-modal-error');
+
+        function saveCurrentSelection() {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && canvas.contains(sel.anchorNode)) {
+                savedRange = sel.getRangeAt(0).cloneRange();
+                return sel.toString();
+            }
+            savedRange = null;
+            return '';
+        }
+
+        function restoreSavedSelection() {
+            if (!savedRange) return;
+            const sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(savedRange);
+        }
+
+        function closeLinkModal() {
+            if (linkModal) linkModal.classList.remove('active');
+        }
+
+        const openLinkBtn = document.getElementById('btn-open-link-modal');
+        if (openLinkBtn && linkModal) {
+            openLinkBtn.addEventListener('click', function () {
+                if (isSourceMode) return;
+                const selectedText = saveCurrentSelection();
+                linkUrlInput.value = 'https://';
+                linkTextInput.value = selectedText || '';
+                if (linkErrorEl) linkErrorEl.style.display = 'none';
+                linkModal.classList.add('active');
+                setTimeout(() => linkUrlInput.focus(), 60);
+            });
+        }
+
+        document.getElementById('close-link-modal')?.addEventListener('click', closeLinkModal);
+        document.getElementById('cancel-link-modal')?.addEventListener('click', closeLinkModal);
+
+        document.getElementById('confirm-insert-link')?.addEventListener('click', function () {
+            const rawUrl = (linkUrlInput.value || '').trim();
+            const isValidUrl = /^(https?:\/\/|mailto:|\/)/i.test(rawUrl) && rawUrl !== 'https://' && rawUrl !== 'http://';
+            if (!isValidUrl) {
+                if (linkErrorEl) linkErrorEl.style.display = 'block';
+                linkUrlInput.focus();
+                return;
+            }
+
+            closeLinkModal();
+            canvas.focus();
+            restoreSavedSelection();
+
+            const displayTxt = (linkTextInput.value || '').trim() || rawUrl;
+            const targetAttr = (linkBlankInput && linkBlankInput.checked) ? ' target="_blank" rel="noopener noreferrer"' : '';
+            const safeUrl = rawUrl.replace(/"/g, '&quot;');
+            const safeText = displayTxt.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            document.execCommand('insertHTML', false, `<a href="${safeUrl}"${targetAttr}>${safeText}</a>`);
+            markDirty();
+            updateChecklistAndSeo();
+        });
+
+        // HTML Source Mode Toggle
+        if (toggleHtmlBtn) {
+            toggleHtmlBtn.addEventListener('click', function () {
+                isSourceMode = !isSourceMode;
+                toggleHtmlBtn.classList.toggle('is-active', isSourceMode);
+                if (htmlModeBadge) htmlModeBadge.classList.toggle('active', isSourceMode);
+
+                if (isSourceMode) {
+                    hiddenTextarea.value = canvas.innerHTML.trim();
+                    canvas.style.display = 'none';
+                    hiddenTextarea.style.display = 'block';
+                    hiddenTextarea.focus();
+                } else {
+                    canvas.innerHTML = hiddenTextarea.value;
+                    hiddenTextarea.style.display = 'none';
+                    canvas.style.display = 'block';
+                    canvas.focus();
+                }
+                updateChecklistAndSeo();
+            });
+        }
+
+        // Paste Cleanup from Word/Google Docs
+        if (canvas) {
+            canvas.addEventListener('paste', function (e) {
+                if (!e.clipboardData) return;
+                const html = e.clipboardData.getData('text/html');
+                if (html && html.trim().length > 0) {
+                    e.preventDefault();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+
+                    doc.querySelectorAll('script, style, meta, link, iframe, object, embed, svg, form').forEach(el => el.remove());
+                    doc.querySelectorAll('*').forEach(el => {
+                        Array.from(el.attributes).forEach(attr => {
+                            const name = attr.name.toLowerCase();
+                            if (name === 'href' && el.tagName === 'A') {
+                                if (/^\s*(javascript|vbscript|data):/i.test(attr.value)) {
+                                    el.setAttribute('href', '#');
+                                }
+                            } else {
+                                el.removeAttribute(attr.name);
+                            }
+                        });
+                    });
+
+                    document.execCommand('insertHTML', false, doc.body.innerHTML);
+                    markDirty();
+                    updateChecklistAndSeo();
+                }
+            });
+
+            canvas.addEventListener('input', function () {
+                markDirty();
+                updateChecklistAndSeo();
+            });
+
+            canvas.addEventListener('keyup', updateToolbarActiveStates);
+            canvas.addEventListener('mouseup', updateToolbarActiveStates);
+        }
+
+        if (hiddenTextarea) {
+            hiddenTextarea.addEventListener('input', function () {
+                markDirty();
+                updateChecklistAndSeo();
+            });
+        }
+
+        // Featured Image Instant Preview with URL.createObjectURL()
+        if (imageInput) {
+            imageInput.addEventListener('change', function () {
+                const file = this.files && this.files[0];
+                const errImg = document.getElementById('err-image');
+                if (errImg) errImg.textContent = '';
+
+                if (!file) return;
+
+                const allowedExts = ['.png', '.jpg', '.jpeg', '.webp'];
+                const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+                if (!allowedExts.includes(ext)) {
+                    if (errImg) errImg.textContent = 'Invalid image format. Allowed: PNG, JPG, JPEG, WEBP.';
+                    this.value = '';
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    if (errImg) errImg.textContent = 'Image exceeds the 5 MB maximum size limit.';
+                    this.value = '';
+                    return;
+                }
+
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                }
+                currentObjectUrl = URL.createObjectURL(file);
+
+                if (imagePreviewEl) {
+                    imagePreviewEl.src = currentObjectUrl;
+                    imagePreviewEl.style.display = 'block';
+                }
+                if (imagePlaceholderEl) {
+                    imagePlaceholderEl.style.display = 'none';
+                }
+                if (btnImageLabel) {
+                    btnImageLabel.textContent = 'Change Image';
+                }
+                if (selectedFileInfo) {
+                    const kb = (file.size / 1024).toFixed(1);
+                    selectedFileInfo.textContent = `Selected: ${file.name} (${kb} KB)`;
+                    selectedFileInfo.style.display = 'block';
+                }
+
+                hasExistingOrSelectedImage = true;
+                markDirty();
+                updateChecklistAndSeo();
+            });
+        }
+
+        // Form Submit Sync & Smooth Scroll to First Invalid Field
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                if (!isSourceMode) {
+                    hiddenTextarea.value = canvas.innerHTML.trim();
+                }
+
+                const titleVal = titleInput ? titleInput.value.trim() : '';
+                const catVal = categorySelect ? categorySelect.value : '';
+                const descVal = shortDescInput ? shortDescInput.value.trim() : '';
+                const hasContent = updateWordStatsAndSync();
+
+                let firstInvalid = null;
+
+                const errTitle = document.getElementById('err-title');
+                if (!titleVal) {
+                    if (errTitle) errTitle.textContent = 'Blog title is required.';
+                    firstInvalid = firstInvalid || titleInput;
+                } else if (errTitle) {
+                    errTitle.textContent = '';
+                }
+
+                const errDesc = document.getElementById('err-short-desc');
+                if (descVal.length < 20 || descVal.length > 600) {
+                    if (errDesc) errDesc.textContent = 'Short description must be between 20 and 600 characters.';
+                    firstInvalid = firstInvalid || shortDescInput;
+                } else if (errDesc) {
+                    errDesc.textContent = '';
+                }
+
+                const errCat = document.getElementById('err-category');
+                if (!catVal) {
+                    if (errCat) errCat.textContent = 'Please select a category.';
+                    firstInvalid = firstInvalid || categorySelect;
+                } else if (errCat) {
+                    errCat.textContent = '';
+                }
+
+                const errContent = document.getElementById('err-content');
+                if (!hasContent) {
+                    if (errContent) errContent.textContent = 'Article content cannot be empty.';
+                    firstInvalid = firstInvalid || (isSourceMode ? hiddenTextarea : canvas);
+                } else if (errContent) {
+                    errContent.textContent = '';
+                }
+
+                if (firstInvalid) {
+                    e.preventDefault();
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => firstInvalid.focus(), 200);
+                    return;
+                }
+
+                isSubmitting = true;
+                isDirty = false;
+            });
+        }
+
+        // Unsaved Changes Confirmation
+        const unsavedModal = document.getElementById('unsaved-changes-modal');
+        const leaveBtn = document.getElementById('btn-leave-page');
+
+        document.querySelectorAll('.js-confirm-leave, .sidebar-nav a').forEach(link => {
+            link.addEventListener('click', function (e) {
+                if (!isDirty || isSubmitting) return;
+                const targetHref = this.getAttribute('href');
+                if (!targetHref || this.getAttribute('target') === '_blank') return;
+                e.preventDefault();
+                if (leaveBtn) leaveBtn.setAttribute('href', targetHref);
+                if (unsavedModal) unsavedModal.classList.add('active');
+            });
+        });
+
+        document.getElementById('btn-stay-on-page')?.addEventListener('click', () => unsavedModal?.classList.remove('active'));
+        document.getElementById('close-unsaved-modal')?.addEventListener('click', () => unsavedModal?.classList.remove('active'));
+
+        window.addEventListener('beforeunload', function (e) {
+            if (isDirty && !isSubmitting) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+
+        // Initial render state
+        updateShortDescCounter();
+        updateChecklistAndSeo();
+    })();
+</script>
+}

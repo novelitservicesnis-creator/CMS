@@ -44,6 +44,7 @@ builder.Services.AddScoped<ILeadStatusRepository, LeadStatusRepository>();
 builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 builder.Services.AddScoped<ILeadCommunicationRepository, LeadCommunicationRepository>();
 builder.Services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
+builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<AgamEstates.Web.Services.ISystemSettingsService, AgamEstates.Web.Services.SystemSettingsService>();
 builder.Services.AddScoped<AgamEstates.Web.Services.IFileStorageService, AgamEstates.Web.Services.FileStorageService>();
 
@@ -53,6 +54,7 @@ builder.Services.AddScoped<LeadStatusRepository>();
 builder.Services.AddScoped<LeadRepository>();
 builder.Services.AddScoped<LeadCommunicationRepository>();
 builder.Services.AddScoped<SystemSettingsRepository>();
+builder.Services.AddScoped<BlogRepository>();
 
 // Register AgamUnitOfWork
 builder.Services.AddScoped<AgamUnitOfWork>();
@@ -100,6 +102,7 @@ if (!string.IsNullOrWhiteSpace(configuredUploadRoot))
     {
         Directory.CreateDirectory(fullUploadRoot);
         Directory.CreateDirectory(Path.Combine(fullUploadRoot, "system"));
+        Directory.CreateDirectory(Path.Combine(fullUploadRoot, "blog"));
 
         app.UseStaticFiles(new StaticFileOptions
         {

@@ -1,20 +1,32 @@
-﻿@model AgamEstates.Repository.ViewModel.PublicSiteSettingsViewModel
+@model AgamEstates.Repository.ViewModel.PublicSiteSettingsViewModel
 <div class="topbar">
     <div class="wrap">
         <div class="topbar-loc">
-            <svg viewBox="0 0 16 16" fill="none"><path d="M8 15C8 15 13 10.2 13 6.3C13 3.4 10.8 1 8 1C5.2 1 3 3.4 3 6.3C3 10.2 8 15 8 15Z" stroke="#DDAE45" stroke-width="1.1"/><circle cx="8" cy="6.2" r="2" stroke="#DDAE45" stroke-width="1"/></svg>
+            <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 15C8 15 13 10.2 13 6.3C13 3.4 10.8 1 8 1C5.2 1 3 3.4 3 6.3C3 10.2 8 15 8 15Z" stroke="#DDAE45" stroke-width="1.1"/><circle cx="8" cy="6.2" r="2" stroke="#DDAE45" stroke-width="1"/></svg>
             <span>@(string.IsNullOrWhiteSpace(Model?.City) ? "Panchkula & Tricity Region" : $"{Model.City} & Tricity Region")</span>
         </div>
         <div class="topbar-right">
             @if (Model?.PrimaryPhone != null && !string.IsNullOrWhiteSpace(Model.PrimaryPhone.PhoneNumber))
             {
-                <span class="topbar-call">For Enquiry Call us at: <a href="tel:@Model.PrimaryPhone.NumberClean" class="topbar-call-link">@Model.PrimaryPhone.PhoneNumber</a></span>
+                <div class="topbar-call">
+                    <span class="topbar-call-text">
+                        <span class="topbar-call-lbl-desktop">For Enquiry Call us at:</span>
+                        <span class="topbar-call-lbl-mobile">For Enquiry:</span>
+                        <a href="tel:@Model.PrimaryPhone.NumberClean" class="topbar-call-link">@Model.PrimaryPhone.PhoneNumber</a>
+                    </span>
+                    <a href="tel:@Model.PrimaryPhone.NumberClean" class="topbar-call-now-btn" aria-label="Call @Model.PrimaryPhone.PhoneNumber">Call Now</a>
+                </div>
             }
             else if (!string.IsNullOrWhiteSpace(Model?.Email))
             {
-                <span class="topbar-call">For Enquiry: <a href="mailto:@Model.Email" class="topbar-call-link">@Model.Email</a></span>
+                <div class="topbar-call">
+                    <span class="topbar-call-text">
+                        <span class="topbar-call-lbl-desktop">For Enquiry:</span>
+                        <span class="topbar-call-lbl-mobile">For Enquiry:</span>
+                        <a href="mailto:@Model.Email" class="topbar-call-link">@Model.Email</a>
+                    </span>
+                </div>
             }
-            @* <a href="/Project" class="topbar-link-project">The Project</a> *@
             <a href="/#contact" class="topbar-link-enquire">Send Enquiry</a>
             @if (Model != null && (!string.IsNullOrWhiteSpace(Model.FacebookUrl) || !string.IsNullOrWhiteSpace(Model.InstagramUrl) || !string.IsNullOrWhiteSpace(Model.YouTubeUrl)))
             {

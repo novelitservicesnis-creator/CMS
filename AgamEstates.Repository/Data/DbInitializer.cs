@@ -340,6 +340,137 @@ namespace AgamEstates.Repository.Data
                     context.SystemAnnouncements.Add(announcement);
                     await context.SaveChangesAsync();
                 }
+
+                // 6. Ensure BlogCategories and BlogPosts tables exist
+                var blogTablesSql = @"
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'BlogCategories')
+BEGIN
+    CREATE TABLE dbo.BlogCategories (
+        BlogCategoryId INT IDENTITY(1,1) PRIMARY KEY,
+        CategoryName NVARCHAR(100) NOT NULL,
+        Slug NVARCHAR(120) NOT NULL CONSTRAINT UQ_BlogCategories_Slug UNIQUE,
+        Description NVARCHAR(300) NULL,
+        IsActive BIT NOT NULL DEFAULT 1,
+        SortOrder INT NOT NULL DEFAULT 0,
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UpdatedAt DATETIME2 NULL
+    );
+END
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'BlogPosts')
+BEGIN
+    CREATE TABLE dbo.BlogPosts (
+        BlogPostId INT IDENTITY(1,1) PRIMARY KEY,
+        Title NVARCHAR(200) NOT NULL,
+        Slug NVARCHAR(220) NOT NULL CONSTRAINT UQ_BlogPosts_Slug UNIQUE,
+        ShortDescription NVARCHAR(600) NULL,
+        Content NVARCHAR(MAX) NOT NULL,
+        FeaturedImage NVARCHAR(500) NULL,
+        BlogCategoryId INT NULL,
+        AuthorUserId INT NULL,
+        AuthorName NVARCHAR(150) NULL,
+        IsPublished BIT NOT NULL DEFAULT 0,
+        PublishedAt DATETIME2 NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UpdatedAt DATETIME2 NULL,
+        CreatedBy INT NULL,
+        UpdatedBy INT NULL,
+        CONSTRAINT FK_BlogPosts_BlogCategories FOREIGN KEY (BlogCategoryId)
+            REFERENCES dbo.BlogCategories(BlogCategoryId) ON DELETE NO ACTION,
+        CONSTRAINT FK_BlogPosts_Users FOREIGN KEY (AuthorUserId)
+            REFERENCES dbo.Users(UserId) ON DELETE SET NULL
+    );
+    CREATE INDEX IX_BlogPosts_BlogCategoryId ON dbo.BlogPosts(BlogCategoryId);
+    CREATE INDEX IX_BlogPosts_IsPublished_PublishedAt ON dbo.BlogPosts(IsPublished, PublishedAt DESC);
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('dbo.BlogPosts') AND name = 'AuthorName')
+BEGIN
+    ALTER TABLE dbo.BlogPosts ADD AuthorName NVARCHAR(150) NULL;
+END";
+                await context.Database.ExecuteSqlRawAsync(blogTablesSql);
+
+                // 7. Seed default BlogCategories if not present
+                if (!await context.BlogCategories.AnyAsync())
+                {
+                    var catMarket = new BlogCategory
+                    {
+                        CategoryName = "Market Insights",
+                        Slug = "market-insights",
+                        Description = "Regional real estate trends, infrastructure growth, and investment perspectives across the Tricity.",
+                        IsActive = true,
+                        SortOrder = 1,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    var catProject = new BlogCategory
+                    {
+                        CategoryName = "Project Updates",
+                        Slug = "project-updates",
+                        Description = "Construction milestones, architectural highlights, and campus developments at Agam Estates.",
+                        IsActive = true,
+                        SortOrder = 2,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    var catGuides = new BlogCategory
+                    {
+                        CategoryName = "Buyer Guides",
+                        Slug = "buyer-guides",
+                        Description = "Thoughtful guidance on selecting floor plans, RERA due diligence, and home planning.",
+                        IsActive = true,
+                        SortOrder = 3,
+                        CreatedAt = DateTime.UtcNow
+                    };
+                    var catDesign = new BlogCategory
+                    {
+                        CategoryName = "Architecture & Living",
+                        Slug = "architecture-and-living",
+                        Description = "Exploring natural light, low-density planning, and refined residential design.",
+                        IsActive = true,
+                        SortOrder = 4,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    context.BlogCategories.AddRange(catMarket, catProject, catGuides, catDesign);
+                    await context.SaveChangesAsync();
+
+                    // Seed minimal editorial articles if BlogPosts is empty
+                    if (!await context.BlogPosts.AnyAsync())
+                    {
+                        var adminUser = await context.Users.FirstOrDefaultAsync(u => u.Role == "Admin");
+                        var authorId = adminUser?.UserId;
+
+                        var post1 = new BlogPost
+                        {
+                            Title = "Understanding Property Investment in the Tricity Corridor",
+                            Slug = "understanding-property-investment-in-the-tricity-corridor",
+                            ShortDescription = "A thoughtful look at connectivity, low-density planning, and why Sector 20 Panchkula Extension continues to command enduring residential demand.",
+                            Content = "<p>Selecting a residential address in the Chandigarh–Panchkula–Mohali Tricity requires looking beyond short-term market cycles. Discerning homeowners and long-term investors increasingly prioritize livability, arterial connectivity, and low-density master planning.</p><h2>The Shift Toward Low-Density Living</h2><p>Over the past decade, families across the region have gravitated toward communities that balance privacy with immediate highway access. Developments designed with generous building setbacks, dedicated green spines, and well-proportioned floor plates consistently retain stronger long-term value.</p><blockquote>True residential luxury is measured in natural light, acoustic calm, and the permanence of construction quality.</blockquote><h3>Key Fundamentals to Evaluate</h3><ul><li>Direct connectivity to the Zirakpur–Panchkula–Shimla highway corridor</li><li>RERA registration transparency and clear title documentation</li><li>Usable carpet area efficiency and cross-ventilation</li><li>Dedicated vehicular-free podiums and landscaped open spaces</li></ul><p>At Agam Estates, every planning decision begins with these enduring fundamentals—ensuring each residence serves both as a serene family sanctuary and a resilient generational asset.</p>",
+                            BlogCategoryId = catMarket.BlogCategoryId,
+                            AuthorUserId = authorId,
+                            IsPublished = true,
+                            PublishedAt = DateTime.UtcNow.AddDays(-5),
+                            CreatedAt = DateTime.UtcNow.AddDays(-5),
+                            CreatedBy = authorId
+                        };
+
+                        var post2 = new BlogPost
+                        {
+                            Title = "Designing Around Light, Space and Cross-Ventilation",
+                            Slug = "designing-around-light-space-and-cross-ventilation",
+                            ShortDescription = "How daylight orientation, generous balcony depths, and thoughtful room proportions shape everyday comfort in modern North Indian homes.",
+                            Content = "<p>Architecture succeeds when a home feels effortlessly bright and breathable throughout changing seasons. In North India's composite climate, orientation and window placement play a decisive role in both thermal comfort and spatial character.</p><h2>Daylight Without Glare</h2><p>By pairing deep recessed balconies with expansive glazing, residences can welcome soft morning and afternoon daylight while shielding interiors from harsh summer heat.</p><h3>Principles Behind Our Floor Plates</h3><ol><li>Dual-aspect living and dining zones that encourage natural airflow</li><li>Clear separation between private family bedrooms and entertaining areas</li><li>Generous ceiling heights that amplify spatial openness</li></ol><p>When evaluating a new residence, visiting the site during different hours of the day reveals how thoughtfully the architecture responds to sun and wind.</p>",
+                            BlogCategoryId = catDesign.BlogCategoryId,
+                            AuthorUserId = authorId,
+                            IsPublished = true,
+                            PublishedAt = DateTime.UtcNow.AddDays(-2),
+                            CreatedAt = DateTime.UtcNow.AddDays(-2),
+                            CreatedBy = authorId
+                        };
+
+                        context.BlogPosts.AddRange(post1, post2);
+                        await context.SaveChangesAsync();
+                    }
+                }
             }
             catch (Exception)
             {

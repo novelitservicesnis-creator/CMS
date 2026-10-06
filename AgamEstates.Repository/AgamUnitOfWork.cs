@@ -22,11 +22,13 @@ namespace AgamEstates.Repository
         private ILeadRepository? _leadRepository;
         private ILeadCommunicationRepository? _leadCommunicationRepository;
         private ISystemSettingsRepository? _systemSettingsRepository;
+        private IBlogRepository? _blogRepository;
 
         public IUserRepository UserRepository => _userRepository ??= new UserRepository(Entity);
         public ILeadStatusRepository LeadStatusRepository => _leadStatusRepository ??= new LeadStatusRepository(Entity);
         public ILeadRepository LeadRepository => _leadRepository ??= new LeadRepository(Entity);
         public ILeadCommunicationRepository LeadCommunicationRepository => _leadCommunicationRepository ??= new LeadCommunicationRepository(Entity);
         public ISystemSettingsRepository SystemSettingsRepository => _systemSettingsRepository ??= new SystemSettingsRepository(Entity);
+        public IBlogRepository BlogRepository => _blogRepository ??= new BlogRepository(Entity);
     }
 }

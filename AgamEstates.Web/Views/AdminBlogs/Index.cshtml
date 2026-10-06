@@ -1,0 +1,705 @@
+@model AgamEstates.Web.Models.AdminBlogsPageViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Blog Management";
+
+    string JsEncode(string? val) => System.Web.HttpUtility.JavaScriptStringEncode(val ?? string.Empty);
+}
+
+@section Styles {
+<style>
+    .blog-page-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .blog-alert {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 18px;
+        border-radius: 4px;
+        margin-bottom: 22px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .blog-alert-success {
+        background: #F0FDF4;
+        color: #166534;
+        border: 1px solid #BBF7D0;
+    }
+    .blog-alert-error {
+        background: #FEF2F2;
+        color: #991B1B;
+        border: 1px solid #FECACA;
+    }
+    .blog-alert-close {
+        background: none;
+        border: none;
+        color: inherit;
+        font-size: 1.2rem;
+        line-height: 1;
+        cursor: pointer;
+        opacity: 0.7;
+    }
+
+    /* Desktop Blog Cell */
+    .blog-cell-wrap {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+    .blog-thumb-box {
+        width: 68px;
+        height: 44px;
+        border-radius: 3px;
+        overflow: hidden;
+        background: #062545;
+        border: 1px solid rgba(221, 174, 69, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .blog-thumb-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .blog-thumb-placeholder {
+        color: #DDAE45;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .blog-cell-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+    .blog-cell-title {
+        font-weight: 600;
+        color: var(--primary-dark);
+        font-size: 0.92rem;
+        line-height: 1.35;
+        overflow-wrap: break-word;
+    }
+    .blog-cell-slug {
+        font-size: 0.77rem;
+        color: var(--fade);
+        font-family: var(--sans);
+        overflow-wrap: anywhere;
+    }
+
+    .badge-blog-category {
+        background: #FAF8F2;
+        color: #062545;
+        border: 1px solid rgba(221, 174, 69, 0.45);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 3px;
+        display: inline-block;
+    }
+    .badge-blog-published {
+        background: #DCFCE7;
+        color: #166534;
+        border: 1px solid #BBF7D0;
+    }
+    .badge-blog-draft {
+        background: #FEF3C7;
+        color: #92400E;
+        border: 1px solid #FDE68A;
+    }
+
+    /* Filter grid for Blog List */
+    .blog-filter-grid {
+        display: grid;
+        grid-template-columns: 2fr 1.2fr 1.1fr auto;
+        gap: 14px;
+        align-items: center;
+    }
+
+    /* Mobile Blog Card (<= 768px) */
+    .responsive-blog-card {
+        background: var(--white);
+        border: 1px solid var(--border-light);
+        border-radius: 4px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(6, 37, 69, 0.04);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        min-width: 0;
+    }
+    .rbc-image-wrap {
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        border-radius: 3px;
+        overflow: hidden;
+        background: #062545;
+        border: 1px solid rgba(221, 174, 69, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .rbc-image-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .rbc-title {
+        font-family: var(--serif);
+        font-size: 1.08rem;
+        font-weight: 600;
+        color: var(--primary-dark);
+        line-height: 1.3;
+        word-break: break-word;
+    }
+    .rbc-slug {
+        font-size: 0.78rem;
+        color: var(--fade);
+        word-break: break-all;
+        margin-top: 2px;
+    }
+    .rbc-badges-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    .rbc-meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px 14px;
+        background: #FAF9F6;
+        padding: 11px 13px;
+        border-radius: 3px;
+        border: 1px solid rgba(6, 37, 69, 0.05);
+    }
+    .rbc-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(6, 37, 69, 0.06);
+    }
+    .rbc-actions .rbc-delete-btn {
+        grid-column: 1 / -1;
+    }
+
+    /* Details Modal Content Preview */
+    .blog-preview-content {
+        background: #FAF9F6;
+        border: 1px solid rgba(6, 37, 69, 0.08);
+        border-radius: 4px;
+        padding: 16px 18px;
+        max-height: 280px;
+        overflow-y: auto;
+        font-size: 0.9rem;
+        line-height: 1.65;
+        color: var(--text-dark);
+    }
+    .blog-preview-content h2,
+    .blog-preview-content h3 {
+        margin-top: 12px;
+        margin-bottom: 6px;
+        font-size: 1.05rem;
+    }
+    .blog-preview-content p {
+        margin-bottom: 10px;
+    }
+    .blog-preview-content ul,
+    .blog-preview-content ol {
+        padding-left: 20px;
+        margin-bottom: 10px;
+    }
+
+    @@media (max-width: 992px) {
+        .blog-filter-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .blog-filter-grid .filter-actions {
+            grid-column: 1 / -1;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .blog-filter-grid {
+            grid-template-columns: 1fr;
+        }
+        .blog-page-actions {
+            width: 100%;
+        }
+        .blog-page-actions .btn {
+            flex: 1 1 100%;
+            justify-content: center;
+        }
+    }
+
+    @@media (max-width: 360px) {
+        .rbc-meta-grid {
+            grid-template-columns: 1fr;
+        }
+        .rbc-actions {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+}
+
+@if (TempData["SuccessMessage"] is string successMsg && !string.IsNullOrWhiteSpace(successMsg))
+{
+    <div class="blog-alert blog-alert-success" role="status">
+        <span>@successMsg</span>
+        <button type="button" class="blog-alert-close" onclick="this.parentElement.remove()" aria-label="Close">&times;</button>
+    </div>
+}
+@if (TempData["ErrorMessage"] is string errorMsg && !string.IsNullOrWhiteSpace(errorMsg))
+{
+    <div class="blog-alert blog-alert-error" role="alert">
+        <span>@errorMsg</span>
+        <button type="button" class="blog-alert-close" onclick="this.parentElement.remove()" aria-label="Close">&times;</button>
+    </div>
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-title">Blog Management</h1>
+        <p class="page-subtitle">Manage property insights, market updates, guides, and published content.</p>
+    </div>
+    <div class="blog-page-actions">
+        <a href="/Admin/BlogCategories" class="btn btn-outline">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            </svg>
+            <span>Categories</span>
+        </a>
+        <a href="/Admin/Blogs/Create" class="btn btn-gold">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add New Blog</span>
+        </a>
+    </div>
+</div>
+
+<!-- Summary KPI Cards -->
+<div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); margin-bottom: 24px;">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Total Blogs</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count">@Model.Summary.TotalBlogs</div>
+        <div class="kpi-subtext">All blog articles</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Published</span>
+            <div class="kpi-icon" style="color: #16A34A;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #16A34A;">@Model.Summary.PublishedBlogs</div>
+        <div class="kpi-subtext">Visible publicly</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Drafts</span>
+            <div class="kpi-icon" style="color: #D97706;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #D97706;">@Model.Summary.DraftBlogs</div>
+        <div class="kpi-subtext">Not published</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Categories</span>
+            <div class="kpi-icon" style="color: var(--gold-dark);">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count">@Model.Summary.ActiveCategories</div>
+        <div class="kpi-subtext">Active categories</div>
+    </div>
+</div>
+
+<!-- Filter Section -->
+<div class="filter-card luxury-card">
+    <form id="blogs-filter-form" method="get" action="/Admin/Blogs">
+        <div class="blog-filter-grid">
+            <div class="search-box">
+                <span class="search-box-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input type="text" name="search" id="filter-search" class="form-control" placeholder="Search by title..." value="@Model.Search">
+            </div>
+
+            <div>
+                <select name="categoryId" id="filter-category" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Categories</option>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <option value="@cat.BlogCategoryId" selected="@(Model.CategoryFilter == cat.BlogCategoryId)">@cat.CategoryName</option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <select name="status" id="filter-status" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="Published" selected="@(string.Equals(Model.StatusFilter, "Published", StringComparison.OrdinalIgnoreCase))">Published</option>
+                    <option value="Draft" selected="@(string.Equals(Model.StatusFilter, "Draft", StringComparison.OrdinalIgnoreCase))">Draft</option>
+                </select>
+            </div>
+
+            <div class="filter-actions" style="display: flex; gap: 8px;">
+                <button type="submit" class="btn btn-navy">Filter</button>
+                <a href="/Admin/Blogs" class="btn btn-outline">Clear</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Blogs Table / Mobile Cards -->
+<div class="luxury-card" style="padding: 0; overflow: hidden;">
+    <!-- Desktop Table View (> 768px) -->
+    <div class="table-responsive desktop-table-view">
+        <table class="data-table" id="blogs-table">
+            <thead>
+                <tr>
+                    <th style="width: 48px;">ID</th>
+                    <th style="min-width: 220px; max-width: 300px;">Blog</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Author</th>
+                    <th>Published</th>
+                    <th>Updated</th>
+                    <th style="text-align: right; width: 185px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Blogs.Any())
+                {
+                    foreach (var b in Model.Blogs)
+                    {
+                        <tr>
+                            <td style="font-weight: 600; color: var(--fade);">#@b.BlogPostId</td>
+                            <td>
+                                <div class="blog-cell-wrap">
+                                    <div class="blog-thumb-box">
+                                        @if (!string.IsNullOrWhiteSpace(b.FeaturedImage))
+                                        {
+                                            <img src="@b.FeaturedImage" alt="@b.Title" loading="lazy" />
+                                        }
+                                        else
+                                        {
+                                            <span class="blog-thumb-placeholder" aria-hidden="true">
+                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                                </svg>
+                                            </span>
+                                        }
+                                    </div>
+                                    <div class="blog-cell-info">
+                                        <span class="blog-cell-title">@b.Title</span>
+                                        <span class="blog-cell-slug">/Blog/@b.Slug</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge-blog-category">@(b.CategoryName ?? "Uncategorized")</span>
+                            </td>
+                            <td>
+                                @if (b.IsPublished)
+                                {
+                                    <span class="badge badge-blog-published">● Published</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-blog-draft">○ Draft</span>
+                                }
+                            </td>
+                            <td style="font-size: 0.85rem; color: var(--text-dark);">
+                                @(b.AuthorName ?? "Agam Estates Editorial Team")
+                            </td>
+                            <td class="lead-cell-sub">
+                                @(b.PublishedAt.HasValue ? b.PublishedAt.Value.ToString("dd MMM yyyy") : "—")
+                            </td>
+                            <td class="lead-cell-sub">
+                                @(b.UpdatedAt.HasValue ? b.UpdatedAt.Value.ToString("dd MMM yyyy") : b.CreatedAt.ToString("dd MMM yyyy"))
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                    <button type="button" class="btn btn-sm btn-outline" onclick="openBlogDetailsModal(@b.BlogPostId)">Details</button>
+                                    <a href="/Admin/Blogs/Edit/@b.BlogPostId" class="btn btn-sm btn-outline">Edit</a>
+                                    <button type="button" class="btn btn-sm btn-outline" style="color: #DC2626; border-color: rgba(220,38,38,0.3);" onclick="openDeleteBlogModal(@b.BlogPostId, '@JsEncode(b.Title)')">Delete</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 54px 24px; color: var(--fade);">
+                            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; color: var(--gold);">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <div style="font-size: 1.08rem; font-weight: 600; color: var(--primary-dark);">No blog articles found</div>
+                            <div style="font-size: 0.86rem; margin-top: 4px; margin-bottom: 18px;">Create your first article or adjust your filter parameters.</div>
+                            <a href="/Admin/Blogs/Create" class="btn btn-gold">+ Add New Blog</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View (<= 768px) -->
+    <div class="mobile-card-view">
+        @if (Model.Blogs.Any())
+        {
+            foreach (var b in Model.Blogs)
+            {
+                <div class="responsive-blog-card">
+                    <div class="rbc-image-wrap">
+                        @if (!string.IsNullOrWhiteSpace(b.FeaturedImage))
+                        {
+                            <img src="@b.FeaturedImage" alt="@b.Title" loading="lazy" />
+                        }
+                        else
+                        {
+                            <span class="blog-thumb-placeholder" aria-hidden="true">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                    <polyline points="21 15 16 10 5 21"></polyline>
+                                </svg>
+                            </span>
+                        }
+                    </div>
+
+                    <div>
+                        <div class="rbc-title">@b.Title</div>
+                        <div class="rbc-slug">/Blog/@b.Slug</div>
+                    </div>
+
+                    <div class="rbc-badges-row">
+                        <span class="badge-blog-category">@(b.CategoryName ?? "Uncategorized")</span>
+                        @if (b.IsPublished)
+                        {
+                            <span class="badge badge-blog-published">● Published</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-blog-draft">○ Draft</span>
+                        }
+                    </div>
+
+                    <div class="rbc-meta-grid">
+                        <div class="ruc-item">
+                            <span class="ruc-label">Published</span>
+                            <span class="ruc-val">@(b.PublishedAt.HasValue ? b.PublishedAt.Value.ToString("dd MMM yyyy") : "Draft")</span>
+                        </div>
+                        <div class="ruc-item">
+                            <span class="ruc-label">Author</span>
+                            <span class="ruc-val">@(b.AuthorName ?? "Agam Estates Editorial Team")</span>
+                        </div>
+                    </div>
+
+                    <div class="rbc-actions">
+                        <button type="button" class="btn btn-sm btn-outline ruc-btn" onclick="openBlogDetailsModal(@b.BlogPostId)">Details</button>
+                        <a href="/Admin/Blogs/Edit/@b.BlogPostId" class="btn btn-sm btn-outline ruc-btn">Edit</a>
+                        <button type="button" class="btn btn-sm btn-outline ruc-btn rbc-delete-btn" style="color: #DC2626; border-color: rgba(220,38,38,0.3);" onclick="openDeleteBlogModal(@b.BlogPostId, '@JsEncode(b.Title)')">Delete</button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align: center; padding: 40px 16px; color: var(--fade);">
+                <div style="font-size: 1.05rem; font-weight: 600; color: var(--primary-dark);">No blog articles found</div>
+                <div style="font-size: 0.85rem; margin-top: 4px; margin-bottom: 16px;">Create your first article or clear filters.</div>
+                <a href="/Admin/Blogs/Create" class="btn btn-gold">+ Add New Blog</a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Delete Blog Confirmation
+     ======================================================== -->
+<div id="delete-blog-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 460px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Delete Blog?</h3>
+            <button type="button" class="modal-close" onclick="closeModal('delete-blog-modal')">&times;</button>
+        </div>
+        <form id="delete-blog-form" method="post" action="">
+            @Html.AntiForgeryToken()
+            <div class="modal-body">
+                <p style="font-size: 0.95rem; color: var(--text-dark); line-height: 1.55;">
+                    &ldquo;<strong id="delete-blog-title"></strong>&rdquo; will be permanently removed.
+                </p>
+                <p style="font-size: 0.82rem; color: var(--fade); margin-top: 8px;">
+                    This action cannot be undone and will also remove any associated featured image.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('delete-blog-modal')">Cancel</button>
+                <button type="submit" class="btn btn-danger">Delete Blog</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Blog Details Preview
+     ======================================================== -->
+<div id="blog-details-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 720px;">
+        <div class="modal-header">
+            <h3 class="modal-title" id="detail-modal-heading">Blog Details</h3>
+            <button type="button" class="modal-close" onclick="closeModal('blog-details-modal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="detail-image-container" style="display: none; margin-bottom: 18px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(221,174,69,0.28); aspect-ratio: 16/9; background: #062545;">
+                <img id="detail-featured-image" src="" alt="" style="width: 100%; height: 100%; object-fit: cover;" />
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+                <span id="detail-category" class="badge-blog-category"></span>
+                <span id="detail-status" class="badge"></span>
+                <span id="detail-slug" style="font-size: 0.8rem; color: var(--fade);"></span>
+            </div>
+
+            <h4 id="detail-title" style="font-family: var(--serif); font-size: 1.35rem; color: var(--primary-dark); margin-bottom: 12px;"></h4>
+
+            <div class="info-list" style="margin-bottom: 16px; background: #FAF9F6; padding: 12px 14px; border-radius: 4px; border: 1px solid rgba(6,37,69,0.06);">
+                <div class="info-item">
+                    <span class="info-label">Author</span>
+                    <span class="info-value" id="detail-author"></span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Published Date</span>
+                    <span class="info-value" id="detail-published"></span>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+                <span class="info-label" style="display: block; margin-bottom: 4px;">Short Description</span>
+                <p id="detail-short-desc" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.55;"></p>
+            </div>
+
+            <div>
+                <span class="info-label" style="display: block; margin-bottom: 6px;">Article Content Preview</span>
+                <div id="detail-content" class="blog-preview-content"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeModal('blog-details-modal')">Close</button>
+            <a id="detail-public-link" href="#" target="_blank" class="btn btn-outline" style="display: none;">View Public Article &rarr;</a>
+            <a id="detail-edit-link" href="#" class="btn btn-gold">Edit Blog</a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function openDeleteBlogModal(blogId, title) {
+        document.getElementById('delete-blog-title').textContent = title;
+        document.getElementById('delete-blog-form').action = '/Admin/Blogs/Delete/' + blogId;
+        openModal('delete-blog-modal');
+    }
+
+    async function openBlogDetailsModal(blogId) {
+        try {
+            const resp = await fetch('/Admin/Blogs/Details/' + blogId);
+            if (!resp.ok) return;
+            const data = await resp.json();
+            if (!data.success || !data.blog) return;
+
+            const b = data.blog;
+            document.getElementById('detail-title').textContent = b.title || '';
+            document.getElementById('detail-category').textContent = b.categoryName || 'Uncategorized';
+            document.getElementById('detail-slug').textContent = '/Blog/' + (b.slug || '');
+            document.getElementById('detail-author').textContent = b.authorName || 'Agam Estates Editorial Team';
+            document.getElementById('detail-published').textContent = b.publishedAtFormatted || '—';
+            document.getElementById('detail-short-desc').textContent = b.shortDescription || '—';
+            document.getElementById('detail-content').innerHTML = b.content || '';
+
+            const statusBadge = document.getElementById('detail-status');
+            if (b.isPublished) {
+                statusBadge.className = 'badge badge-blog-published';
+                statusBadge.textContent = '● Published';
+            } else {
+                statusBadge.className = 'badge badge-blog-draft';
+                statusBadge.textContent = '○ Draft';
+            }
+
+            const imgContainer = document.getElementById('detail-image-container');
+            const imgEl = document.getElementById('detail-featured-image');
+            if (b.featuredImage) {
+                imgEl.src = b.featuredImage;
+                imgEl.alt = b.title || 'Featured image';
+                imgContainer.style.display = 'block';
+            } else {
+                imgEl.src = '';
+                imgContainer.style.display = 'none';
+            }
+
+            const pubLink = document.getElementById('detail-public-link');
+            if (b.isPublished && b.slug) {
+                pubLink.href = '/Blog/' + b.slug;
+                pubLink.style.display = 'inline-flex';
+            } else {
+                pubLink.style.display = 'none';
+            }
+
+            document.getElementById('detail-edit-link').href = '/Admin/Blogs/Edit/' + b.blogPostId;
+            openModal('blog-details-modal');
+        } catch (e) {
+            console.error(e);
+        }
+    }
+</script>
+}
