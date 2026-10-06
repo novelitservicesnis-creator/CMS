@@ -45,6 +45,7 @@ builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 builder.Services.AddScoped<ILeadCommunicationRepository, LeadCommunicationRepository>();
 builder.Services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>();
 builder.Services.AddScoped<AgamEstates.Web.Services.ISystemSettingsService, AgamEstates.Web.Services.SystemSettingsService>();
+builder.Services.AddScoped<AgamEstates.Web.Services.IFileStorageService, AgamEstates.Web.Services.FileStorageService>();
 
 // Also register concrete types for direct injection or UnitOfWork resolution
 builder.Services.AddScoped<UserRepository>();
@@ -89,6 +90,31 @@ else
 }
 
 app.UseHttpsRedirection();
+
+// Production external upload storage mapping (only when Storage:UploadRoot is configured)
+var configuredUploadRoot = builder.Configuration["Storage:UploadRoot"];
+if (!string.IsNullOrWhiteSpace(configuredUploadRoot))
+{
+    var fullUploadRoot = Path.GetFullPath(configuredUploadRoot.Trim());
+    try
+    {
+        Directory.CreateDirectory(fullUploadRoot);
+        Directory.CreateDirectory(Path.Combine(fullUploadRoot, "system"));
+
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(fullUploadRoot),
+            RequestPath = "/uploads"
+        });
+    }
+    catch (Exception ex)
+    {
+        var logger = app.Services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Failed to initialize external static upload directory at '{UploadRoot}'. Ensure the IIS Application Pool identity has Read, Write, and Modify permissions.", fullUploadRoot);
+    }
+}
+
+// Default static files middleware for wwwroot (/css, /js, /images, /assets, and local wwwroot/uploads)
 app.UseStaticFiles();
 
 app.UseRouting();

@@ -23,6 +23,7 @@ namespace AgamEstates.Web.Controllers
     {
         private readonly ISystemSettingsRepository _settingsRepository;
         private readonly ISystemSettingsService _settingsService;
+        private readonly IFileStorageService _fileStorageService;
         private readonly IWebHostEnvironment _env;
 
         private static readonly string[] AllowedImageExtensions = { ".png", ".jpg", ".jpeg", ".webp" };
@@ -35,12 +36,14 @@ namespace AgamEstates.Web.Controllers
             ILogger<SystemSettingsController> logger,
             ISystemSettingsRepository settingsRepository,
             ISystemSettingsService settingsService,
+            IFileStorageService fileStorageService,
             IWebHostEnvironment env,
             IMemoryCache? cache = null)
             : base(agamEntity, configuration, logger, cache)
         {
             _settingsRepository = settingsRepository;
             _settingsService = settingsService;
+            _fileStorageService = fileStorageService;
             _env = env;
         }
 
@@ -91,6 +94,8 @@ namespace AgamEstates.Web.Controllers
             }
 
             string? logoPath = null;
+            string? previousLogoPath = null;
+
             if (model.LogoFile != null && model.LogoFile.Length > 0)
             {
                 // Validate size
@@ -115,33 +120,55 @@ namespace AgamEstates.Web.Controllers
                     return RedirectToAction(nameof(Index), new { tab = "general" });
                 }
 
-                // Save to wwwroot/uploads/system/
-                var uploadsDir = Path.Combine(_env.WebRootPath, "uploads", "system");
-                if (!Directory.Exists(uploadsDir))
+                // Capture current logo path BEFORE updating database
+                var currentSettings = await _settingsRepository.GetSettingsDtoAsync();
+                previousLogoPath = currentSettings?.LogoPath;
+
+                try
                 {
-                    Directory.CreateDirectory(uploadsDir);
+                    logoPath = await _fileStorageService.SaveSystemLogoAsync(model.LogoFile, ext);
                 }
-
-                var safeFileName = $"agam-logo-{Guid.NewGuid():N}{ext}";
-                var physicalPath = Path.Combine(uploadsDir, safeFileName);
-
-                using (var stream = new FileStream(physicalPath, FileMode.Create))
+                catch (Exception ex)
                 {
-                    await model.LogoFile.CopyToAsync(stream);
+                    _logger.LogError(ex, "Failed to save uploaded system logo file.");
+                    TempData["ErrorMessage"] = "Unable to save the uploaded logo file. Please verify server storage permissions.";
+                    return RedirectToAction(nameof(Index), new { tab = "general" });
                 }
-
-                logoPath = $"/uploads/system/{safeFileName}";
             }
 
             var adminId = GetCurrentAdminUserId();
-            var success = await _settingsRepository.UpdateGeneralSettingsAsync(model.CompanyName, logoPath, adminId);
+            bool success = false;
+            try
+            {
+                success = await _settingsRepository.UpdateGeneralSettingsAsync(model.CompanyName, logoPath, adminId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Database update failed during UpdateGeneral.");
+                success = false;
+            }
+
             if (success)
             {
+                // Only after DB update succeeds, safely delete the previous uploaded logo if it was replaced
+                if (!string.IsNullOrWhiteSpace(logoPath) &&
+                    !string.IsNullOrWhiteSpace(previousLogoPath) &&
+                    !string.Equals(previousLogoPath, logoPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    _fileStorageService.TryDeleteManagedSystemFile(previousLogoPath);
+                }
+
                 _settingsService.InvalidateCache();
                 TempData["SuccessMessage"] = "Website identity updated successfully.";
             }
             else
             {
+                // DB update failed: delete newly uploaded file so no orphan file remains, keeping old logo untouched
+                if (!string.IsNullOrWhiteSpace(logoPath))
+                {
+                    _fileStorageService.TryDeleteManagedSystemFile(logoPath);
+                }
+
                 TempData["ErrorMessage"] = "Unable to update website identity. Please try again.";
             }
 

@@ -5,3 +5,5 @@
 *.suo
 cookie.txt
 appsettings.Development.json
+AgamEstates.Web/wwwroot/uploads/*
+!AgamEstates.Web/wwwroot/uploads/.gitkeep
