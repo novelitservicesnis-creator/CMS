@@ -1,0 +1,282 @@
+﻿@{
+    var currentPath = Context.Request.Path.Value ?? "";
+    var isDashboard = currentPath.StartsWith("/AdminPanel", StringComparison.OrdinalIgnoreCase);
+    var isLeads = currentPath.StartsWith("/Leads", StringComparison.OrdinalIgnoreCase) || currentPath.StartsWith("/LeadDetails", StringComparison.OrdinalIgnoreCase);
+    var isUsers = currentPath.StartsWith("/Admin/Users", StringComparison.OrdinalIgnoreCase);
+    var isSystemSettings = currentPath.StartsWith("/Admin/SystemSettings", StringComparison.OrdinalIgnoreCase) || currentPath.StartsWith("/SystemSettings", StringComparison.OrdinalIgnoreCase);
+    var isAdmin = User.IsInRole("Admin");
+    
+    var userName = User.Identity?.Name ?? "CRM User";
+    var userRole = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "Agent";
+    var userEmail = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+    var userPhone = User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.MobilePhone)?.Value ?? "";
+    
+    var initials = "AE";
+    if (!string.IsNullOrWhiteSpace(userName))
+    {
+        var parts = userName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+        {
+            initials = $"{parts[0][0]}{parts[1][0]}".ToUpper();
+        }
+        else if (parts.Length == 1 && parts[0].Length >= 2)
+        {
+            initials = parts[0].Substring(0, 2).ToUpper();
+        }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — Agam Estates CRM</title>
+    <link rel="icon" type="image/png" href="/images/logo.png" />
+    <link rel="stylesheet" href="/css/site.css" />
+    <link rel="stylesheet" href="/css/admin.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar Backdrop for Mobile -->
+        <div id="sidebar-backdrop" class="modal-backdrop" style="z-index: 95;"></div>
+
+        <!-- Left Sidebar -->
+        <aside id="admin-sidebar" class="admin-sidebar">
+            <div class="sidebar-brand">
+                <img src="/images/logo.png" alt="Agam Estates" class="sidebar-logo" />
+                <div class="sidebar-brand-text">
+                    <span class="sidebar-brand-name">Agam <span>Estates</span></span>
+                    <span class="sidebar-brand-badge">Executive CRM</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-heading">Sales Management</div>
+                
+                <a href="/AdminPanel" class="sidebar-link @(isDashboard ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+
+                <a href="/Leads" class="sidebar-link @(isLeads ? "active" : "")">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Leads Pipeline</span>
+                </a>
+
+                @if (isAdmin)
+                {
+                    <a href="/Admin/Users" class="sidebar-link @(isUsers ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <span>Agents &amp; Users</span>
+                    </a>
+
+                    <div class="nav-heading" style="margin-top: 18px;">System</div>
+                    <a href="/Admin/SystemSettings" class="sidebar-link @(isSystemSettings ? "active" : "")">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <span>System Settings</span>
+                    </a>
+                }
+
+                <div class="nav-heading" style="margin-top: 18px;">Quick Shortcuts</div>
+                <a href="/" target="_blank" class="sidebar-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                    <span>Public Website</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-user">
+                <!-- Clickable Profile Trigger Row -->
+                <div id="sidebar-profile-trigger" class="user-profile-row" onclick="toggleProfilePopover(event)" role="button" aria-haspopup="true" aria-expanded="false" tabindex="0" title="Account Menu">
+                    <div class="user-avatar">@initials</div>
+                    <div class="user-details">
+                        <span class="user-name" title="@userName">@userName</span>
+                        <span class="user-role">@userRole</span>
+                    </div>
+                    <div class="profile-arrow" aria-hidden="true">
+                        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="18 15 12 9 6 15"></polyline>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Attached Floating Profile Popover (No overlay, no blur) -->
+                <div id="sidebar-profile-popover" class="profile-popover" role="dialog" aria-label="Account Profile" onclick="event.stopPropagation()">
+                    <div class="popover-header">
+                        <div class="popover-badge">ACCOUNT</div>
+                        <div class="popover-user-row">
+                            <div class="popover-avatar">@initials</div>
+                            <div class="popover-user-info">
+                                <div class="popover-name" title="@userName">@userName</div>
+                                <span class="popover-role badge @(isAdmin ? "badge-status-closed-won" : "badge-status-new")">@userRole</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="popover-body">
+                        <div class="popover-info-item">
+                            <span class="popover-info-label">Email</span>
+                            <span class="popover-info-val" title="@userEmail">@(string.IsNullOrWhiteSpace(userEmail) ? "No email recorded" : userEmail)</span>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(userPhone))
+                        {
+                            <div class="popover-info-item">
+                                <span class="popover-info-label">Phone</span>
+                                <span class="popover-info-val">@userPhone</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="popover-actions">
+                        @* <button type="button" class="popover-action-row" onclick="viewDetailedProfile()">
+                            <span class="action-text">View Profile</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12 5 19 12 12 19"></polyline>
+                            </svg>
+                        </button> *@
+                        <a href="/Logout" class="popover-action-row signout-row">
+                            <span class="action-text">Sign Out</span>
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                <polyline points="7 7 17 7 17 17"></polyline>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Viewport -->
+        <div class="admin-main">
+            <!-- Top Header -->
+            <header class="admin-header">
+                <div class="header-left">
+                    <button type="button" id="sidebar-toggle-btn" class="sidebar-toggle-btn" aria-label="Toggle Navigation">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+
+                    <div class="breadcrumbs">
+                        @{
+                            var breadcrumbs = (ViewData["Breadcrumbs"] as IEnumerable<BreadcrumbItem> ?? Enumerable.Empty<BreadcrumbItem>()).ToList();
+                        }
+                        @if (breadcrumbs.Any())
+                        {
+                            for (int i = 0; i < breadcrumbs.Count; i++)
+                            {
+                                var crumb = breadcrumbs[i];
+                                if (i > 0)
+                                {
+                                    <span class="breadcrumb-separator">/</span>
+                                }
+                                if (!string.IsNullOrWhiteSpace(crumb.Url))
+                                {
+                                    <span class="breadcrumb-item"><a href="@crumb.Url">@crumb.Text</a></span>
+                                }
+                                else
+                                {
+                                    <span class="breadcrumb-item active">@crumb.Text</span>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <span class="breadcrumb-item"><a href="/AdminPanel">@(isAdmin ? "Admin" : "CRM")</a></span>
+                            <span class="breadcrumb-separator">/</span>
+                            <span class="breadcrumb-item active">@ViewData["Title"]</span>
+                        }
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <a href="/" target="_blank" class="header-link-site">
+                        <span>View Website</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                        </svg>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Main Page Content -->
+            <main class="admin-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- My Account Modal -->
+    <div id="my-account-modal" class="modal-backdrop">
+        <div class="modal-card" style="max-width: 440px;">
+            <div class="modal-header">
+                <h3 class="modal-title">Account Profile</h3>
+                <button type="button" class="modal-close" onclick="closeModal('my-account-modal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                    <div style="width: 56px; height: 56px; border-radius: 50%; background: #062545; color: #DDAE45; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; font-weight: 700; border: 2px solid #DDAE45;">
+                        @initials
+                    </div>
+                    <div>
+                        <h4 style="font-size: 1.15rem; color: var(--primary-dark); font-family: var(--serif); margin: 0;">@userName</h4>
+                        <span class="badge @(isAdmin ? "badge-status-closed-won" : "badge-status-new")" style="margin-top: 6px; display: inline-block;">@userRole</span>
+                    </div>
+                </div>
+                <div style="background: var(--light); border-radius: 4px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px;">
+                    <div>
+                        <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--fade); font-weight: 600;">Email</div>
+                        <div style="font-size: 0.9rem; color: var(--primary-dark); font-weight: 500; word-break: break-all;">@(string.IsNullOrWhiteSpace(userEmail) ? "No email recorded" : userEmail)</div>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(userPhone))
+                    {
+                        <div>
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--fade); font-weight: 600;">Phone</div>
+                            <div style="font-size: 0.9rem; color: var(--primary-dark); font-weight: 500;">@userPhone</div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: space-between;">
+                <a href="/Logout" class="btn btn-outline" style="color: #DC2626; border-color: rgba(220,38,38,0.3);">
+                    Sign Out
+                </a>
+                <button type="button" class="btn btn-navy" onclick="closeModal('my-account-modal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/js/admin.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

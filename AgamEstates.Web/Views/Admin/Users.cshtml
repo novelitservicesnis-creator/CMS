@@ -1,0 +1,727 @@
+﻿@model AgamEstates.Web.Models.UsersPageViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Agents & Users";
+    ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem
+        {
+            Text = "Admin",
+            Url = "/AdminPanel"
+        },
+        new BreadcrumbItem
+        {
+            Text = "Agents & Users",
+            Url = null
+        }
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-title">Agents &amp; Team Management</h1>
+        <p class="page-subtitle">Manage CRM accounts, agent assignments, roles, and access credentials securely.</p>
+    </div>
+    <div>
+        <button type="button" class="btn btn-gold" onclick="openAddUserModal()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add New Agent</span>
+        </button>
+    </div>
+</div>
+
+<!-- Quick Stats Row -->
+<div class="kpi-grid" style="grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); margin-bottom: 24px;">
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Total Accounts</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count">@Model.TotalManageableCount</div>
+        <div class="kpi-subtext">Managed team accounts</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Active Agents</span>
+            <div class="kpi-icon" style="color: #16A34A;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #16A34A;">@Model.ActiveManageableCount</div>
+        <div class="kpi-subtext">Enabled CRM access</div>
+    </div>
+
+    <div class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Inactive Accounts</span>
+            <div class="kpi-icon" style="color: #DC2626;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #DC2626;">@Model.InactiveManageableCount</div>
+        <div class="kpi-subtext">Suspended or disabled</div>
+    </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="filter-card luxury-card">
+    <form id="users-filter-form" method="get" action="/Admin/Users">
+        <div class="filter-grid" style="grid-template-columns: 2fr 1.2fr 1.2fr auto;">
+            <div class="search-box">
+                <span class="search-box-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input type="text" name="search" id="filter-search" class="form-control" placeholder="Search by name, email, or phone..." value="@Model.Search">
+            </div>
+
+            <div>
+                <select name="role" id="filter-role" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Roles</option>
+                    <option value="Admin" selected="@(string.Equals(Model.RoleFilter, "Admin", StringComparison.OrdinalIgnoreCase))">Admin</option>
+                    <option value="Agent" selected="@(string.Equals(Model.RoleFilter, "Agent", StringComparison.OrdinalIgnoreCase))">Agent</option>
+                    <option value="Manager" selected="@(string.Equals(Model.RoleFilter, "Manager", StringComparison.OrdinalIgnoreCase))">Manager</option>
+                </select>
+            </div>
+
+            <div>
+                <select name="active" id="filter-active" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    <option value="true" selected="@(Model.ActiveFilter == true)">Active Only</option>
+                    <option value="false" selected="@(Model.ActiveFilter == false)">Inactive Only</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-navy">Filter</button>
+                <a href="/Admin/Users" class="btn btn-outline" title="Clear all filters">Clear</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Users Table -->
+<div class="luxury-card" style="padding: 0; overflow: hidden;">
+    <!-- Desktop Table View (> 768px) -->
+    <div class="table-responsive desktop-table-view">
+        <table class="data-table" id="users-table">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th>User &amp; Contact</th>
+                    <th>Role</th>
+                    <th>Assigned Leads</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th style="text-align: right; min-width: 220px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Users.Any())
+                {
+                    foreach (var u in Model.Users)
+                    {
+                        var leadCount = Model.UserLeadCounts.TryGetValue(u.UserId, out int cnt) ? cnt : 0;
+                        var initials = "AG";
+                        if (!string.IsNullOrWhiteSpace(u.FullName))
+                        {
+                            var parts = u.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length >= 2) initials = $"{parts[0][0]}{parts[1][0]}".ToUpper();
+                            else if (parts.Length == 1 && parts[0].Length >= 2) initials = parts[0].Substring(0, 2).ToUpper();
+                        }
+                        <tr id="user-row-@u.UserId">
+                            <td style="font-weight: 600; color: var(--fade);">#@u.UserId</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="width: 38px; height: 38px; border-radius: 50%; background: #062545; color: #DDAE45; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.85rem; flex-shrink: 0; border: 1px solid rgba(221,174,69,0.3);">
+                                        @initials
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--primary-dark);">@u.FullName</div>
+                                        <div class="lead-cell-sub">
+                                            <span>@u.Email</span>
+                                            @if (!string.IsNullOrWhiteSpace(u.PhoneNumber))
+                                            {
+                                                <span> • @u.PhoneNumber</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge @(u.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase) ? "badge-status-closed-won" : "badge-status-new")">
+                                    @u.Role
+                                </span>
+                            </td>
+                            <td>
+                                <a href="/Leads?assignedTo=@u.UserId" class="lead-link" style="font-weight: 600;">
+                                    @leadCount Leads
+                                </a>
+                            </td>
+                            <td>
+                                @if (u.IsActive)
+                                {
+                                    <span class="badge" style="background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0;">
+                                        ● Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge" style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">
+                                        ○ Inactive
+                                    </span>
+                                }
+                            </td>
+                            <td class="lead-cell-sub">
+                                @u.CreatedAt.ToString("MMM dd, yyyy")
+                            </td>
+                            <td style="text-align: right;">
+                                <div style="display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+                                    <button type="button" class="btn btn-sm btn-outline" onclick="showUserDetails(@u.UserId)" title="View Performance &amp; Details">
+                                        Details
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline" onclick="openEditUserModal(@u.UserId, '@JavaScriptStringEncode(u.FullName)', '@JavaScriptStringEncode(u.PhoneNumber)', '@JavaScriptStringEncode(u.Email)', '@JavaScriptStringEncode(u.Role)')" title="Edit Agent Information">
+                                        Edit
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline" onclick="openResetPasswordModal(@u.UserId, '@JavaScriptStringEncode(u.FullName)')" title="Reset Agent Password">
+                                        Password
+                                    </button>
+                                    <button type="button" class="btn btn-sm @(u.IsActive ? "btn-outline" : "btn-gold")" onclick="toggleUserStatus(@u.UserId, '@JavaScriptStringEncode(u.FullName)', @(u.IsActive ? "true" : "false"))" title="@(u.IsActive ? "Deactivate Account" : "Activate Account")" style="@(u.IsActive ? "color: #DC2626; border-color: rgba(220,38,38,0.3);" : "")">
+                                        @(u.IsActive ? "Deactivate" : "Activate")
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 48px 24px; color: var(--fade);">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; color: var(--gold);">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                            </svg>
+                            <div style="font-size: 1.05rem; font-weight: 500; color: var(--primary-dark);">No agents found</div>
+                            <div style="font-size: 0.85rem; margin-top: 4px;">Try modifying your search or filter parameters.</div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View (<= 768px) -->
+    <div class="mobile-card-view">
+        @if (Model.Users.Any())
+        {
+            foreach (var u in Model.Users)
+            {
+                var leadCount = Model.UserLeadCounts.TryGetValue(u.UserId, out int cnt) ? cnt : 0;
+                var initials = "AG";
+                if (!string.IsNullOrWhiteSpace(u.FullName))
+                {
+                    var parts = u.FullName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 2) initials = $"{parts[0][0]}{parts[1][0]}".ToUpper();
+                    else if (parts.Length == 1 && parts[0].Length >= 2) initials = parts[0].Substring(0, 2).ToUpper();
+                }
+
+                <div class="responsive-user-card" id="user-card-@u.UserId">
+                    <div class="ruc-head">
+                        <div class="ruc-user-info">
+                            <div class="ruc-avatar">@initials</div>
+                            <div class="ruc-title-wrap">
+                                <span class="ruc-id">#@u.UserId</span>
+                                <span class="ruc-name">@u.FullName</span>
+                                <div class="ruc-badges">
+                                    <span class="badge @(u.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase) ? "badge-status-closed-won" : "badge-status-new")">@u.Role</span>
+                                    @if (u.IsActive)
+                                    {
+                                        <span class="badge" style="background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0;">● Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge" style="background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA;">○ Inactive</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ruc-body">
+                        <div class="ruc-contact-row">
+                            <a href="mailto:@u.Email" class="rlc-contact-pill">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                <span>@u.Email</span>
+                            </a>
+                            @if (!string.IsNullOrWhiteSpace(u.PhoneNumber))
+                            {
+                                <a href="tel:@u.PhoneNumber" class="rlc-contact-pill">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                    <span>@u.PhoneNumber</span>
+                                </a>
+                            }
+                        </div>
+
+                        <div class="ruc-grid">
+                            <div class="ruc-item">
+                                <span class="ruc-label">Assigned Leads</span>
+                                <a href="/Leads?assignedTo=@u.UserId" class="lead-link ruc-val" style="font-weight: 600;">@leadCount Leads</a>
+                            </div>
+                            <div class="ruc-item">
+                                <span class="ruc-label">Account Created</span>
+                                <span class="ruc-val">@u.CreatedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                        </div>
+
+                        <div class="ruc-actions-grid">
+                            <button type="button" class="btn btn-sm btn-outline ruc-btn" onclick="showUserDetails(@u.UserId)">Details</button>
+                            <button type="button" class="btn btn-sm btn-outline ruc-btn" onclick="openEditUserModal(@u.UserId, '@JavaScriptStringEncode(u.FullName)', '@JavaScriptStringEncode(u.PhoneNumber)', '@JavaScriptStringEncode(u.Email)', '@JavaScriptStringEncode(u.Role)')">Edit</button>
+                            <button type="button" class="btn btn-sm btn-outline ruc-btn" onclick="openResetPasswordModal(@u.UserId, '@JavaScriptStringEncode(u.FullName)')">Password</button>
+                            <button type="button" class="btn btn-sm @(u.IsActive ? "btn-outline" : "btn-gold") ruc-btn" onclick="toggleUserStatus(@u.UserId, '@JavaScriptStringEncode(u.FullName)', @(u.IsActive ? "true" : "false"))" style="@(u.IsActive ? "color: #DC2626; border-color: rgba(220,38,38,0.3);" : "")">
+                                @(u.IsActive ? "Deactivate" : "Activate")
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align: center; padding: 40px 16px; color: var(--fade);">
+                <div style="font-size: 1.05rem; font-weight: 500; color: var(--primary-dark);">No agents found</div>
+                <div style="font-size: 0.85rem; margin-top: 4px;">Try modifying your search or filter parameters.</div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Add New Agent
+     ======================================================== -->
+<div id="add-user-modal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">Add New Agent / Team Member</h3>
+            <button type="button" class="modal-close" onclick="closeModal('add-user-modal')">&times;</button>
+        </div>
+        <form id="add-user-form" onsubmit="submitAddUser(event)">
+            <div class="modal-body">
+                <div id="add-user-error" class="form-alert" style="display: none; margin-bottom: 16px;"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name <span style="color: #DC2626;">*</span></label>
+                    <input type="text" name="FullName" id="add-user-name" class="form-control" required placeholder="e.g. Priya Sharma" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address <span style="color: #DC2626;">*</span></label>
+                    <input type="email" name="Email" id="add-user-email" class="form-control" required placeholder="e.g. priya@agamestates.com" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number <span style="color: #DC2626;">*</span></label>
+                    <input type="tel" name="PhoneNumber" id="add-user-phone" class="form-control" required placeholder="e.g. +91 98765 43210" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Assigned Role</label>
+                    <select name="Role" id="add-user-role" class="form-select">
+                        <option value="Agent">Agent (Leads CRM access)</option>
+                        <option value="Admin">Administrator (Full CRM &amp; User control)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Initial Password <span style="color: #DC2626;">*</span></label>
+                    <input type="password" name="Password" id="add-user-password" class="form-control" required minlength="6" placeholder="Min. 6 characters" />
+                    <span style="font-size: 0.75rem; color: var(--fade); margin-top: 4px; display: block;">Passwords are securely hashed using cryptographic salt before storage.</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('add-user-modal')">Cancel</button>
+                <button type="submit" id="add-user-btn" class="btn btn-gold">Create Account</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Edit Agent
+     ======================================================== -->
+<div id="edit-user-modal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">Edit Team Member</h3>
+            <button type="button" class="modal-close" onclick="closeModal('edit-user-modal')">&times;</button>
+        </div>
+        <form id="edit-user-form" onsubmit="submitEditUser(event)">
+            <input type="hidden" name="UserId" id="edit-user-id" />
+            <div class="modal-body">
+                <div id="edit-user-error" class="form-alert" style="display: none; margin-bottom: 16px;"></div>
+
+                <div class="form-group">
+                    <label class="form-label">Full Name <span style="color: #DC2626;">*</span></label>
+                    <input type="text" name="FullName" id="edit-user-name" class="form-control" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address <span style="color: #DC2626;">*</span></label>
+                    <input type="email" name="Email" id="edit-user-email" class="form-control" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" name="PhoneNumber" id="edit-user-phone" class="form-control" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <select name="Role" id="edit-user-role" class="form-select">
+                        <option value="Agent">Agent</option>
+                        <option value="Admin">Administrator</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('edit-user-modal')">Cancel</button>
+                <button type="submit" id="edit-user-btn" class="btn btn-navy">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: Reset Password
+     ======================================================== -->
+<div id="reset-password-modal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">Reset Agent Password</h3>
+            <button type="button" class="modal-close" onclick="closeModal('reset-password-modal')">&times;</button>
+        </div>
+        <form id="reset-password-form" onsubmit="submitResetPassword(event)">
+            <input type="hidden" id="reset-user-id" />
+            <div class="modal-body">
+                <div id="reset-password-error" class="form-alert" style="display: none; margin-bottom: 16px;"></div>
+
+                <p style="font-size: 0.9rem; color: var(--fade); margin-bottom: 18px;">
+                    Set a new password for <strong id="reset-user-name" style="color: var(--primary-dark);"></strong>. Existing password hash will be replaced securely.
+                </p>
+
+                <div class="form-group">
+                    <label class="form-label">New Password <span style="color: #DC2626;">*</span></label>
+                    <input type="password" id="reset-new-password" class="form-control" required minlength="6" placeholder="Min. 6 characters" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password <span style="color: #DC2626;">*</span></label>
+                    <input type="password" id="reset-confirm-password" class="form-control" required minlength="6" placeholder="Re-enter new password" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('reset-password-modal')">Cancel</button>
+                <button type="submit" id="reset-password-btn" class="btn btn-gold">Update Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================
+     MODAL: User Details & Performance
+     ======================================================== -->
+<div id="user-details-modal" class="modal-backdrop">
+    <div class="modal-card" style="max-width: 520px;">
+        <div class="modal-header">
+            <h3 class="modal-title">Agent Profile &amp; Performance</h3>
+            <button type="button" class="modal-close" onclick="closeModal('user-details-modal')">&times;</button>
+        </div>
+        <div class="modal-body" id="user-details-body">
+            <div style="text-align: center; padding: 24px; color: var(--fade);">
+                Loading agent details...
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-outline" onclick="closeModal('user-details-modal')">Close</button>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public static string JavaScriptStringEncode(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return "";
+        return System.Web.HttpUtility.JavaScriptStringEncode(value);
+    }
+}
+
+@section Scripts {
+<script>
+    function openAddUserModal() {
+        document.getElementById('add-user-form').reset();
+        document.getElementById('add-user-error').style.display = 'none';
+        openModal('add-user-modal');
+    }
+
+    async function submitAddUser(e) {
+        e.preventDefault();
+        const errBox = document.getElementById('add-user-error');
+        errBox.style.display = 'none';
+
+        const btn = document.getElementById('add-user-btn');
+        btn.disabled = true;
+        btn.innerText = 'Creating...';
+
+        const payload = {
+            fullName: document.getElementById('add-user-name').value.trim(),
+            email: document.getElementById('add-user-email').value.trim(),
+            phoneNumber: document.getElementById('add-user-phone').value.trim(),
+            role: document.getElementById('add-user-role').value,
+            password: document.getElementById('add-user-password').value
+        };
+
+        try {
+            const resp = await fetch('/Admin/Users/Create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                closeModal('add-user-modal');
+                showToast(data.message || 'Agent created successfully.', 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                errBox.innerText = data.message || 'Failed to create agent.';
+                errBox.style.display = 'block';
+            }
+        } catch (err) {
+            errBox.innerText = 'Network error. Please try again.';
+            errBox.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Create Account';
+        }
+    }
+
+    function openEditUserModal(id, name, phone, email, role) {
+        document.getElementById('edit-user-error').style.display = 'none';
+        document.getElementById('edit-user-id').value = id;
+        document.getElementById('edit-user-name').value = name;
+        document.getElementById('edit-user-phone').value = phone;
+        document.getElementById('edit-user-email').value = email;
+        document.getElementById('edit-user-role').value = role;
+        openModal('edit-user-modal');
+    }
+
+    async function submitEditUser(e) {
+        e.preventDefault();
+        const errBox = document.getElementById('edit-user-error');
+        errBox.style.display = 'none';
+
+        const btn = document.getElementById('edit-user-btn');
+        btn.disabled = true;
+        btn.innerText = 'Saving...';
+
+        const payload = {
+            userId: parseInt(document.getElementById('edit-user-id').value),
+            fullName: document.getElementById('edit-user-name').value.trim(),
+            phoneNumber: document.getElementById('edit-user-phone').value.trim(),
+            email: document.getElementById('edit-user-email').value.trim(),
+            role: document.getElementById('edit-user-role').value
+        };
+
+        try {
+            const resp = await fetch('/Admin/Users/Update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                closeModal('edit-user-modal');
+                showToast(data.message || 'Agent updated successfully.', 'success');
+                setTimeout(() => window.location.reload(), 800);
+            } else {
+                errBox.innerText = data.message || 'Failed to update agent.';
+                errBox.style.display = 'block';
+            }
+        } catch (err) {
+            errBox.innerText = 'Network error. Please try again.';
+            errBox.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Save Changes';
+        }
+    }
+
+    function openResetPasswordModal(id, name) {
+        document.getElementById('reset-password-form').reset();
+        document.getElementById('reset-password-error').style.display = 'none';
+        document.getElementById('reset-user-id').value = id;
+        document.getElementById('reset-user-name').innerText = name;
+        openModal('reset-password-modal');
+    }
+
+    async function submitResetPassword(e) {
+        e.preventDefault();
+        const errBox = document.getElementById('reset-password-error');
+        errBox.style.display = 'none';
+
+        const pwd = document.getElementById('reset-new-password').value;
+        const confirm = document.getElementById('reset-confirm-password').value;
+
+        if (pwd !== confirm) {
+            errBox.innerText = 'Passwords do not match.';
+            errBox.style.display = 'block';
+            return;
+        }
+
+        if (pwd.length < 6) {
+            errBox.innerText = 'Password must be at least 6 characters.';
+            errBox.style.display = 'block';
+            return;
+        }
+
+        const btn = document.getElementById('reset-password-btn');
+        btn.disabled = true;
+        btn.innerText = 'Updating...';
+
+        const payload = {
+            userId: parseInt(document.getElementById('reset-user-id').value),
+            newPassword: pwd
+        };
+
+        try {
+            const resp = await fetch('/Admin/Users/ResetPassword', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                closeModal('reset-password-modal');
+                showToast(data.message || 'Password reset successfully.', 'success');
+            } else {
+                errBox.innerText = data.message || 'Failed to reset password.';
+                errBox.style.display = 'block';
+            }
+        } catch (err) {
+            errBox.innerText = 'Network error. Please try again.';
+            errBox.style.display = 'block';
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Update Password';
+        }
+    }
+
+    async function toggleUserStatus(id, name, currentActive) {
+        const actionText = currentActive ? 'deactivate' : 'activate';
+        if (!confirm(`Are you sure you want to ${actionText} ${name}'s account?`)) {
+            return;
+        }
+
+        try {
+            const resp = await fetch(`/Admin/Users/ToggleStatus/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await resp.json();
+
+            if (data.success) {
+                showToast(data.message || 'Account status updated.', 'success');
+                setTimeout(() => window.location.reload(), 700);
+            } else {
+                showToast(data.message || 'Failed to change status.', 'error');
+            }
+        } catch (err) {
+            showToast('Network error updating status.', 'error');
+        }
+    }
+
+    async function showUserDetails(id) {
+        openModal('user-details-modal');
+        const body = document.getElementById('user-details-body');
+        body.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--fade);">Loading agent details...</div>';
+
+        try {
+            const resp = await fetch(`/Admin/Users/Details/${id}`);
+            const data = await resp.json();
+
+            if (data.success && data.user) {
+                const u = data.user;
+                body.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 22px;">
+                        <div style="width: 54px; height: 54px; border-radius: 50%; background: #062545; color: #DDAE45; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; font-weight: 700; border: 2px solid #DDAE45;">
+                            ${u.fullName.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: var(--primary-dark); font-family: var(--serif);">${u.fullName}</h4>
+                            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px;">
+                                <span class="badge ${u.role === 'Admin' ? 'badge-status-closed-won' : 'badge-status-new'}">${u.role}</span>
+                                <span class="badge" style="background: ${u.isActive ? '#DCFCE7' : '#FEE2E2'}; color: ${u.isActive ? '#166534' : '#991B1B'};">${u.isActive ? 'Active' : 'Inactive'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: var(--light); border-radius: 4px; padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;">
+                        <div>
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--fade); font-weight: 600;">Email</div>
+                            <div style="font-size: 0.9rem; color: var(--primary-dark); word-break: break-all;">${u.email}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--fade); font-weight: 600;">Phone</div>
+                            <div style="font-size: 0.9rem; color: var(--primary-dark);">${u.phoneNumber || '—'}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--fade); font-weight: 600;">Member Since</div>
+                            <div style="font-size: 0.9rem; color: var(--primary-dark);">${u.createdAt}</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 0.72rem; text-transform: uppercase; color: var(--fade); font-weight: 600;">Total Pipeline</div>
+                            <div style="font-size: 0.9rem; font-weight: 600; color: var(--gold-dark);">${u.assignedLeadCount} Leads</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <div style="padding: 14px; background: #EFF6FF; border-radius: 4px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #1E40AF; font-family: var(--serif);">${u.activeLeadCount}</div>
+                            <div style="font-size: 0.76rem; color: #3B82F6; text-transform: uppercase; font-weight: 600; margin-top: 2px;">Active Pipeline</div>
+                        </div>
+                        <div style="padding: 14px; background: #ECFDF5; border-radius: 4px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #065F46; font-family: var(--serif);">${u.closedWonCount}</div>
+                            <div style="font-size: 0.76rem; color: #10B981; text-transform: uppercase; font-weight: 600; margin-top: 2px;">Deals Closed</div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                body.innerHTML = `<div style="text-align: center; padding: 24px; color: #DC2626;">${data.message || 'Failed to load details.'}</div>`;
+            }
+        } catch (err) {
+            body.innerHTML = '<div style="text-align: center; padding: 24px; color: #DC2626;">Network error loading details.</div>';
+        }
+    }
+</script>
+}

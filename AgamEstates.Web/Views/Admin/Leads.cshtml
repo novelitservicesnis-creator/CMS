@@ -1,0 +1,485 @@
+﻿@model AgamEstates.Web.Models.LeadsPageViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Leads";
+    ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem
+        {
+            Text = User.IsInRole("Admin") ? "Admin" : "CRM",
+            Url = "/AdminPanel"
+        },
+        new BreadcrumbItem
+        {
+            Text = "Leads",
+            Url = null
+        }
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-title">Leads Management</h1>
+        <p class="page-subtitle">Track enquiries, assignments, and customer interest across Agam Estates projects.</p>
+    </div>
+    <div>
+        <button type="button" class="btn btn-gold" onclick="openModal('add-lead-modal')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add New Lead</span>
+        </button>
+    </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="filter-card luxury-card">
+    <form id="filter-form" method="get" action="/Leads">
+        <div class="filter-grid @(!User.IsInRole("Admin") ? "is-agent" : "")">
+            <div class="search-box">
+                <span class="search-box-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </span>
+                <input type="text" name="search" id="filter-search" class="form-control" placeholder="Search by name, phone, email, city..." value="@Model.Search">
+            </div>
+
+            <div>
+                <select name="status" id="filter-status" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Statuses</option>
+                    @foreach (var s in Model.Statuses)
+                    {
+                        <option value="@s.StatusName" selected="@(string.Equals(Model.StatusFilter, s.StatusName, StringComparison.OrdinalIgnoreCase))">@s.StatusName</option>
+                    }
+                </select>
+            </div>
+
+            <div>
+                <select name="priority" id="filter-priority" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Priorities</option>
+                    <option value="High" selected="@(string.Equals(Model.PriorityFilter, "High", StringComparison.OrdinalIgnoreCase))">High</option>
+                    <option value="Medium" selected="@(string.Equals(Model.PriorityFilter, "Medium", StringComparison.OrdinalIgnoreCase))">Medium</option>
+                    <option value="Low" selected="@(string.Equals(Model.PriorityFilter, "Low", StringComparison.OrdinalIgnoreCase))">Low</option>
+                </select>
+            </div>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <div>
+                    <select name="assignedTo" id="filter-assigned" class="form-select" onchange="this.form.submit()">
+                        <option value="">All Agents</option>
+                        @foreach (var u in Model.Users)
+                        {
+                            <option value="@u.UserId" selected="@(Model.AssignedToFilter == u.UserId)">@u.FullName</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            <div>
+                <select name="source" id="filter-source" class="form-select" onchange="this.form.submit()">
+                    <option value="">All Sources</option>
+                    <option value="Website" selected="@(string.Equals(Model.SourceFilter, "Website", StringComparison.OrdinalIgnoreCase))">Website</option>
+                    <option value="Website Enquiry" selected="@(string.Equals(Model.SourceFilter, "Website Enquiry", StringComparison.OrdinalIgnoreCase))">Website Enquiry</option>
+                    <option value="Google Ads" selected="@(string.Equals(Model.SourceFilter, "Google Ads", StringComparison.OrdinalIgnoreCase))">Google Ads</option>
+                    <option value="Referral" selected="@(string.Equals(Model.SourceFilter, "Referral", StringComparison.OrdinalIgnoreCase))">Referral</option>
+                    <option value="Walk-in" selected="@(string.Equals(Model.SourceFilter, "Walk-in", StringComparison.OrdinalIgnoreCase))">Walk-in</option>
+                    <option value="Billboard" selected="@(string.Equals(Model.SourceFilter, "Billboard", StringComparison.OrdinalIgnoreCase))">Billboard</option>
+                    <option value="Direct" selected="@(string.Equals(Model.SourceFilter, "Direct", StringComparison.OrdinalIgnoreCase))">Direct</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-navy">Filter</button>
+                <a href="/Leads" class="btn btn-outline" title="Clear all filters">Clear</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Leads Data Table -->
+<div class="luxury-card" style="padding: 0; overflow: hidden;">
+    <!-- Desktop Table View (> 768px) -->
+    <div class="table-responsive desktop-table-view">
+        <table class="data-table" id="leads-table">
+            <thead>
+                <tr>
+                    <th style="width: 70px;">ID</th>
+                    <th>Name &amp; Contact</th>
+                    <th>Property Interest</th>
+                    <th>Budget</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Assigned To</th>
+                    <th>Created</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Leads.Any())
+                {
+                    foreach (var lead in Model.Leads)
+                    {
+                        var statusLower = (lead.StatusName ?? "").ToLower().Replace(" ", "-");
+                        var priorityLower = (lead.Priority ?? "medium").ToLower();
+                        <tr>
+                            <td style="font-weight: 600; color: var(--fade);">#@lead.LeadId</td>
+                            <td>
+                                <a href="/LeadDetails/@lead.LeadId" class="lead-cell-name">@lead.Name</a>
+                                <span class="lead-cell-sub">
+                                    @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber))
+                                    {
+                                        <a href="tel:@lead.PhoneNumber" style="color: inherit;">@lead.PhoneNumber</a>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber) && !string.IsNullOrWhiteSpace(lead.Email))
+                                    {
+                                        <span>&middot;</span>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(lead.Email))
+                                    {
+                                        <a href="mailto:@lead.Email" style="color: inherit;">@lead.Email</a>
+                                    }
+                                </span>
+                            </td>
+                            <td>
+                                <div>@(lead.PropertyInterest ?? "3 & 4 BHK Residences")</div>
+                                <span class="lead-cell-sub">@(lead.City ?? "Tricity") &middot; @(lead.Source ?? "Direct")</span>
+                            </td>
+                            <td>
+                                @if (lead.Budget.HasValue)
+                                {
+                                    <strong>₹ @lead.Budget.Value.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</strong>
+                                }
+                                else
+                                {
+                                    <span class="lead-cell-sub">—</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge badge-status-@statusLower">@(lead.StatusName ?? "New")</span>
+                            </td>
+                            <td>
+                                <span class="badge badge-priority-@priorityLower">@(lead.Priority ?? "Medium")</span>
+                            </td>
+                            <td>
+                                <span>@(lead.AssignedToName ?? "Unassigned")</span>
+                            </td>
+                            <td style="font-size: 0.8rem; color: var(--fade);">
+                                @lead.CreatedAt.ToString("dd MMM yyyy")
+                            </td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <a href="/LeadDetails/@lead.LeadId" class="btn btn-sm btn-outline">View Details</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 60px 20px;">
+                            <div style="max-width: 400px; margin: 0 auto; color: var(--fade);">
+                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 14px; opacity: 0.7;">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <h3 style="font-size: 1.2rem; color: var(--primary-dark); margin-bottom: 8px;">No leads found</h3>
+                                <p style="font-size: 0.9rem; margin-bottom: 20px;">
+                                    @(string.IsNullOrWhiteSpace(Model.Search) && string.IsNullOrWhiteSpace(Model.StatusFilter) 
+                                        ? "No enquiries or leads exist in the database yet. Click below to add the first lead."
+                                        : "No leads match your current search or filter criteria. Try clearing filters.")
+                                </p>
+                                <button type="button" class="btn btn-gold" onclick="openModal('add-lead-modal')">Add Lead</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Mobile Card View (<= 768px) -->
+    <div class="mobile-card-view">
+        @if (Model.Leads.Any())
+        {
+            foreach (var lead in Model.Leads)
+            {
+                var statusLower = (lead.StatusName ?? "").ToLower().Replace(" ", "-");
+                var priorityLower = (lead.Priority ?? "medium").ToLower();
+                <div class="responsive-lead-card">
+                    <div class="rlc-head">
+                        <div class="rlc-title-wrap">
+                            <span class="rlc-id">#@lead.LeadId</span>
+                            <a href="/LeadDetails/@lead.LeadId" class="rlc-name">@lead.Name</a>
+                        </div>
+                        <div class="rlc-badges">
+                            <span class="badge badge-status-@statusLower">@(lead.StatusName ?? "New")</span>
+                            <span class="badge badge-priority-@priorityLower">@(lead.Priority ?? "Medium")</span>
+                        </div>
+                    </div>
+
+                    <div class="rlc-body">
+                        @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber) || !string.IsNullOrWhiteSpace(lead.Email))
+                        {
+                            <div class="rlc-contact-row">
+                                @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber))
+                                {
+                                    <a href="tel:@lead.PhoneNumber" class="rlc-contact-pill">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                        <span>@lead.PhoneNumber</span>
+                                    </a>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(lead.Email))
+                                {
+                                    <a href="mailto:@lead.Email" class="rlc-contact-pill">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                        <span>@lead.Email</span>
+                                    </a>
+                                }
+                            </div>
+                        }
+
+                        <div class="rlc-grid">
+                            <div class="rlc-item">
+                                <span class="rlc-label">Property Interest</span>
+                                <span class="rlc-val">@(lead.PropertyInterest ?? "3 & 4 BHK Residences")</span>
+                            </div>
+                            <div class="rlc-item">
+                                <span class="rlc-label">Budget</span>
+                                <span class="rlc-val budget-highlight">
+                                    @(lead.Budget.HasValue ? "₹ " + lead.Budget.Value.ToString("N0", new System.Globalization.CultureInfo("en-IN")) : "—")
+                                </span>
+                            </div>
+                            <div class="rlc-item">
+                                <span class="rlc-label">Location / Source</span>
+                                <span class="rlc-val">@(lead.City ?? "Tricity") &middot; @(lead.Source ?? "Direct")</span>
+                            </div>
+                            <div class="rlc-item">
+                                <span class="rlc-label">Assigned Agent</span>
+                                <span class="rlc-val">@(lead.AssignedToName ?? "Unassigned")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rlc-footer">
+                        <span class="rlc-date">Logged on @lead.CreatedAt.ToString("dd MMM yyyy")</span>
+                        <a href="/LeadDetails/@lead.LeadId" class="btn btn-sm btn-outline rlc-btn">
+                            <span>View Details</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </a>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align: center; padding: 40px 16px; color: var(--fade);">
+                <p style="font-size: 0.95rem; margin-bottom: 16px;">
+                    @(string.IsNullOrWhiteSpace(Model.Search) && string.IsNullOrWhiteSpace(Model.StatusFilter) 
+                        ? "No enquiries or leads exist in the database yet."
+                        : "No leads match your current search or filter criteria.")
+                </p>
+                <button type="button" class="btn btn-gold" style="min-height: 42px; width: 100%; justify-content: center;" onclick="openModal('add-lead-modal')">Add Lead</button>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination Footer -->
+    @if (Model.Leads.Any())
+    {
+        <div class="table-pagination">
+            <span>Showing <strong>@Model.Leads.Count</strong> total lead(s)</span>
+            <div class="pagination-controls">
+                <button type="button" class="btn btn-sm btn-outline" disabled>&larr; Previous</button>
+                <button type="button" class="btn btn-sm btn-navy">1</button>
+                <button type="button" class="btn btn-sm btn-outline" disabled>Next &rarr;</button>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Add Lead Modal -->
+<div id="add-lead-modal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3 class="modal-title">Create New Lead</h3>
+            <button type="button" class="modal-close-btn" onclick="closeModal('add-lead-modal')">&times;</button>
+        </div>
+
+        <form id="add-lead-form">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" for="add-name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="add-name" class="form-control" placeholder="e.g. Ramesh Chandra" required>
+                    <div class="input-feedback" id="add-name-error">Lead name is required.</div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label" for="add-phone">Phone Number</label>
+                        <input type="tel" id="add-phone" class="form-control" placeholder="+91 98765 00000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="add-email">Email Address</label>
+                        <input type="email" id="add-email" class="form-control" placeholder="client@example.com">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label" for="add-property">Property Interest</label>
+                        <input type="text" id="add-property" class="form-control" placeholder="e.g. 4 BHK Luxury Residence">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="add-budget">Budget (₹)</label>
+                        <input type="number" id="add-budget" class="form-control" placeholder="8500000" min="0" step="50000">
+                    </div>
+                </div>
+
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label class="form-label" for="add-city">City</label>
+                        <input type="text" id="add-city" class="form-control" placeholder="e.g. Panchkula">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="add-source">Source</label>
+                        <select id="add-source" class="form-select">
+                            <option value="Website">Website</option>
+                            <option value="Direct Call">Direct Call</option>
+                            <option value="Google Ads">Google Ads</option>
+                            <option value="Referral">Referral</option>
+                            <option value="Walk-in">Walk-in</option>
+                            <option value="Billboard">Billboard</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row-3">
+                    <div class="form-group">
+                        <label class="form-label" for="add-status">Status</label>
+                        <select id="add-status" class="form-select">
+                            @foreach (var s in Model.Statuses)
+                            {
+                                <option value="@s.StatusId">@s.StatusName</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="add-priority">Priority</label>
+                        <select id="add-priority" class="form-select">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="add-assigned">Assigned Agent</label>
+                        <select id="add-assigned" class="form-select">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <option value="">Unassigned</option>
+                                foreach (var u in Model.Users)
+                                {
+                                    <option value="@u.UserId">@u.FullName</option>
+                                }
+                            }
+                            else
+                            {
+                                var curUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                                var me = Model.Users.FirstOrDefault(u => u.UserId.ToString() == curUserId);
+                                if (me != null)
+                                {
+                                    <option value="@me.UserId" selected>@me.FullName (You)</option>
+                                }
+                                else
+                                {
+                                    <option value="">Assigned to You</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="add-notes">Notes / Initial Requirements</label>
+                    <textarea id="add-notes" class="form-control" placeholder="Enter any specific preferences, unit orientation, or notes..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeModal('add-lead-modal')">Cancel</button>
+                <button type="submit" id="add-lead-btn" class="btn btn-gold">Create Lead</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const addLeadForm = document.getElementById('add-lead-form');
+        const addLeadBtn = document.getElementById('add-lead-btn');
+        const nameInput = document.getElementById('add-name');
+        const nameError = document.getElementById('add-name-error');
+
+        if (addLeadForm) {
+            addLeadForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                nameError.style.display = 'none';
+
+                const name = nameInput.value.trim();
+                if (!name) {
+                    nameError.style.display = 'block';
+                    return;
+                }
+
+                const budgetVal = document.getElementById('add-budget').value;
+                const budget = budgetVal ? parseFloat(budgetVal) : null;
+                if (budget !== null && budget < 0) {
+                    showToast('Budget cannot be negative.', 'error');
+                    return;
+                }
+
+                const payload = {
+                    name,
+                    phoneNumber: document.getElementById('add-phone').value.trim() || null,
+                    email: document.getElementById('add-email').value.trim() || null,
+                    propertyInterest: document.getElementById('add-property').value.trim() || null,
+                    budget,
+                    city: document.getElementById('add-city').value.trim() || null,
+                    source: document.getElementById('add-source').value,
+                    statusId: parseInt(document.getElementById('add-status').value) || 1,
+                    priority: document.getElementById('add-priority').value,
+                    assignedTo: parseInt(document.getElementById('add-assigned').value) || null,
+                    notes: document.getElementById('add-notes').value.trim() || null
+                };
+
+                addLeadBtn.disabled = true;
+                addLeadBtn.innerHTML = '<span>Creating lead...</span>';
+
+                try {
+                    const response = await fetch('/Admin/AddLead', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const res = await response.json();
+                    if (res.success) {
+                        showToast('Lead created successfully.', 'success');
+                        closeModal('add-lead-modal');
+                        setTimeout(() => window.location.reload(), 500);
+                    } else {
+                        showToast(res.message || 'Failed to create lead.', 'error');
+                    }
+                } catch (err) {
+                    showToast('Server error while creating lead.', 'error');
+                } finally {
+                    addLeadBtn.disabled = false;
+                    addLeadBtn.innerHTML = '<span>Create Lead</span>';
+                }
+            });
+        }
+    </script>
+}

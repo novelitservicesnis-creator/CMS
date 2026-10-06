@@ -1,0 +1,136 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Restricted — Agam Estates</title>
+    <link rel="icon" type="image/png" href="/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/site.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                linear-gradient(135deg, rgba(4, 26, 51, 0.96) 0%, rgba(6, 37, 69, 0.98) 100%),
+                radial-gradient(circle at 80% 20%, rgba(221, 174, 69, 0.12) 0%, transparent 60%);
+            padding: 24px;
+            font-family: var(--sans, 'Work Sans', sans-serif);
+            color: #F8F6F0;
+        }
+
+        .access-card {
+            width: min(560px, 94vw);
+            background: #062545;
+            border: 1px solid rgba(221, 174, 69, 0.35);
+            border-radius: 4px;
+            padding: clamp(32px, 6vw, 48px);
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .access-card::before, .access-card::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-color: #DDAE45;
+            border-style: solid;
+            border-width: 0;
+        }
+        .access-card::before { top: -1px; left: -1px; border-top-width: 2px; border-left-width: 2px; }
+        .access-card::after { bottom: -1px; right: -1px; border-bottom-width: 2px; border-right-width: 2px; }
+
+        .brand-badge {
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(221, 174, 69, 0.5);
+            padding: 4px;
+        }
+
+        .access-title {
+            font-family: var(--serif, 'Playfair Display', serif);
+            font-size: clamp(1.6rem, 4vw, 2.1rem);
+            color: #F8F6F0;
+            margin-bottom: 12px;
+        }
+
+        .access-desc {
+            color: #C6D0E0;
+            font-size: 0.98rem;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .access-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-gold {
+            background: #DDAE45;
+            color: #041A33;
+            padding: 12px 24px;
+            border-radius: 2px;
+            font-weight: 500;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-gold:hover {
+            background: #F5D98A;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #F8F6F0;
+            border: 1px solid rgba(248, 246, 240, 0.3);
+            padding: 12px 24px;
+            border-radius: 2px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.25s ease;
+        }
+        .btn-outline:hover {
+            border-color: #DDAE45;
+            color: #F5D98A;
+        }
+    </style>
+</head>
+<body>
+    <div class="access-card">
+        <img src="/images/logo.png" alt="Agam Estates" class="brand-badge" />
+        <h1 class="access-title">Access Restricted</h1>
+        <p class="access-desc">
+            You do not have permission to access this administrative resource. If you believe this is an error, please contact your system administrator.
+        </p>
+        <div class="access-actions">
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                <a href="/Leads" class="btn-gold">Go to Leads Pipeline &rarr;</a>
+                <a href="/Logout" class="btn-outline">Sign Out</a>
+            }
+            else
+            {
+                <a href="/Login" class="btn-gold">Sign In &rarr;</a>
+                <a href="/" class="btn-outline">Return to Website</a>
+            }
+        </div>
+    </div>
+</body>
+</html>

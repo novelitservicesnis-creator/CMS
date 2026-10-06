@@ -1,0 +1,511 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Work+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary: #062545;
+  --primary-dark: #041A33;
+  --secondary: #0D3560;
+  --navy-card: #0A2F57;
+  --navy-border: rgba(221, 174, 69, 0.22);
+  
+  --gold: #DDAE45;
+  --gold-soft: #F5D98A;
+  --gold-dark: #B88D2D;
+  --gold-glow: rgba(221, 174, 69, 0.25);
+  --gold-subtle: rgba(221, 174, 69, 0.12);
+  
+  --light: #F8F6F0;
+  --light-cream: #EFEADA;
+  --white: #FFFFFF;
+  --fade: #64748B;
+  --fade-light: #94A3B8;
+  --text-dark: #041A33;
+  --text-muted: #53647A;
+  
+  --border-light: rgba(6, 37, 69, 0.12);
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Work Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  --shadow-sm: 0 2px 4px rgba(4, 26, 51, 0.04);
+  --shadow-md: 0 4px 12px rgba(4, 26, 51, 0.08);
+  --shadow-lg: 0 10px 25px rgba(4, 26, 51, 0.12);
+  --shadow-gold: 0 4px 14px rgba(221, 174, 69, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--sans);
+  background-color: var(--light);
+  color: var(--text-dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--serif);
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.25;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+/* ========================================================
+   Buttons
+======================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 22px;
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--primary-dark);
+  border-color: var(--gold);
+}
+
+.btn-gold:hover {
+  background: var(--gold-soft);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-1px);
+}
+
+.btn-navy {
+  background: var(--primary);
+  color: var(--light);
+  border-color: var(--primary);
+}
+
+.btn-navy:hover {
+  background: var(--secondary);
+  color: var(--gold-soft);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border-color: var(--border-light);
+}
+
+.btn-outline:hover {
+  border-color: var(--gold);
+  color: var(--gold-dark);
+  background: var(--gold-subtle);
+}
+
+.btn-outline-gold {
+  background: transparent;
+  color: var(--gold-soft);
+  border-color: var(--gold);
+}
+
+.btn-outline-gold:hover {
+  background: var(--gold);
+  color: var(--primary-dark);
+}
+
+.btn-danger {
+  background: #DC2626;
+  color: #FFFFFF;
+  border-color: #DC2626;
+}
+
+.btn-danger:hover {
+  background: #B91C1C;
+}
+
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+}
+
+.btn-lg {
+  padding: 14px 28px;
+  font-size: 0.98rem;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ========================================================
+   Form Inputs & Controls
+======================================================== */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
+
+.form-label .required {
+  color: #DC2626;
+}
+
+.form-control, .form-select {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  color: var(--text-dark);
+  background-color: var(--white);
+  border: 1px solid rgba(6, 37, 69, 0.18);
+  border-radius: 3px;
+  outline: none;
+  transition: all 0.25s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(221, 174, 69, 0.16);
+}
+
+.form-control::placeholder {
+  color: var(--fade-light);
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.input-feedback {
+  font-size: 0.78rem;
+  margin-top: 4px;
+  color: #DC2626;
+  display: none;
+}
+
+/* ========================================================
+   Badges
+======================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Status Badges */
+.badge-status-new {
+  background: #EBF8FF;
+  color: #0D3560;
+  border: 1px solid #BEE3F8;
+}
+
+.badge-status-contacted {
+  background: #EBF4FF;
+  color: #2B6CB0;
+  border: 1px solid #C3D9FF;
+}
+
+.badge-status-interested {
+  background: #FFFDF5;
+  color: #975A16;
+  border: 1px solid #F6E05E;
+}
+
+.badge-status-site-visit {
+  background: #FAF5FF;
+  color: #553C9A;
+  border: 1px solid #D6BCFA;
+}
+
+.badge-status-negotiation {
+  background: #FFFAF0;
+  color: #C05621;
+  border: 1px solid #FBD38D;
+}
+
+.badge-status-won, .badge-status-booked {
+  background: #F0FFF4;
+  color: #22543D;
+  border: 1px solid #9AE6B4;
+}
+
+.badge-status-lost {
+  background: #FFF5F5;
+  color: #742A2A;
+  border: 1px solid #FEB2B2;
+}
+
+/* Priority Badges */
+.badge-priority-high {
+  background: #FEF2F2;
+  color: #991B1B;
+  border: 1px solid #FECACA;
+}
+
+.badge-priority-medium {
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
+.badge-priority-low {
+  background: #F8FAFC;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+}
+
+/* Follow-up Badges */
+.badge-followup-overdue {
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FCA5A5;
+}
+
+.badge-followup-today {
+  background: #FFFBEB;
+  color: #B45309;
+  border: 1px solid #FCD34D;
+}
+
+.badge-followup-upcoming {
+  background: #F0F9FF;
+  color: #0369A1;
+  border: 1px solid #BAE6FD;
+}
+
+/* ========================================================
+   Toast Notification System
+======================================================== */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  min-width: 300px;
+  max-width: 440px;
+  background: var(--primary-dark);
+  color: var(--light);
+  border-left: 4px solid var(--gold);
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(4, 26, 51, 0.35);
+  font-size: 0.88rem;
+  animation: toastSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all 0.3s ease;
+}
+
+.toast.toast-error {
+  border-left-color: #EF4444;
+}
+
+.toast.toast-info {
+  border-left-color: #38BDF8;
+}
+
+.toast-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.toast-message {
+  flex-grow: 1;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: var(--fade);
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 1.1rem;
+}
+
+.toast-close:hover {
+  color: var(--light);
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ========================================================
+   Modal Dialogs
+======================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 26, 51, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 990;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.modal-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-card {
+  background: var(--white);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 50px rgba(4, 26, 51, 0.3);
+  border: 1px solid var(--border-light);
+  transform: translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.modal-backdrop.active .modal-card {
+  transform: translateY(0);
+}
+
+.modal-header {
+  padding: 22px 28px;
+  background: var(--light);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
+
+.modal-header::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 60px;
+  height: 2px;
+  background: var(--gold);
+}
+
+.modal-title {
+  font-size: 1.35rem;
+  font-weight: 500;
+  color: var(--primary-dark);
+}
+
+.modal-close-btn,
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--fade);
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px;
+}
+
+.modal-close-btn:hover,
+.modal-close:hover {
+  color: var(--primary-dark);
+}
+
+.modal-body {
+  padding: 28px;
+}
+
+.modal-footer {
+  padding: 18px 28px;
+  background: var(--light);
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ========================================================
+   Luxury Architectural Card with Corner Notches
+======================================================== */
+.luxury-card {
+  position: relative;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 3px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.luxury-card::before, .luxury-card::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-color: var(--gold);
+  border-style: solid;
+  border-width: 0;
+  pointer-events: none;
+}
+
+.luxury-card::before {
+  top: -1px;
+  left: -1px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+
+.luxury-card::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+}

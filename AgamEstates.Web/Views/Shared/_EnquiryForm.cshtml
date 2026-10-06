@@ -1,0 +1,48 @@
+@* Agam Estates Reusable Enquiry Form Component *@
+@{
+    var prefix = ViewData["Prefix"]?.ToString() ?? "contact";
+    var formId = ViewData["FormId"]?.ToString() ?? (prefix + "-enquiry-form");
+    var isPopup = (ViewData["IsPopup"] as bool?) ?? false;
+}
+
+<form id="@formId" class="agam-enquiry-form @(isPopup ? "is-popup-form" : "is-contact-form")" novalidate>
+    <div class="form-row">
+        <div class="field">
+            <label for="@(prefix)-name">Full name <span class="req-star" aria-hidden="true">*</span></label>
+            <input id="@(prefix)-name" name="name" type="text" placeholder="e.g. Vikram Malhotra" required autocomplete="name">
+            <span class="field-error" id="@(prefix)-name-error" role="alert"></span>
+        </div>
+        <div class="field">
+            <label for="@(prefix)-phone">Phone number <span class="req-star" aria-hidden="true">*</span></label>
+            <input id="@(prefix)-phone" name="phoneNumber" type="tel" placeholder="+91 98765 00000" required autocomplete="tel">
+            <span class="field-error" id="@(prefix)-phone-error" role="alert"></span>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="field">
+            <label for="@(prefix)-email">Email <span class="req-star" aria-hidden="true">*</span></label>
+            <input id="@(prefix)-email" name="email" type="email" placeholder="vikram@example.com" required autocomplete="email">
+            <span class="field-error" id="@(prefix)-email-error" role="alert"></span>
+        </div>
+        <div class="field">
+            <label for="@(prefix)-unit">Interested in <span class="req-star" aria-hidden="true">*</span></label>
+            <select id="@(prefix)-unit" name="propertyInterest" required>
+                <option value="" disabled selected>Select residence type</option>
+                <option value="3 BHK · 1,620 sq ft">3 BHK · 1,620 sq ft</option>
+                <option value="3 BHK + Study · 2,040 sq ft">3 BHK + Study · 2,040 sq ft</option>
+                <option value="4 BHK · 2,780 sq ft">4 BHK · 2,780 sq ft</option>
+                <option value="Not sure yet">Not sure yet</option>
+            </select>
+            <span class="field-error" id="@(prefix)-unit-error" role="alert"></span>
+        </div>
+    </div>
+    <div class="field">
+        <label for="@(prefix)-msg">Message (optional)</label>
+        <textarea id="@(prefix)-msg" name="message" placeholder="Preferred date for a site visit, floor preference, anything else we should know"></textarea>
+    </div>
+    <button type="submit" class="btn btn-gold btn-enquiry-submit" style="width:100%; justify-content:center;">
+        <span class="btn-spinner" aria-hidden="true" style="display:none;"></span>
+        <span class="btn-text">Request a Call Back</span>
+    </button>
+    <p class="form-msg" id="@(prefix)-form-msg" role="status" aria-live="polite">Thank you — our sales team will call you back shortly.</p>
+</form>

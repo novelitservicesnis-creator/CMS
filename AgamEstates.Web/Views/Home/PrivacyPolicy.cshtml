@@ -1,0 +1,985 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Privacy Policy — Agam Estates";
+    ViewData["ActiveNav"] = "PrivacyPolicy";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+}
+
+@section Styles {
+<style>
+/* ==========================================================================
+   Agam Estates — Privacy Policy Bespoke Styling
+   Design Identity: Modern, Calm, Secure, Data-Transparency Focused
+   ========================================================================== */
+
+/* Privacy Hero: 2-Column Split with Abstract Privacy Graphic */
+.privacy-hero {
+    position: relative;
+    background: linear-gradient(135deg, #041A33 0%, #062545 60%, #0D3560 100%);
+    padding: 175px 0 75px;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(221, 174, 69, 0.2);
+}
+
+.privacy-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 30%, rgba(221, 174, 69, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.privacy-hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.privacy-hero-text h1 {
+    font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+    line-height: 1.12;
+    color: var(--light);
+    margin: 14px 0 18px;
+    font-weight: 400;
+}
+
+.privacy-hero-divider {
+    width: 56px;
+    height: 2px;
+    background: var(--gold);
+    margin-bottom: 22px;
+}
+
+.privacy-hero-lede {
+    font-size: 1.08rem;
+    line-height: 1.7;
+    color: var(--fade-light);
+    max-width: 540px;
+    margin-bottom: 28px;
+}
+
+.privacy-meta-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.privacy-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    background: rgba(4, 26, 51, 0.6);
+    border: 1px solid rgba(221, 174, 69, 0.25);
+    border-radius: 20px;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    color: var(--gold-soft);
+}
+
+.privacy-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+}
+
+/* Hero Abstract Privacy Vector */
+.privacy-hero-art {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.privacy-art-svg {
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.35));
+}
+
+/* Privacy at a Glance (Summary Section) */
+.privacy-glance {
+    background: #F3EFE6;
+    border-bottom: 1px solid rgba(221, 174, 69, 0.22);
+    padding: 64px 0;
+}
+
+.privacy-glance-head {
+    margin-bottom: 38px;
+}
+
+.privacy-glance-head h2 {
+    font-size: clamp(1.8rem, 3vw, 2.3rem);
+    color: var(--text-dark);
+    margin-top: 6px;
+}
+
+.privacy-glance-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 22px;
+}
+
+.glance-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(6, 37, 69, 0.12);
+    border-top: 3px solid var(--gold);
+    border-radius: 2px;
+    padding: 28px 22px;
+    box-shadow: 0 4px 16px rgba(6, 37, 69, 0.04);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glance-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(6, 37, 69, 0.08);
+}
+
+.glance-num {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: block;
+}
+
+.glance-title {
+    font-family: var(--sans);
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.glance-desc {
+    font-size: 0.88rem;
+    color: var(--fade);
+    line-height: 1.6;
+}
+
+/* Main Long-Form Layout (Sidebar + Clean Flowing Sections) */
+.privacy-body-wrap {
+    padding: 72px clamp(20px, 5vw, 48px);
+}
+
+.privacy-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 56px;
+    align-items: flex-start;
+}
+
+/* Sticky Sidebar Index */
+.privacy-sidebar {
+    position: sticky;
+    top: 105px;
+    padding-right: 20px;
+    border-right: 1px solid rgba(6, 37, 69, 0.1);
+}
+
+.privacy-sidebar-title {
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    color: var(--fade);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 18px;
+}
+
+.privacy-nav-links {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.privacy-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.86rem;
+    color: var(--fade);
+    padding: 7px 10px;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+    border-left: 2px solid transparent;
+}
+
+.privacy-nav-item:hover {
+    color: var(--primary);
+    background: rgba(221, 174, 69, 0.08);
+}
+
+.privacy-nav-item.active {
+    color: var(--primary);
+    font-weight: 500;
+    border-left-color: var(--gold);
+    background: rgba(221, 174, 69, 0.12);
+}
+
+.privacy-nav-num {
+    font-size: 0.74rem;
+    color: var(--gold-dark);
+    font-weight: 600;
+}
+
+/* Privacy Long-Form Content (Flows directly on canvas, no giant box) */
+.privacy-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 52px;
+}
+
+.privacy-section {
+    scroll-margin-top: 110px;
+}
+
+.privacy-sec-header {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.privacy-sec-number {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    font-weight: 600;
+}
+
+.privacy-section h2 {
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    color: var(--text-dark);
+    font-weight: 500;
+}
+
+.privacy-sec-rule {
+    width: 100%;
+    height: 1px;
+    background: rgba(221, 174, 69, 0.25);
+    margin-bottom: 20px;
+}
+
+.privacy-section p {
+    color: #24354A;
+    font-size: 0.96rem;
+    line-height: 1.75;
+    margin-bottom: 16px;
+}
+
+.privacy-section p:last-child {
+    margin-bottom: 0;
+}
+
+.privacy-section ul {
+    margin: 12px 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.privacy-section li {
+    position: relative;
+    padding-left: 24px;
+    color: #24354A;
+    font-size: 0.94rem;
+    line-height: 1.65;
+}
+
+.privacy-section li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+}
+
+/* Structured Information Types Layout */
+.privacy-data-types {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin: 24px 0 10px;
+}
+
+.data-type-box {
+    background: #FFFFFF;
+    border: 1px solid rgba(6, 37, 69, 0.12);
+    border-radius: 2px;
+    padding: 24px 20px;
+    box-shadow: 0 2px 10px rgba(6, 37, 69, 0.03);
+}
+
+.data-type-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(221, 174, 69, 0.22);
+}
+
+.data-type-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(221, 174, 69, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.data-type-header h4 {
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--primary);
+    letter-spacing: 0.02em;
+}
+
+.data-type-list {
+    list-style: none !important;
+    margin: 0 !important;
+    gap: 8px !important;
+}
+
+.data-type-list li {
+    padding-left: 0 !important;
+    font-size: 0.88rem !important;
+    color: var(--text-dark) !important;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.data-type-list li::before {
+    display: none !important;
+}
+
+.data-type-check {
+    color: var(--gold);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+/* Privacy Data Flow Diagram */
+.privacy-flow-diagram {
+    background: #FFFFFF;
+    border: 1px solid rgba(221, 174, 69, 0.25);
+    border-radius: 2px;
+    padding: 28px 24px;
+    margin: 24px 0 16px;
+}
+
+.flow-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    position: relative;
+}
+
+.flow-step {
+    position: relative;
+    padding: 16px;
+    background: #F8F6F0;
+    border: 1px solid rgba(6, 37, 69, 0.08);
+    border-radius: 2px;
+}
+
+.flow-step-num {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gold-dark);
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+}
+
+.flow-step-title {
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.flow-step-desc {
+    font-size: 0.8rem;
+    color: var(--fade);
+    line-height: 1.5;
+}
+
+.flow-connector {
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 1rem;
+    z-index: 2;
+}
+
+/* Dark Navy User Rights Feature Section */
+.privacy-rights-panel {
+    background: #041A33;
+    color: var(--light);
+    border-radius: 2px;
+    padding: 44px 38px;
+    margin: 20px 0 10px;
+    border: 1px solid rgba(221, 174, 69, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.privacy-rights-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(221, 174, 69, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.privacy-rights-panel h3 {
+    font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+    color: var(--light);
+    margin: 8px 0 14px;
+}
+
+.privacy-rights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 26px;
+}
+
+.right-card {
+    background: rgba(6, 37, 69, 0.7);
+    border: 1px solid rgba(221, 174, 69, 0.2);
+    border-radius: 2px;
+    padding: 20px 18px;
+}
+
+.right-card-title {
+    font-family: var(--sans);
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--gold-soft);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.right-card p {
+    color: var(--fade-light) !important;
+    font-size: 0.86rem !important;
+    line-height: 1.55 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Privacy Contact Callout */
+.privacy-callout-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(6, 37, 69, 0.14);
+    border-left: 4px solid var(--gold);
+    border-radius: 2px;
+    padding: 28px;
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    flex-wrap: wrap;
+}
+
+.privacy-callout-info h4 {
+    font-size: 1.25rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.privacy-callout-info p {
+    font-size: 0.9rem;
+    color: var(--fade);
+    margin-bottom: 6px;
+}
+
+.privacy-callout-info p:last-child {
+    margin-bottom: 0;
+}
+
+/* Responsive Rules for Privacy Policy */
+@@media (max-width: 991px) {
+    .privacy-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+    .privacy-hero-art {
+        display: none;
+    }
+    .privacy-glance-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .privacy-layout {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+    .privacy-sidebar {
+        display: none;
+    }
+    .privacy-data-types {
+        grid-template-columns: 1fr;
+    }
+    .flow-steps {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    .flow-connector {
+        display: none;
+    }
+    .privacy-rights-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@@media (max-width: 600px) {
+    .privacy-glance-grid {
+        grid-template-columns: 1fr;
+    }
+    .privacy-hero {
+        padding: 140px 0 50px;
+    }
+    .privacy-rights-panel {
+        padding: 28px 20px;
+    }
+    .privacy-callout-card {
+        padding: 20px;
+    }
+}
+</style>
+}
+
+<!-- Privacy Hero: 2-Column Split with Abstract Privacy Art -->
+<section class="privacy-hero">
+    <div class="wrap">
+        <div class="privacy-hero-grid">
+            <div class="privacy-hero-text">
+                <span class="eyebrow">LEGAL &amp; PRIVACY</span>
+                <h1>Privacy, handled with care.</h1>
+                <div class="privacy-hero-divider"></div>
+                <p class="privacy-hero-lede">
+                    A clear explanation of how Agam Estates collects, uses, stores, and protects information shared through our website.
+                </p>
+                <div class="privacy-meta-pills">
+                    <span class="privacy-pill">
+                        <span class="privacy-pill-dot"></span>
+                        Document: Public Privacy Policy
+                    </span>
+                    <span class="privacy-pill">
+                        <span class="privacy-pill-dot"></span>
+                        Effective: 01 October 2026
+                    </span>
+                    <span class="privacy-pill">
+                        <span class="privacy-pill-dot"></span>
+                        Version 2.0
+                    </span>
+                </div>
+            </div>
+
+            <!-- Abstract Geometric Privacy Vector Graphic -->
+            <div class="privacy-hero-art" aria-hidden="true">
+                <svg class="privacy-art-svg" viewBox="0 0 380 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="190" cy="170" r="145" stroke="#DDAE45" stroke-opacity="0.12" stroke-width="1" stroke-dasharray="4 4"/>
+                    <circle cx="190" cy="170" r="115" stroke="#DDAE45" stroke-opacity="0.2" stroke-width="1"/>
+                    <circle cx="190" cy="170" r="80" stroke="#DDAE45" stroke-opacity="0.28" stroke-width="1.2"/>
+                    <circle cx="190" cy="170" r="48" stroke="#DDAE45" stroke-opacity="0.38" stroke-width="1.5"/>
+
+                    <!-- Grid Nodes -->
+                    <line x1="190" y1="20" x2="190" y2="320" stroke="rgba(248,246,240,0.08)" stroke-width="1"/>
+                    <line x1="40" y1="170" x2="340" y2="170" stroke="rgba(248,246,240,0.08)" stroke-width="1"/>
+                    <line x1="85" y1="65" x2="295" y2="275" stroke="rgba(221,174,69,0.06)" stroke-width="1"/>
+                    <line x1="85" y1="275" x2="295" y2="65" stroke="rgba(221,174,69,0.06)" stroke-width="1"/>
+
+                    <!-- Shield & Vault Geometry -->
+                    <path d="M190 120 L226 138 V182 C226 206 190 224 190 224 C190 224 154 206 154 182 V138 Z" fill="rgba(6,37,69,0.6)" stroke="#DDAE45" stroke-width="1.8"/>
+                    <circle cx="190" cy="165" r="9" stroke="#F5D98A" stroke-width="1.6" fill="rgba(221,174,69,0.2)"/>
+                    <path d="M190 174 V185" stroke="#F5D98A" stroke-width="2" stroke-linecap="round"/>
+
+                    <!-- Data Nodes -->
+                    <circle cx="190" cy="55" r="4" fill="#DDAE45"/>
+                    <circle cx="190" cy="285" r="4" fill="#DDAE45"/>
+                    <circle cx="75" cy="170" r="4" fill="#DDAE45"/>
+                    <circle cx="305" cy="170" r="4" fill="#DDAE45"/>
+                    <circle cx="270" cy="90" r="3" fill="#F5D98A"/>
+                    <circle cx="110" cy="250" r="3" fill="#F5D98A"/>
+
+                    <!-- Text Badge -->
+                    <text x="190" y="258" text-anchor="middle" fill="#93A5C1" font-family="'Work Sans', sans-serif" font-size="9" letter-spacing="0.14em">DATA SECURITY PROTOCOL</text>
+                    <text x="190" y="272" text-anchor="middle" fill="#DDAE45" font-family="'Work Sans', sans-serif" font-size="8" letter-spacing="0.18em">AGAM ESTATES</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- "Privacy at a Glance" (4 Summary Blocks) -->
+<section class="privacy-glance">
+    <div class="wrap">
+        <div class="privacy-glance-head">
+            <span class="eyebrow">TRANSPARENCY</span>
+            <h2>Privacy at a glance</h2>
+        </div>
+        <div class="privacy-glance-grid">
+            <div class="glance-card">
+                <span class="glance-num">01</span>
+                <h3 class="glance-title">Information you provide</h3>
+                <p class="glance-desc">Name, phone, email, and property preference voluntarily submitted for brochures and private site visits.</p>
+            </div>
+            <div class="glance-card">
+                <span class="glance-num">02</span>
+                <h3 class="glance-title">How we use it</h3>
+                <p class="glance-desc">Exclusively to respond to queries, verify specifications, and coordinate consultations with verified development staff.</p>
+            </div>
+            <div class="glance-card">
+                <span class="glance-num">03</span>
+                <h3 class="glance-title">Who can access it</h3>
+                <p class="glance-desc">Restricted to authorized Agam Estates advisors only. Zero selling, leasing, or trading to outside brokers.</p>
+            </div>
+            <div class="glance-card">
+                <span class="glance-num">04</span>
+                <h3 class="glance-title">Your choices</h3>
+                <p class="glance-desc">Review records, update contact details, opt out of calls, or request complete removal anytime via our privacy desk.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Long-Form Layout (Sidebar + Flowing Sections Directly on Canvas) -->
+<div class="wrap privacy-body-wrap">
+    <div class="privacy-layout">
+        <!-- Sticky Navigation Index -->
+        <aside class="privacy-sidebar">
+            <div class="privacy-sidebar-title">NAVIGATION</div>
+            <nav class="privacy-nav-links" id="privacy-nav">
+                <a href="#sec-scope" class="privacy-nav-item active"><span class="privacy-nav-num">01</span> Scope &amp; Commitment</a>
+                <a href="#sec-collect" class="privacy-nav-item"><span class="privacy-nav-num">02</span> Information We Collect</a>
+                <a href="#sec-use" class="privacy-nav-item"><span class="privacy-nav-num">03</span> How We Use It</a>
+                <a href="#sec-flow" class="privacy-nav-item"><span class="privacy-nav-num">04</span> Data Flow Lifecycle</a>
+                <a href="#sec-forms" class="privacy-nav-item"><span class="privacy-nav-num">05</span> Website Submissions</a>
+                <a href="#sec-cookies" class="privacy-nav-item"><span class="privacy-nav-num">06</span> Cookies &amp; Storage</a>
+                <a href="#sec-sharing" class="privacy-nav-item"><span class="privacy-nav-num">07</span> Sharing &amp; Non-Disclosure</a>
+                <a href="#sec-security" class="privacy-nav-item"><span class="privacy-nav-num">08</span> Security Safeguards</a>
+                <a href="#sec-rights" class="privacy-nav-item"><span class="privacy-nav-num">09</span> Your Rights &amp; Choices</a>
+                <a href="#sec-contact" class="privacy-nav-item"><span class="privacy-nav-num">10</span> Privacy Desk &amp; Contact</a>
+            </nav>
+        </aside>
+
+        <!-- Main Flowing Sections -->
+        <main class="privacy-flow">
+            <!-- Section 1 -->
+            <section class="privacy-section" id="sec-scope">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">01</span>
+                    <h2>Scope &amp; Commitment to Privacy</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    Agam Estates (“Agam Estates,” “we,” “our,” or “us”) respects your privacy and is committed to protecting the personal data of visitors and clients who interact with our website and digital services.
+                </p>
+                <p>
+                    This Privacy Policy explains in detail our practices regarding the collection, use, maintenance, protection, and disclosure of your information when you browse our public pages, request project literature, submit enquiries for residential units, or schedule private site visits.
+                </p>
+                <p>
+                    This policy is effective as of <strong>01 October 2026</strong> and reflects our dedication to transparency, data hygiene, and responsible stewardship of your personal communications.
+                </p>
+            </section>
+
+            <!-- Section 2: Structured Information Types -->
+            <section class="privacy-section" id="sec-collect">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">02</span>
+                    <h2>Information We Collect</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    We collect only the personal information reasonably necessary to respond to your specific property inquiries and deliver high-quality advisory services:
+                </p>
+
+                <!-- 2-Column Structured Types -->
+                <div class="privacy-data-types">
+                    <div class="data-type-box">
+                        <div class="data-type-header">
+                            <span class="data-type-icon" aria-hidden="true">&#9998;</span>
+                            <h4>Information You Provide</h4>
+                        </div>
+                        <ul class="data-type-list">
+                            <li><span class="data-type-check">&#10003;</span> <strong>Full Name:</strong> To address you and prepare visitor documentation.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Phone Number:</strong> To coordinate consultations and arrange site visits.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Email Address:</strong> To transmit brochures, floor plans, and price sheets.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Property Interest:</strong> Preference for 3 BHK, 4 BHK, or Penthouse layouts.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Message &amp; Notes:</strong> Specific timing preferences or questions shared in forms.</li>
+                        </ul>
+                    </div>
+
+                    <div class="data-type-box">
+                        <div class="data-type-header">
+                            <span class="data-type-icon" aria-hidden="true">&#9881;</span>
+                            <h4>Automatically Collected Technical Data</h4>
+                        </div>
+                        <ul class="data-type-list">
+                            <li><span class="data-type-check">&#10003;</span> <strong>Browser &amp; OS:</strong> Client specifications to ensure proper layout rendering.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Network Log Data:</strong> IP address and request timestamps recorded in server logs.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Referring URLs:</strong> Source of web traffic to optimize public discoverability.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Session Identifiers:</strong> Non-tracking storage used for popup suppression.</li>
+                            <li><span class="data-type-check">&#10003;</span> <strong>Performance Metrics:</strong> Aggregate load times to maintain site speed across devices.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 3 -->
+            <section class="privacy-section" id="sec-use">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">03</span>
+                    <h2>How We Use Information</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    Personal data submitted through Agam Estates digital channels is utilized strictly for legitimate business purposes connected with property advisory:
+                </p>
+                <ul>
+                    <li>To respond directly to your enquiry and provide requested brochures, unit specifications, and pricing guidance.</li>
+                    <li>To schedule and coordinate guided site visits with our on-site development team at Sector 20, Panchkula Extension.</li>
+                    <li>To verify contact details and follow up on pending queries with verified sales consultants.</li>
+                    <li>To ensure website security, prevent fraudulent bot submissions, and maintain optimal technical performance.</li>
+                    <li>To satisfy any regulatory disclosures or records required under real estate guidelines.</li>
+                </ul>
+            </section>
+
+            <!-- Section 4: Data Flow Lifecycle -->
+            <section class="privacy-section" id="sec-flow">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">04</span>
+                    <h2>Data Flow &amp; Advisory Lifecycle</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    Understanding what happens when you share information gives you complete confidence in our process. Here is how your data flows through our advisory channels:
+                </p>
+
+                <!-- Stepper Diagram -->
+                <div class="privacy-flow-diagram">
+                    <div class="flow-steps">
+                        <div class="flow-step">
+                            <span class="flow-step-num">STEP 01</span>
+                            <h4 class="flow-step-title">You Submit Enquiry</h4>
+                            <p class="flow-step-desc">You voluntarily provide your details through our site forms or callback request.</p>
+                            <span class="flow-connector" aria-hidden="true">&rarr;</span>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-step-num">STEP 02</span>
+                            <h4 class="flow-step-title">Encrypted Transit</h4>
+                            <p class="flow-step-desc">Data is securely transmitted using TLS/HTTPS encryption into our CRM.</p>
+                            <span class="flow-connector" aria-hidden="true">&rarr;</span>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-step-num">STEP 03</span>
+                            <h4 class="flow-step-title">Advisor Follow-up</h4>
+                            <p class="flow-step-desc">An assigned advisor connects with you to provide project plans and coordinate visits.</p>
+                            <span class="flow-connector" aria-hidden="true">&rarr;</span>
+                        </div>
+                        <div class="flow-step">
+                            <span class="flow-step-num">STEP 04</span>
+                            <h4 class="flow-step-title">Controlled Retention</h4>
+                            <p class="flow-step-desc">Information is retained during advisory and securely purged if no transaction ensues.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 5 -->
+            <section class="privacy-section" id="sec-forms">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">05</span>
+                    <h2>Website Forms &amp; Submission Flow</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    When you submit an enquiry form on our website—whether on the homepage contact section, project page, or interactive enquiry modal—your data is transmitted securely to our customer relationship database.
+                </p>
+                <p>
+                    We validate that telephone numbers and email addresses conform to standard formatting to ensure our advisors can reach you promptly. You will receive an immediate on-screen confirmation upon successful receipt.
+                </p>
+            </section>
+
+            <!-- Section 6 -->
+            <section class="privacy-section" id="sec-cookies">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">06</span>
+                    <h2>Cookies &amp; Browser Storage</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    Our website uses essential browser storage mechanisms to enhance user experience:
+                </p>
+                <ul>
+                    <li><strong>Session Storage (<code>sessionStorage</code>):</strong> We utilize a key named <code>agamEstatesEnquiryPopupShown</code> to ensure the homepage enquiry invitation displays only once per browser tab session, preventing disruptive repetitive popups during your visit.</li>
+                    <li><strong>Essential Cookies:</strong> Cookies necessary for session management, anti-forgery token verification, and security controls for administrative access.</li>
+                    <li><strong>Analytics &amp; Performance:</strong> Aggregated, non-personally identifiable performance metrics to monitor page load times and improve responsive layouts across mobile, tablet, and desktop devices.</li>
+                </ul>
+                <p>
+                    You can configure your browser to decline cookies or alert you when cookies are being sent. Note that essential navigation will continue to function normally.
+                </p>
+            </section>
+
+            <!-- Section 7 -->
+            <section class="privacy-section" id="sec-sharing">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">07</span>
+                    <h2>Data Sharing &amp; Non-Disclosure</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    <strong>Agam Estates does not sell, lease, rent, or trade your personal information to third-party telemarketers, brokers, or data brokers.</strong>
+                </p>
+                <p>
+                    Your details are accessible solely by authorized Agam Estates representatives and assigned sales advisors. We will disclose personal information only when strictly mandated by legal process, lawful court order, or regulatory authority under applicable jurisdiction.
+                </p>
+                <p>
+                    We may engage reputable third-party technology providers to host our web infrastructure, manage secure cloud databases, or assist with transactional communication delivery. These providers are bound by strict contractual confidentiality agreements and are prohibited from using your personal information for any secondary marketing purposes.
+                </p>
+            </section>
+
+            <!-- Section 8 -->
+            <section class="privacy-section" id="sec-security">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">08</span>
+                    <h2>Security Safeguards &amp; Retention</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    We implement industry-standard administrative, technical, and physical safeguards to protect your personal information against unauthorized access, loss, alteration, or disclosure. Web transmissions are encrypted using Transport Layer Security (TLS/HTTPS), and internal database access is restricted to authenticated staff on a strict need-to-know basis.
+                </p>
+                <p>
+                    We retain personal details collected through website inquiries only for as long as necessary to fulfill your real estate advisory request, support ongoing customer relationships, and satisfy statutory record-keeping obligations. Inquiries that do not proceed to an active transaction are archived or securely purged in accordance with our routine data maintenance schedules.
+                </p>
+            </section>
+
+            <!-- Section 9: Dark Navy User Rights Feature Section -->
+            <section class="privacy-section" id="sec-rights">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">09</span>
+                    <h2>User Rights &amp; Choices</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+
+                <div class="privacy-rights-panel">
+                    <span class="eyebrow" style="color:var(--gold);">TRANSPARENCY &amp; CONTROL</span>
+                    <h3>Your information. Your choices.</h3>
+                    <p style="color:var(--fade-light); max-width:580px; font-size:0.95rem; line-height:1.65;">
+                        We believe control over personal information should be straightforward. As an individual interacting with Agam Estates, you retain the following rights:
+                    </p>
+
+                    <div class="privacy-rights-grid">
+                        <div class="right-card">
+                            <h4 class="right-card-title">&#10003; Access &amp; Confirmation</h4>
+                            <p>Request confirmation of the personal data we hold concerning your enquiry at any time.</p>
+                        </div>
+                        <div class="right-card">
+                            <h4 class="right-card-title">&#10003; Correction &amp; Updating</h4>
+                            <p>Request correction or updating of outdated, inaccurate, or incomplete contact details.</p>
+                        </div>
+                        <div class="right-card">
+                            <h4 class="right-card-title">&#10003; Communication Withdrawal</h4>
+                            <p>Opt out of future informational phone calls, emails, or project announcements whenever you wish.</p>
+                        </div>
+                        <div class="right-card">
+                            <h4 class="right-card-title">&#10003; Deletion &amp; Removal</h4>
+                            <p>Request removal and purging of your contact records from our active outreach database.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 10: Governance & Contact -->
+            <section class="privacy-section" id="sec-contact">
+                <div class="privacy-sec-header">
+                    <span class="privacy-sec-number">10</span>
+                    <h2>Policy Governance &amp; Contact Desk</h2>
+                </div>
+                <div class="privacy-sec-rule"></div>
+                <p>
+                    Our website and residential offerings are directed exclusively to adults of legal age competent to enter into binding real estate transactions. We do not knowingly solicit or collect personal information from individuals under 18 years of age.
+                </p>
+                <p>
+                    We reserve the right to amend this Privacy Policy at our discretion to reflect changes in legal requirements or digital operations. Any revised version will be published on this page with an updated effective date.
+                </p>
+
+                <!-- Premium Light Contact Callout -->
+                <div class="privacy-callout-card">
+                    <div class="privacy-callout-info">
+                        <h4>Questions about your privacy?</h4>
+                        <p><strong>Desk:</strong> @siteSettings.CompanyName — Privacy &amp; Data Governance</p>
+                        @if (!string.IsNullOrWhiteSpace(siteSettings.Email))
+                        {
+                            <p><strong>Email:</strong> <a href="mailto:@siteSettings.Email" style="color:var(--primary); font-weight:600;">@siteSettings.Email</a></p>
+                        }
+                        @if (siteSettings.PrimaryPhone != null)
+                        {
+                            <p><strong>Telephone:</strong> <a href="tel:@siteSettings.PrimaryPhone.NumberClean" style="color:var(--primary); font-weight:600;">@siteSettings.PrimaryPhone.PhoneNumber</a></p>
+                        }
+                        <p><strong>Site &amp; Sales Office:</strong> @siteSettings.FormattedAddress</p>
+                    </div>
+                    <div>
+                        <a href="/#contact" class="nav-contact-btn">Contact Us <span class="nav-arrow" aria-hidden="true">&rarr;</span></a>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Scroll spy for sticky sidebar navigation
+    document.addEventListener('DOMContentLoaded', () => {
+        const sections = document.querySelectorAll('.privacy-section');
+        const navItems = document.querySelectorAll('.privacy-nav-item');
+
+        function updateSpy() {
+            let current = '';
+            sections.forEach(sec => {
+                const top = sec.getBoundingClientRect().top;
+                if (top <= 140) {
+                    current = sec.getAttribute('id');
+                }
+            });
+
+            if (current) {
+                navItems.forEach(item => {
+                    item.classList.toggle('active', item.getAttribute('href') === '#' + current);
+                });
+            }
+        }
+
+        window.addEventListener('scroll', updateSpy, { passive: true });
+        updateSpy();
+    });
+</script>

@@ -1,0 +1,350 @@
+﻿@model AgamEstates.Web.Models.DashboardViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard";
+    ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem
+        {
+            Text = User.IsInRole("Admin") ? "Admin" : "CRM",
+            Url = null
+        },
+        new BreadcrumbItem
+        {
+            Text = "Dashboard",
+            Url = null
+        }
+    };
+}
+
+<div class="page-head">
+    <div>
+        <h1 class="page-title">Executive Dashboard</h1>
+        <p class="page-subtitle">Overview of your lead pipeline and upcoming follow-ups across Sector 20 Tricity.</p>
+    </div>
+    <div style="display: flex; gap: 12px;">
+        <a href="/Leads" class="btn btn-navy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+            </svg>
+            <span>View All Leads</span>
+        </a>
+    </div>
+</div>
+
+<!-- 7 KPI Cards -->
+<div class="kpi-grid">
+    <a href="/Leads" class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Total Leads</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count">@Model.TotalLeads</div>
+        <div class="kpi-subtext">Active enquiry pool</div>
+    </a>
+
+    <a href="/Leads?status=New" class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">New Leads</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #2563EB;">@Model.NewLeads</div>
+        <div class="kpi-subtext">Requires outreach</div>
+    </a>
+
+    <a href="/Leads?status=Interested" class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Interested</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #D97706;">@Model.InterestedLeads</div>
+        <div class="kpi-subtext">Actively reviewing units</div>
+    </a>
+
+    <a href="/Leads?status=Site%20Visit%20Scheduled" class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Site Visits</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #7C3AED;">@Model.SiteVisitsScheduled</div>
+        <div class="kpi-subtext">Booked campus walkthroughs</div>
+    </a>
+
+    <a href="/Leads?status=Negotiation" class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Negotiation</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #EA580C;">@Model.NegotiationLeads</div>
+        <div class="kpi-subtext">Price & payment discussion</div>
+    </a>
+
+    <a href="/Leads?status=Closed%20Won" class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Closed Won</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: #16A34A;">@Model.ClosedWonLeads</div>
+        <div class="kpi-subtext">Booked & confirmed</div>
+    </a>
+
+    <a href="#follow-ups-section" class="kpi-card">
+        <div class="kpi-header">
+            <span class="kpi-title">Follow-ups Due</span>
+            <div class="kpi-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+        </div>
+        <div class="kpi-count" style="color: var(--gold-dark);">@Model.FollowUpsDue</div>
+        <div class="kpi-subtext">Due today or overdue</div>
+    </a>
+</div>
+
+<!-- Pipeline Status Funnel -->
+<div class="pipeline-section luxury-card">
+    <div class="pipeline-header">
+        <h3>Pipeline Stage Breakdown</h3>
+    </div>
+    <div class="pipeline-grid">
+        @foreach (var entry in Model.PipelineCounts)
+        {
+            var encStatus = System.Net.WebUtility.UrlEncode(entry.Key);
+            <a href="/Leads?status=@encStatus" class="pipeline-item">
+                <div class="pipeline-count">@entry.Value</div>
+                <div class="pipeline-label">@entry.Key</div>
+            </a>
+        }
+    </div>
+</div>
+
+<!-- 2-Column Section: Recent Leads & Upcoming Follow-ups -->
+<div class="dashboard-grid">
+    <!-- Recent Leads Table -->
+    <div class="dashboard-panel luxury-card">
+        <div class="panel-header">
+            <h3 class="panel-title">Recent Leads</h3>
+            <a href="/Leads" class="btn btn-sm btn-outline">View All &rarr;</a>
+        </div>
+
+        <!-- Desktop Table View (> 768px) -->
+        <div class="table-responsive desktop-table-view">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Lead</th>
+                        <th>Interest</th>
+                        <th>Budget</th>
+                        <th>Status</th>
+                        <th>Assigned</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.RecentLeads.Any())
+                    {
+                        foreach (var lead in Model.RecentLeads)
+                        {
+                            var statusLower = (lead.StatusName ?? "").ToLower().Replace(" ", "-");
+                            <tr>
+                                <td>
+                                    <a href="/LeadDetails/@lead.LeadId" class="lead-cell-name">@lead.Name</a>
+                                    <span class="lead-cell-sub">@(lead.PhoneNumber ?? lead.Email ?? "No contact")</span>
+                                </td>
+                                <td>
+                                    <span>@(lead.PropertyInterest ?? "3 & 4 BHK")</span>
+                                    <span class="lead-cell-sub">@(lead.City ?? "Tricity")</span>
+                                </td>
+                                <td>
+                                    @if (lead.Budget.HasValue)
+                                    {
+                                        <strong>₹ @lead.Budget.Value.ToString("N0", new System.Globalization.CultureInfo("en-IN"))</strong>
+                                    }
+                                    else
+                                    {
+                                        <span class="lead-cell-sub">—</span>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge badge-status-@statusLower">@(lead.StatusName ?? "New")</span>
+                                </td>
+                                <td>
+                                    <span>@(lead.AssignedToName ?? "Unassigned")</span>
+                                </td>
+                                <td>
+                                    <a href="/LeadDetails/@lead.LeadId" class="btn btn-sm btn-outline">Details</a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 30px; color: var(--fade);">
+                                No leads logged yet.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card View (<= 768px) -->
+        <div class="mobile-card-view">
+            @if (Model.RecentLeads.Any())
+            {
+                foreach (var lead in Model.RecentLeads)
+                {
+                    var statusLower = (lead.StatusName ?? "").ToLower().Replace(" ", "-");
+                    <div class="responsive-lead-card">
+                        <div class="rlc-head">
+                            <div class="rlc-title-wrap">
+                                <span class="rlc-id">#@lead.LeadId</span>
+                                <a href="/LeadDetails/@lead.LeadId" class="rlc-name">@lead.Name</a>
+                            </div>
+                            <div class="rlc-badges">
+                                <span class="badge badge-status-@statusLower">@(lead.StatusName ?? "New")</span>
+                            </div>
+                        </div>
+
+                        <div class="rlc-body">
+                            @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber) || !string.IsNullOrWhiteSpace(lead.Email))
+                            {
+                                <div class="rlc-contact-row">
+                                    @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber))
+                                    {
+                                        <a href="tel:@lead.PhoneNumber" class="rlc-contact-pill">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                                            <span>@lead.PhoneNumber</span>
+                                        </a>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(lead.Email))
+                                    {
+                                        <a href="mailto:@lead.Email" class="rlc-contact-pill">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                                            <span>@lead.Email</span>
+                                        </a>
+                                    }
+                                </div>
+                            }
+
+                            <div class="rlc-grid">
+                                <div class="rlc-item">
+                                    <span class="rlc-label">Interest</span>
+                                    <span class="rlc-val">@(lead.PropertyInterest ?? "3 & 4 BHK")</span>
+                                </div>
+                                <div class="rlc-item">
+                                    <span class="rlc-label">Budget</span>
+                                    <span class="rlc-val budget-highlight">
+                                        @(lead.Budget.HasValue ? "₹ " + lead.Budget.Value.ToString("N0", new System.Globalization.CultureInfo("en-IN")) : "—")
+                                    </span>
+                                </div>
+                                <div class="rlc-item">
+                                    <span class="rlc-label">City</span>
+                                    <span class="rlc-val">@(lead.City ?? "Tricity")</span>
+                                </div>
+                                <div class="rlc-item">
+                                    <span class="rlc-label">Assigned Agent</span>
+                                    <span class="rlc-val">@(lead.AssignedToName ?? "Unassigned")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="rlc-footer">
+                            <span class="rlc-date">@(lead.CreatedAt != default ? lead.CreatedAt.ToString("dd MMM yyyy") : "")</span>
+                            <a href="/LeadDetails/@lead.LeadId" class="btn btn-sm btn-outline rlc-btn">
+                                <span>View Details</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="text-align: center; padding: 30px; color: var(--fade);">
+                    No leads logged yet.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Upcoming Follow-ups -->
+    <div class="dashboard-panel luxury-card" id="follow-ups-section">
+        <div class="panel-header">
+            <h3 class="panel-title">Upcoming Follow-ups</h3>
+            <span class="badge badge-followup-today">@Model.UpcomingFollowUps.Count Scheduled</span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+            @if (Model.UpcomingFollowUps.Any())
+            {
+                foreach (var comm in Model.UpcomingFollowUps)
+                {
+                    var isOverdue = comm.FollowUpDate.HasValue && comm.FollowUpDate.Value.Date < DateTime.Today;
+                    var isToday = comm.FollowUpDate.HasValue && comm.FollowUpDate.Value.Date == DateTime.Today;
+                    var badgeClass = isOverdue ? "badge-followup-overdue" : isToday ? "badge-followup-today" : "badge-followup-upcoming";
+                    var badgeLabel = isOverdue ? "Overdue" : isToday ? "Today" : "Upcoming";
+
+                    <div style="padding: 14px 16px; background: var(--light); border: 1px solid rgba(6,37,69,0.08); border-radius: 3px; display: flex; flex-direction: column; gap: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <a href="/LeadDetails/@comm.LeadId" style="font-weight: 600; color: var(--primary-dark);">@comm.LeadName</a>
+                            <span class="badge @badgeClass">@badgeLabel</span>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-dark);">
+                            <span style="font-weight: 500; color: var(--gold-dark);">[@comm.CommunicationType]</span> @comm.Message
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.76rem; color: var(--fade); margin-top: 4px;">
+                            <span>Follow-up: <strong>@comm.FollowUpDate?.ToString("dd MMM yyyy, hh:mm tt")</strong></span>
+                            <a href="/LeadDetails/@comm.LeadId" class="lead-link">View Lead &rarr;</a>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="text-align: center; padding: 40px 20px; color: var(--fade);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 8px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 14 14"></polyline>
+                    </svg>
+                    <div>No pending follow-ups scheduled.</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

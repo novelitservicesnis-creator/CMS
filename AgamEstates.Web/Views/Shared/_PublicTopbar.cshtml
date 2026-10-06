@@ -1,0 +1,38 @@
+﻿@model AgamEstates.Repository.ViewModel.PublicSiteSettingsViewModel
+<div class="topbar">
+    <div class="wrap">
+        <div class="topbar-loc">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M8 15C8 15 13 10.2 13 6.3C13 3.4 10.8 1 8 1C5.2 1 3 3.4 3 6.3C3 10.2 8 15 8 15Z" stroke="#DDAE45" stroke-width="1.1"/><circle cx="8" cy="6.2" r="2" stroke="#DDAE45" stroke-width="1"/></svg>
+            <span>@(string.IsNullOrWhiteSpace(Model?.City) ? "Panchkula & Tricity Region" : $"{Model.City} & Tricity Region")</span>
+        </div>
+        <div class="topbar-right">
+            @if (Model?.PrimaryPhone != null && !string.IsNullOrWhiteSpace(Model.PrimaryPhone.PhoneNumber))
+            {
+                <span class="topbar-call">For Enquiry Call us at: <a href="tel:@Model.PrimaryPhone.NumberClean" class="topbar-call-link">@Model.PrimaryPhone.PhoneNumber</a></span>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model?.Email))
+            {
+                <span class="topbar-call">For Enquiry: <a href="mailto:@Model.Email" class="topbar-call-link">@Model.Email</a></span>
+            }
+            @* <a href="/Project" class="topbar-link-project">The Project</a> *@
+            <a href="/#contact" class="topbar-link-enquire">Send Enquiry</a>
+            @if (Model != null && (!string.IsNullOrWhiteSpace(Model.FacebookUrl) || !string.IsNullOrWhiteSpace(Model.InstagramUrl) || !string.IsNullOrWhiteSpace(Model.YouTubeUrl)))
+            {
+                <div class="topbar-social">
+                    @if (!string.IsNullOrWhiteSpace(Model.FacebookUrl))
+                    {
+                        <a href="@Model.FacebookUrl" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><svg viewBox="0 0 22 22" fill="none"><path d="M13 21V12H16L16.5 8H13V6C13 5 13.5 4 15 4H16.5V1H14C11 1 9.5 3 9.5 6V8H7V12H9.5V21" stroke="#DDAE45" stroke-width="1.3"/></svg></a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.InstagramUrl))
+                    {
+                        <a href="@Model.InstagramUrl" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><svg viewBox="0 0 22 22" fill="none"><rect x="2" y="2" width="18" height="18" rx="5" stroke="#DDAE45" stroke-width="1.3"/><circle cx="11" cy="11" r="4.5" stroke="#DDAE45" stroke-width="1.3"/><circle cx="16" cy="6" r="1" fill="#DDAE45"/></svg></a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.YouTubeUrl))
+                    {
+                        <a href="@Model.YouTubeUrl" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="12" rx="3" stroke="#DDAE45" stroke-width="1.3"/><path d="M9.5 8.5L14.5 11L9.5 13.5Z" fill="#DDAE45"/></svg></a>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+@model AgamEstates.Repository.ViewModel.PublicSiteSettingsViewModel
+@if (Model?.ActiveAnnouncement != null && Model.ActiveAnnouncement.IsCurrentlyDisplayable)
+{
+    var ann = Model.ActiveAnnouncement;
+    var titleText = !string.IsNullOrWhiteSpace(ann.Title) ? (ann.Title.Trim().TrimEnd(':') + ":") : "";
+    var linkUrl = !string.IsNullOrWhiteSpace(ann.LinkUrl) ? ann.LinkUrl : "/#contact";
+    var linkText = !string.IsNullOrWhiteSpace(ann.LinkText) ? ann.LinkText : "Request a Visit";
+
+    <div class="announcement-strip" role="region" aria-label="Announcement">
+        <div class="announcement-marquee">
+            <div class="announcement-track">
+                <div class="announcement-item announcement-group">
+                    <span class="announcement-badge">LATEST</span>
+                    @if (!string.IsNullOrWhiteSpace(titleText))
+                    {
+                        <strong class="announcement-title">@titleText</strong>
+                    }
+                    <span class="announcement-message">@ann.Message</span>
+                    <a class="announcement-link" href="@linkUrl">
+                        @linkText &rarr;
+                    </a>
+                </div>
+                <div class="announcement-item announcement-group" aria-hidden="true">
+                    <span class="announcement-badge">LATEST</span>
+                    @if (!string.IsNullOrWhiteSpace(titleText))
+                    {
+                        <strong class="announcement-title">@titleText</strong>
+                    }
+                    <span class="announcement-message">@ann.Message</span>
+                    <a class="announcement-link" href="@linkUrl" tabindex="-1">
+                        @linkText &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}

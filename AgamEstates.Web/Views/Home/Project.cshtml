@@ -1,0 +1,450 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Our Project — Agam Estates | Sector 20, Panchkula Extension";
+    ViewData["ActiveNav"] = "Project";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+    var primaryPhone = siteSettings.PrimaryPhone;
+}
+
+<!-- Project Hero -->
+<section class="page-hero">
+    <div class="page-hero-bg">
+        <img src="https://sales-test1.process360.us/images/5startower.png" alt="Agam Estates Architecture">
+    </div>
+    <div class="page-hero-pattern">
+        <svg viewBox="0 0 1400 900" fill="none" preserveAspectRatio="xMidYMax slice" style="position:absolute; inset:0; width:100%; height:100%;">
+            <line x1="0" y1="200" x2="1400" y2="200" stroke="#DDAE45" stroke-opacity="0.2"/>
+            <line x1="0" y1="450" x2="1400" y2="450" stroke="#DDAE45" stroke-opacity="0.15"/>
+            <line x1="0" y1="700" x2="1400" y2="700" stroke="#DDAE45" stroke-opacity="0.1"/>
+            <line x1="320" y1="0" x2="320" y2="900" stroke="#DDAE45" stroke-opacity="0.15"/>
+            <line x1="720" y1="0" x2="720" y2="900" stroke="#DDAE45" stroke-opacity="0.12"/>
+            <line x1="1120" y1="0" x2="1120" y2="900" stroke="#DDAE45" stroke-opacity="0.15"/>
+        </svg>
+    </div>
+
+    <div class="wrap page-hero-content">
+        <span class="eyebrow">AGAM ESTATES · PANCHKULA EXTENSION</span>
+        <h1>A residence shaped around<br><em>light, space and quiet luxury.</em></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">
+            Conceived as an antidote to dense, crowded high-rises, Agam Estates brings a refined architectural presence to Sector 20, Panchkula Extension. Expansive 3 &amp; 4 BHK residences designed around a private green spine, where luxury is measured in craftsmanship, silence, and genuine daylight.
+        </p>
+
+        <div class="page-hero-actions">
+            <button type="button" class="btn btn-gold" onclick="openEnquiryModal()">
+                <span>Request a Site Visit</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <a href="#residences" class="btn btn-outline-gold">
+                <span>Explore Residences</span>
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 3V13M8 13L4 9M8 13L12 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+        </div>
+
+        <div class="hero-meta-strip">
+            <div class="hero-meta-item">
+                <span class="hero-meta-label">Typology</span>
+                <span class="hero-meta-val">3 &amp; 4 BHK Residences &amp; Penthouses</span>
+            </div>
+            <div class="hero-meta-item">
+                <span class="hero-meta-label">Location</span>
+                <span class="hero-meta-val">Sector 20, Panchkula Extension</span>
+            </div>
+            <div class="hero-meta-item">
+                <span class="hero-meta-label">Orientation</span>
+                <span class="hero-meta-val">Three-Side Open Floorplates</span>
+            </div>
+            <div class="hero-meta-item">
+                <span class="hero-meta-label">Status</span>
+                <span class="hero-meta-val">RERA Process Active · In Progress</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 1. Project Overview -->
+<section class="editorial-sec" id="overview">
+    <div class="wrap">
+        <div class="editorial-split">
+            <div class="editorial-frame">
+                <img src="https://images.pexels.com/photos/7534561/pexels-photo-7534561.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Agam Estates Living Room Interior">
+                <div class="editorial-caption">SAMPLE INTERIOR · HIGH CEILINGS &amp; CROSS LIGHT</div>
+            </div>
+
+            <div class="editorial-body">
+                <span class="eyebrow">PROJECT OVERVIEW</span>
+                <h2>Restraint in form. Generosity in living space.</h2>
+                <p class="lead">
+                    Agam Estates is planned with an acute understanding of how space influences state of mind. Each floorplate is oriented to welcome seasonal breezes and optimal winter sun.
+                </p>
+                <p>
+                    Rather than maximizing the number of units per floor, the masterplan privileges breathing room, deep balconies, and dedicated green buffers. From the double-height entrance pavilion to the private residential elevator lobbies, the sequence of arrival is calm, dignified, and distinctly personal.
+                </p>
+
+                <div class="feature-list">
+                    <div class="feature-list-item">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span><strong>Low-density campus plan</strong> — controlled height and generous setback margins.</span>
+                    </div>
+                    <div class="feature-list-item">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span><strong>Continuous central green spine</strong> — landscaped pedestrian corridor free from vehicular traffic.</span>
+                    </div>
+                    <div class="feature-list-item">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span><strong>Corner apertures &amp; cross-breeze</strong> — thoughtful floor layout maximizing natural airflow.</span>
+                    </div>
+                    <div class="feature-list-item">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span><strong>Earthquake-engineered RCC frame</strong> — uncompromising safety and high-spec structural concrete.</span>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-gold" onclick="openEnquiryModal()">
+                    <span>Download Project Factsheet</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 2. Location & Connectivity -->
+<section class="editorial-sec" style="background:#EFEADA;" id="location">
+    <div class="wrap">
+        <div class="section-head center">
+            <span class="eyebrow">LOCATION &amp; CONNECTIVITY</span>
+            <h2>Connected to the city. Removed from the noise.</h2>
+            <p>
+                Positioned in Sector 20, Panchkula Extension, the address combines seamless arterial connectivity to Chandigarh, Mohali, and the Zirakpur highway with the natural quiet of the Shivalik foothills.
+            </p>
+        </div>
+
+        <div class="cards-grid-3">
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                </div>
+                <h3>Arterial Transit &amp; Corridors</h3>
+                <p>Swift access to the Chandigarh-Shimla expressway, Old Panchkula junction, and rapid bypass connecting directly toward Shaheed Bhagat Singh International Airport road.</p>
+                <div style="margin-top:16px; font-size:0.82rem; font-weight:600; color:var(--primary); border-top:1px solid rgba(6,37,69,0.1); padding-top:12px;">
+                    12–15 mins to Chandigarh Border · 20 mins to Airport Road
+                </div>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <h3>Commercial &amp; Business Hubs</h3>
+                <p>Direct proximity to key corporate IT hubs, Sector 20 commercial markets, boutique banking districts, and Tricity hospitality landmarks without residential spillover.</p>
+                <div style="margin-top:16px; font-size:0.82rem; font-weight:600; color:var(--primary); border-top:1px solid rgba(6,37,69,0.1); padding-top:12px;">
+                    8 mins to Sector 20 Market · 14 mins to Rajiv Gandhi IT Park
+                </div>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                </div>
+                <h3>Healthcare &amp; Education</h3>
+                <p>Surrounded by respected multi-specialty hospitals, premier academic schools, golf clubs, and green recreation belts characteristic of the Panchkula district.</p>
+                <div style="margin-top:16px; font-size:0.82rem; font-weight:600; color:var(--primary); border-top:1px solid rgba(6,37,69,0.1); padding-top:12px;">
+                    10 mins to Command Hospital &amp; Alchemist · Top Schools Nearby
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. Residences Section -->
+<section class="editorial-sec" id="residences">
+    <div class="wrap">
+        <div class="section-head center">
+            <span class="eyebrow">LIVING SPACES</span>
+            <h2>Residences built for longevity.</h2>
+            <p>
+                Each apartment is designed from the inside out. Large living rooms, proportioned bedrooms that accept standard king layouts with ease, and deep verandahs that extend life into the open air.
+            </p>
+        </div>
+
+        <div class="cards-grid-3">
+            <!-- 3 BHK Luxury Suite -->
+            <div class="residence-card">
+                <div class="residence-photo">
+                    <img src="https://images.pexels.com/photos/7534561/pexels-photo-7534561.jpeg?auto=compress&cs=tinysrgb&w=900" alt="3 BHK Residence Agam Estates">
+                    <span class="residence-tag">3 BHK Classic</span>
+                </div>
+                <div class="residence-body">
+                    <h3>3 BHK Luxury Suite</h3>
+                    <div class="residence-area">Approx. 2,150 – 2,300 sq.ft.</div>
+                    <p class="residence-desc">
+                        A balanced layout featuring three generous ensuite bedrooms, an expansive formal living-dining room opening to an 8-foot deep balcony, and a parallel modular chef’s kitchen.
+                    </p>
+                    <div class="residence-features">
+                        <span class="residence-pill">3 Bedrooms</span>
+                        <span class="residence-pill">3 Bathrooms</span>
+                        <span class="residence-pill">Dual Balconies</span>
+                        <span class="residence-pill">Utility Area</span>
+                    </div>
+                    <div class="residence-foot">
+                        <button type="button" class="btn btn-outline-dark" style="width:100%;" onclick="openEnquiryModal()">
+                            <span>Request Layout Details</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 BHK + Lounge -->
+            <div class="residence-card">
+                <div class="residence-photo">
+                    <img src="https://images.pexels.com/photos/7534554/pexels-photo-7534554.jpeg?auto=compress&cs=tinysrgb&w=900" alt="3 BHK Plus Study Residence Agam Estates">
+                    <span class="residence-tag">3 BHK + Lounge</span>
+                </div>
+                <div class="residence-body">
+                    <h3>3 BHK + Family Study</h3>
+                    <div class="residence-area">Approx. 2,480 – 2,650 sq.ft.</div>
+                    <p class="residence-desc">
+                        Designed for growing families who value dedicated zones. Includes a central family lounge/work alcove, separate powder room, and private guest bedroom orientation.
+                    </p>
+                    <div class="residence-features">
+                        <span class="residence-pill">3 Bed + Study</span>
+                        <span class="residence-pill">Family Lounge</span>
+                        <span class="residence-pill">Walk-in Dresser</span>
+                        <span class="residence-pill">Corner Views</span>
+                    </div>
+                    <div class="residence-foot">
+                        <button type="button" class="btn btn-outline-dark" style="width:100%;" onclick="openEnquiryModal()">
+                            <span>Request Layout Details</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 BHK Grand -->
+            <div class="residence-card">
+                <div class="residence-photo">
+                    <img src="https://images.pexels.com/photos/15994062/pexels-photo-15994062.jpeg?auto=compress&cs=tinysrgb&w=900" alt="4 BHK Grand Residence Agam Estates">
+                    <span class="residence-tag">4 BHK Grand</span>
+                </div>
+                <div class="residence-body">
+                    <h3>4 BHK Grand Residence</h3>
+                    <div class="residence-area">Approx. 3,100 – 3,450 sq.ft.</div>
+                    <p class="residence-desc">
+                        Our flagship multi-generational residence. Features private elevator foyer access, a dramatic formal living wing, double master suites, and dedicated helper quarters with independent entry.
+                    </p>
+                    <div class="residence-features">
+                        <span class="residence-pill">4 Ensuite Beds</span>
+                        <span class="residence-pill">Helper Room</span>
+                        <span class="residence-pill">Wraparound Deck</span>
+                        <span class="residence-pill">3-Side Open</span>
+                    </div>
+                    <div class="residence-foot">
+                        <button type="button" class="btn btn-outline-dark" style="width:100%;" onclick="openEnquiryModal()">
+                            <span>Request Layout Details</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Architecture & Design -->
+<section class="editorial-sec dark-section" id="architecture">
+    <div class="wrap">
+        <div class="editorial-split reversed">
+            <div class="editorial-frame">
+                <img src="https://sales-test1.process360.us/images/5startower.png" alt="Agam Estates Architecture Tower Detail">
+                <div class="editorial-caption" style="background:#0D3560; border-color:var(--gold);">ARCHITECTURAL RENDERING · INDICATIVE ELEVATION</div>
+            </div>
+
+            <div class="editorial-body">
+                <span class="eyebrow" style="color:var(--gold-soft);">ARCHITECTURE &amp; CRAFT</span>
+                <h2 style="color:var(--light);">An architecture of silence, proportion and daylight.</h2>
+                <p class="lead" style="color:#E2E8F0;">
+                    Modernist lines paired with enduring natural materials. The façade is composed with rhythmic louvers that provide solar shading while framing panoramic views toward the Shivaliks.
+                </p>
+                <p>
+                    The structural core utilizes high-performance acoustic isolation between homes, ensuring that common walls never compromise privacy. Deep overhangs protect the interior spaces from peak summer solar gain while allowing gentle winter sunlight to penetrate deep into living rooms.
+                </p>
+
+                <div class="feature-list">
+                    <div class="feature-list-item" style="color:#E2E8F0;">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#DDAE45" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="#DDAE45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span><strong>Double-glazed acoustic glazing</strong> — insulating temperature and dampening exterior sound.</span>
+                    </div>
+                    <div class="feature-list-item" style="color:#E2E8F0;">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#DDAE45" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="#DDAE45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span><strong>Continuous structural cantilevered decks</strong> — extending living spaces seamlessly into outdoor greenery.</span>
+                    </div>
+                    <div class="feature-list-item" style="color:#E2E8F0;">
+                        <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#DDAE45" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="#DDAE45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        <span><strong>Natural stone and tactile masonry</strong> — warm color palette that patinas gracefully over decades.</span>
+                    </div>
+                </div>
+
+                <div style="margin-top:32px;">
+                    <button type="button" class="btn btn-gold" onclick="openEnquiryModal()">
+                        <span>Request Architecture Brochure</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. Amenities Section -->
+<section class="editorial-sec" id="amenities">
+    <div class="wrap">
+        <div class="section-head center">
+            <span class="eyebrow">AMENITIES &amp; ENVIRONMENT</span>
+            <h2>Spaces designed for calm, health and community.</h2>
+            <p>
+                Agam Estates eschews superficial marketing gimmicks in favor of amenities that actually enrich the daily lives of residents across all generations.
+            </p>
+        </div>
+
+        <div class="cards-grid-4">
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+                </div>
+                <h3>The Club Pavilion</h3>
+                <p>A multi-level resident clubhouse offering heated lap swimming, quiet reading alcoves, and private hosting suites.</p>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                </div>
+                <h3>Fitness &amp; Wellness</h3>
+                <p>Fully equipped strength and cardio training spaces, dedicated yoga court, and outdoor meditation lawns.</p>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <h3>Central Green Spine</h3>
+                <p>Vehicle-free landscaped garden spine featuring indigenous trees, stone pathways, and shaded seating pavilions.</p>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                </div>
+                <h3>Multi-Tier Security</h3>
+                <p>RFID access control, discreet perimeter cameras, biometric lobby doors, and professional 24/7 on-site personnel.</p>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 006 0v-1a10 10 0 10-3.92 7.94"/></svg>
+                </div>
+                <h3>Executive Co-Working</h3>
+                <p>High-speed wireless private booths and boardroom for working professionals needing focused quiet outside the apartment.</p>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                </div>
+                <h3>EV Infrastructure</h3>
+                <p>Dedicated stilt and basement parking bays equipped with charging provisions for electric vehicles and bicycles.</p>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <h3>Children &amp; Seniors Zone</h3>
+                <p>Natural surface play arena with non-toxic equipment alongside level, zero-step walking tracks for elderly residents.</p>
+            </div>
+
+            <div class="lux-card">
+                <div class="lux-card-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <h3>100% Power Backup</h3>
+                <p>Full dual-generator silent emergency power backup covering common circulation, elevators, pumps, and full in-home loads.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6. Gallery Preview -->
+<section class="editorial-sec" style="background:#EFEADA;" id="gallery">
+    <div class="wrap">
+        <div class="section-head center">
+            <span class="eyebrow">VISUAL RECORD</span>
+            <h2>Material, scale and perspective.</h2>
+            <p>
+                An overview of architectural details, surrounding spaces, and proposed material finishes across Agam Estates.
+            </p>
+        </div>
+
+        <div class="lux-gallery-grid">
+            <div class="lux-gallery-item col-7">
+                <img src="https://sales-test1.process360.us/images/5startower.png" alt="Agam Estates Tower Elevation">
+                <div class="lux-gallery-overlay">
+                    <strong>Signature Elevation</strong> — Sector 20 Panchkula Extension
+                </div>
+            </div>
+
+            <div class="lux-gallery-item col-5">
+                <img src="https://images.pexels.com/photos/7534561/pexels-photo-7534561.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Living Room Sample">
+                <div class="lux-gallery-overlay">
+                    <strong>Living &amp; Dining Foyer</strong> — Double aspect daylight
+                </div>
+            </div>
+
+            <div class="lux-gallery-item col-4">
+                <img src="https://images.pexels.com/photos/5563469/pexels-photo-5563469.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Clubhouse Pool">
+                <div class="lux-gallery-overlay">
+                    <strong>Resident Pool Pavilion</strong> — Heated lap swimming
+                </div>
+            </div>
+
+            <div class="lux-gallery-item col-8">
+                <img src="https://images.pexels.com/photos/39520071/pexels-photo-39520071.jpeg?auto=compress&cs=tinysrgb&w=900" alt="Green Courtyard">
+                <div class="lux-gallery-overlay">
+                    <strong>Central Green Courtyard</strong> — Shaded pathways &amp; native flora
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 7. Site Visit CTA Section -->
+<section class="cta-banner" id="site-visit">
+    <div class="wrap">
+        <div class="cta-inner">
+            <div class="cta-text">
+                <span class="eyebrow" style="color:var(--gold-soft);">EXPERIENCE AGAM ESTATES</span>
+                <h2>Plan your private site visit.</h2>
+                <p>
+                    Speak directly with the Agam Estates team. Our advisors will coordinate a guided walkthrough of the site location, spatial orientations, and detailed floorplans without obligation.
+                </p>
+            </div>
+            <div class="cta-actions">
+                <button type="button" class="btn btn-gold" onclick="openEnquiryModal()">
+                    <span>Request a Call Back</span>
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                @if (primaryPhone != null)
+                {
+                    <a href="tel:@primaryPhone.NumberClean" class="btn btn-outline-gold">
+                        <span>Call @primaryPhone.PhoneNumber</span>
+                    </a>
+                }
+                else
+                {
+                    <a href="/#contact" class="btn btn-outline-gold">
+                        <span>Contact Advisory Desk</span>
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</section>

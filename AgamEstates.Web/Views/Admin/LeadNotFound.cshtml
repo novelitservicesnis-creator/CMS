@@ -1,0 +1,43 @@
+﻿@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Lead Not Found";
+    var notFoundId = ViewBag.NotFoundId ?? "requested";
+    ViewData["Breadcrumbs"] = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem
+        {
+            Text = User.IsInRole("Admin") ? "Admin" : "CRM",
+            Url = "/AdminPanel"
+        },
+        new BreadcrumbItem
+        {
+            Text = "Leads",
+            Url = "/Leads"
+        },
+        new BreadcrumbItem
+        {
+            Text = "Lead Not Found",
+            Url = null
+        }
+    };
+}
+
+<div style="text-align: center; padding: 80px 20px; max-width: 520px; margin: 0 auto;">
+    <div style="width: 72px; height: 72px; background: #FFFDF5; border: 2px solid var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px auto; color: var(--gold-dark);">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+    </div>
+
+    <h1 style="font-size: 1.85rem; color: var(--primary-dark); margin-bottom: 12px;">Lead Record Not Found</h1>
+    <p style="font-size: 0.95rem; color: var(--fade); line-height: 1.6; margin-bottom: 30px;">
+        Lead ID #@notFoundId could not be located in the database. It may have been deleted, merged, or does not exist.
+    </p>
+
+    <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <a href="/Leads" class="btn btn-navy" style="min-height: 42px;">&larr; Return to Leads Pipeline</a>
+        <a href="/AdminPanel" class="btn btn-outline" style="min-height: 42px;">Go to Dashboard</a>
+    </div>
+</div>

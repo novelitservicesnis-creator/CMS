@@ -1,0 +1,28 @@
+﻿@model AgamEstates.Repository.ViewModel.PublicSiteSettingsViewModel
+@{
+    var activeNav = ViewData["ActiveNav"]?.ToString() ?? "";
+}
+<header id="site-header">
+    @await Html.PartialAsync("_PublicAnnouncementBar", Model)
+    @await Html.PartialAsync("_PublicTopbar", Model)
+    <div class="header-nav-row">
+        <div class="wrap">
+            <a class="brand" href="/">
+                <img class="brand-mark" src="@(Model?.LogoPath ?? "/images/logo.png")" alt="@(Model?.CompanyName ?? "Agam Estates") logo">
+                <span class="brand-name">@(Model?.CompanyNameFirst ?? "Agam") <span>@(Model?.CompanyNameSecond ?? "Estates")</span></span>
+            </a>
+            <nav id="site-nav">
+                <a href="/" class="@(activeNav == "Home" ? "active" : "")">Home</a>
+                <a href="/Project" class="@(activeNav == "Project" ? "active" : "")">Project</a>
+                <a href="/PrivacyPolicy" class="@(activeNav == "PrivacyPolicy" ? "active" : "")">Privacy Policy</a>
+                <a href="/AboutUs" class="@(activeNav == "AboutUs" ? "active" : "")">About Us</a>
+                <a href="/TermsAndConditions" class="@(activeNav == "TermsAndConditions" ? "active" : "")">Terms &amp; Conditions</a>
+                <a href="/#contact" class="nav-contact-btn">Contact Us <span class="nav-arrow" aria-hidden="true">&rarr;</span></a>
+            </nav>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </div>
+</header>
+<div class="nav-backdrop" id="nav-backdrop"></div>

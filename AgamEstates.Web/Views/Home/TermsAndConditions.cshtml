@@ -1,0 +1,984 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Terms & Conditions — Agam Estates";
+    ViewData["ActiveNav"] = "TermsAndConditions";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+}
+
+@section Styles {
+<style>
+/* ==========================================================================
+   Agam Estates — Terms & Conditions Bespoke Styling
+   Design Identity: Authoritative, Editorial, Contractual, Architectural, Formal
+   ========================================================================== */
+
+/* Terms Hero: Editorial Full-Width Navy with Document Metadata Block */
+.terms-hero {
+    position: relative;
+    background: #041A33;
+    padding: 175px 0 70px;
+    border-bottom: 1px solid rgba(221, 174, 69, 0.25);
+    overflow: hidden;
+}
+
+.terms-hero-grid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.75fr;
+    gap: 52px;
+    align-items: center;
+}
+
+.terms-hero-left h1 {
+    font-size: clamp(2.4rem, 4.2vw, 3.8rem);
+    line-height: 1.12;
+    color: var(--light);
+    margin: 14px 0 20px;
+    font-weight: 400;
+}
+
+.terms-hero-left h1 em {
+    font-style: italic;
+    color: var(--gold-soft);
+    font-weight: 300;
+}
+
+.terms-hero-desc {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--fade-light);
+    max-width: 580px;
+}
+
+/* Formal Metadata Box */
+.terms-meta-box {
+    background: rgba(6, 37, 69, 0.65);
+    border: 1px solid rgba(221, 174, 69, 0.35);
+    border-radius: 2px;
+    padding: 30px 28px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.terms-meta-box::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: 6px;
+    bottom: 6px;
+    border: 1px solid rgba(221, 174, 69, 0.12);
+    pointer-events: none;
+}
+
+.terms-meta-tag {
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    letter-spacing: 0.16em;
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: block;
+    border-bottom: 1px solid rgba(221, 174, 69, 0.25);
+    padding-bottom: 10px;
+}
+
+.terms-meta-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.86rem;
+    gap: 16px;
+}
+
+.meta-label {
+    color: var(--fade-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.76rem;
+}
+
+.meta-val {
+    color: var(--light);
+    font-weight: 500;
+    text-align: right;
+    font-family: var(--sans);
+}
+
+/* Editorial Introduction Notice Band */
+.terms-notice-band {
+    background: #EFEADA;
+    border-bottom: 1px solid rgba(6, 37, 69, 0.12);
+    padding: 18px 0;
+}
+
+.terms-notice-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 0.92rem;
+    color: var(--text-dark);
+}
+
+.notice-icon-badge {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 600;
+    color: var(--gold-dark);
+    font-size: 1.15rem;
+    flex-shrink: 0;
+}
+
+/* Terms Body Layout: Slim Sticky Article Index + Canvas Articles */
+.terms-body-wrap {
+    padding: 72px clamp(20px, 5vw, 48px);
+}
+
+.terms-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 60px;
+    align-items: flex-start;
+}
+
+/* Slim Sticky Article Index (No Box, Pure Editorial Typography) */
+.terms-sidebar {
+    position: sticky;
+    top: 105px;
+    padding-right: 18px;
+    border-right: 1px solid rgba(6, 37, 69, 0.12);
+}
+
+.terms-sidebar-header {
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    color: var(--fade);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.terms-index-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.terms-index-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--fade);
+    padding: 6px 8px;
+    border-left: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.terms-index-link:hover {
+    color: var(--primary);
+    background: rgba(221, 174, 69, 0.08);
+}
+
+.terms-index-link.active {
+    color: var(--primary);
+    font-weight: 600;
+    border-left-color: var(--gold);
+    background: rgba(221, 174, 69, 0.12);
+}
+
+.terms-index-num {
+    font-size: 0.72rem;
+    color: var(--gold-dark);
+    font-weight: 600;
+}
+
+/* Mobile Quick Jump Dropdown */
+.terms-mobile-jump {
+    display: none;
+    margin-bottom: 28px;
+    background: #FFFFFF;
+    border: 1px solid rgba(221, 174, 69, 0.35);
+    border-radius: 2px;
+    padding: 12px 16px;
+}
+
+.terms-mobile-jump select {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    background: #F8F6F0;
+    border: 1px solid rgba(6, 37, 69, 0.18);
+    border-radius: 2px;
+    outline: none;
+}
+
+/* Articles Flow (Direct on page, editorial publication aesthetic) */
+.terms-articles-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+.terms-article {
+    scroll-margin-top: 110px;
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 32px;
+    align-items: flex-start;
+}
+
+.article-num-col {
+    padding-top: 4px;
+}
+
+.article-big-num {
+    font-family: var(--serif);
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--gold);
+    font-weight: 500;
+    display: block;
+}
+
+.article-content-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.article-eyebrow {
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    letter-spacing: 0.14em;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.terms-article h2 {
+    font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+    color: var(--text-dark);
+    font-weight: 400;
+    margin-bottom: 12px;
+}
+
+.article-divider-rule {
+    width: 100%;
+    height: 1px;
+    background: rgba(6, 37, 69, 0.14);
+    margin-bottom: 18px;
+}
+
+.terms-article p {
+    color: #24354A;
+    font-size: 0.96rem;
+    line-height: 1.75;
+    margin-bottom: 16px;
+}
+
+.terms-article p:last-child {
+    margin-bottom: 0;
+}
+
+.terms-article ul {
+    margin: 12px 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.terms-article li {
+    position: relative;
+    padding-left: 24px;
+    color: #24354A;
+    font-size: 0.94rem;
+    line-height: 1.65;
+}
+
+.terms-article li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+}
+
+/* Distinct Property Disclaimer Block (Article 03) */
+.terms-disclaimer-card {
+    background: #EFEADA;
+    border-left: 4px solid var(--gold);
+    border-radius: 2px;
+    padding: 24px 26px;
+    margin: 18px 0 10px;
+}
+
+.terms-disclaimer-card .disclaimer-tag {
+    font-family: var(--sans);
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--gold-dark);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.terms-disclaimer-card p {
+    font-size: 0.92rem !important;
+    line-height: 1.65 !important;
+    color: var(--text-dark) !important;
+    margin-bottom: 0 !important;
+}
+
+/* Architectural Blueprint Box (Article 05: Images & Illustrations) */
+.architectural-blueprint-box {
+    background: #FFFFFF;
+    border: 1px solid rgba(221, 174, 69, 0.35);
+    border-radius: 2px;
+    padding: 24px;
+    margin: 20px 0 12px;
+    position: relative;
+}
+
+.blueprint-corner {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: var(--gold);
+}
+.blueprint-tl { top: -1px; left: -1px; border-top: 2px solid var(--gold); border-left: 2px solid var(--gold); }
+.blueprint-tr { top: -1px; right: -1px; border-top: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+.blueprint-bl { bottom: -1px; left: -1px; border-bottom: 2px solid var(--gold); border-left: 2px solid var(--gold); }
+.blueprint-br { bottom: -1px; right: -1px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold); }
+
+.blueprint-head {
+    font-family: var(--sans);
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Split Columns for Article 06 (Enquiry Submissions) */
+.enquiry-split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin: 18px 0 8px;
+}
+
+.enquiry-sub-box {
+    background: #FFFFFF;
+    border: 1px solid rgba(6, 37, 69, 0.12);
+    border-radius: 2px;
+    padding: 20px 18px;
+}
+
+.enquiry-sub-box h4 {
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.enquiry-sub-box p {
+    font-size: 0.88rem !important;
+    line-height: 1.6 !important;
+    color: var(--fade) !important;
+    margin-bottom: 0 !important;
+}
+
+/* Legal Desk Box (Article 14) */
+.terms-desk-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(6, 37, 69, 0.14);
+    border-top: 3px solid var(--primary);
+    border-radius: 2px;
+    padding: 26px;
+    margin-top: 20px;
+}
+
+.terms-desk-card h4 {
+    font-size: 1.15rem;
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.terms-desk-card p {
+    font-size: 0.9rem;
+    color: var(--fade);
+    margin-bottom: 6px;
+}
+
+.terms-desk-card p:last-child {
+    margin-bottom: 0;
+}
+
+/* Final Full-Width Navy Acceptance Panel */
+.terms-acceptance-banner {
+    background: #041A33;
+    border-top: 1px solid rgba(221, 174, 69, 0.25);
+    padding: 60px 0;
+    color: var(--light);
+}
+
+.terms-acceptance-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.terms-acceptance-text h3 {
+    font-size: clamp(1.6rem, 2.5vw, 2.2rem);
+    color: var(--light);
+    margin-bottom: 8px;
+}
+
+.terms-acceptance-text p {
+    color: var(--fade-light);
+    font-size: 0.95rem;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+.terms-acceptance-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.terms-alt-link {
+    color: var(--gold-soft);
+    font-size: 0.92rem;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border: 1px solid rgba(221, 174, 69, 0.35);
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.terms-alt-link:hover {
+    background: rgba(221, 174, 69, 0.12);
+    color: var(--light);
+    border-color: var(--gold);
+}
+
+/* Responsive Rules for Terms & Conditions */
+@@media (max-width: 991px) {
+    .terms-hero-grid {
+        grid-template-columns: 1fr;
+        gap: 36px;
+    }
+    .terms-layout {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    .terms-sidebar {
+        display: none;
+    }
+    .terms-mobile-jump {
+        display: block;
+    }
+    .terms-article {
+        grid-template-columns: 56px 1fr;
+        gap: 20px;
+    }
+    .article-big-num {
+        font-size: 2.2rem;
+    }
+    .enquiry-split-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@@media (max-width: 600px) {
+    .terms-hero {
+        padding: 140px 0 50px;
+    }
+    .terms-article {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .article-big-num {
+        font-size: 1.8rem;
+    }
+    .terms-acceptance-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+}
+</style>
+}
+
+<!-- Terms Editorial Hero: Full-Width Navy with Document Metadata Block -->
+<section class="terms-hero">
+    <div class="wrap">
+        <div class="terms-hero-grid">
+            <div class="terms-hero-left">
+                <span class="eyebrow">LEGAL &amp; COMPLIANCE</span>
+                <h1>Terms that define <em>the relationship.</em></h1>
+                <p class="terms-hero-desc">
+                    The legal terms, property disclaimers, and user conditions governing access to the Agam Estates website, project specifications, and digital communications.
+                </p>
+            </div>
+
+            <!-- Refined Metadata Block -->
+            <div class="terms-meta-box">
+                <span class="terms-meta-tag">WEBSITE TERMS</span>
+                <div class="terms-meta-rows">
+                    <div class="meta-row">
+                        <span class="meta-label">Effective Date</span>
+                        <span class="meta-val">01 October 2026</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Version</span>
+                        <span class="meta-val">2.0 (Official Release)</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Status</span>
+                        <span class="meta-val">Active &amp; Enforceable</span>
+                    </div>
+                    <div class="meta-row">
+                        <span class="meta-label">Jurisdiction</span>
+                        <span class="meta-val">Panchkula / Tricity (India)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Narrow Editorial Introduction Band -->
+<div class="terms-notice-band">
+    <div class="wrap">
+        <div class="terms-notice-content">
+            <span class="notice-icon-badge">&sect;</span>
+            <p>
+                <strong>Notice:</strong> Please read these terms carefully before browsing the website or submitting a property enquiry. By accessing this site, you agree to be bound by the articles below.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Main Terms Layout: Slim Sticky Article Index + Canvas Articles -->
+<div class="wrap terms-body-wrap">
+    <!-- Mobile Jump Dropdown -->
+    <div class="terms-mobile-jump">
+        <label for="terms-jump-select" style="font-size:0.75rem; letter-spacing:0.1em; color:var(--fade); text-transform:uppercase; font-weight:600; display:block; margin-bottom:6px;">Jump to Article:</label>
+        <select id="terms-jump-select" onchange="if(this.value) window.location.hash = this.value;">
+            <option value="">Select an Article...</option>
+            <option value="#art-01">Article 01 — Acceptance of Terms</option>
+            <option value="#art-02">Article 02 — Website Information</option>
+            <option value="#art-03">Article 03 — Property Disclaimer &amp; RERA</option>
+            <option value="#art-04">Article 04 — Pricing &amp; Availability</option>
+            <option value="#art-05">Article 05 — Images &amp; Illustrations</option>
+            <option value="#art-06">Article 06 — Enquiry Submissions</option>
+            <option value="#art-07">Article 07 — Intellectual Property</option>
+            <option value="#art-08">Article 08 — Third-Party Links</option>
+            <option value="#art-09">Article 09 — User Conduct</option>
+            <option value="#art-10">Article 10 — Limitation of Liability</option>
+            <option value="#art-11">Article 11 — Modifications to Site</option>
+            <option value="#art-12">Article 12 — Governing Law</option>
+            <option value="#art-13">Article 13 — Severability</option>
+            <option value="#art-14">Article 14 — Legal Inquiries</option>
+        </select>
+    </div>
+
+    <div class="terms-layout">
+        <!-- Slim Sticky Article Index (No Box, Editorial Text) -->
+        <aside class="terms-sidebar">
+            <div class="terms-sidebar-header">
+                <span>ARTICLES</span>
+                <span style="font-size:0.7rem; color:var(--gold);">14 TOTAL</span>
+            </div>
+            <nav class="terms-index-list" id="terms-index">
+                <a href="#art-01" class="terms-index-link active"><span class="terms-index-num">01</span> Acceptance</a>
+                <a href="#art-02" class="terms-index-link"><span class="terms-index-num">02</span> Scope</a>
+                <a href="#art-03" class="terms-index-link"><span class="terms-index-num">03</span> Property &amp; RERA</a>
+                <a href="#art-04" class="terms-index-link"><span class="terms-index-num">04</span> Pricing</a>
+                <a href="#art-05" class="terms-index-link"><span class="terms-index-num">05</span> Visual Material</a>
+                <a href="#art-06" class="terms-index-link"><span class="terms-index-num">06</span> Enquiries</a>
+                <a href="#art-07" class="terms-index-link"><span class="terms-index-num">07</span> IP &amp; Copyright</a>
+                <a href="#art-08" class="terms-index-link"><span class="terms-index-num">08</span> External Links</a>
+                <a href="#art-09" class="terms-index-link"><span class="terms-index-num">09</span> User Conduct</a>
+                <a href="#art-10" class="terms-index-link"><span class="terms-index-num">10</span> Liability</a>
+                <a href="#art-11" class="terms-index-link"><span class="terms-index-num">11</span> Amendments</a>
+                <a href="#art-12" class="terms-index-link"><span class="terms-index-num">12</span> Jurisdiction</a>
+                <a href="#art-13" class="terms-index-link"><span class="terms-index-num">13</span> Severability</a>
+                <a href="#art-14" class="terms-index-link"><span class="terms-index-num">14</span> Legal Inquiries</a>
+            </nav>
+        </aside>
+
+        <!-- Main Articles (Directly on Canvas) -->
+        <main class="terms-articles-flow">
+            <!-- Article 01 -->
+            <article class="terms-article" id="art-01">
+                <div class="article-num-col">
+                    <span class="article-big-num">01</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 01</span>
+                    <h2>Acceptance of Terms</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        By accessing, browsing, or using the website of Agam Estates (<a href="/" style="color:var(--primary); font-weight:600; text-decoration:underline;">agamestates.com</a>), you acknowledge that you have read, understood, and agree to be legally bound by these Terms &amp; Conditions, together with our <a href="/PrivacyPolicy" style="color:var(--primary); font-weight:600; text-decoration:underline;">Privacy Policy</a>.
+                    </p>
+                    <p>
+                        If you do not agree with any part of these terms, you must refrain from accessing or using this website and its interactive services.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 02 -->
+            <article class="terms-article" id="art-02">
+                <div class="article-num-col">
+                    <span class="article-big-num">02</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 02</span>
+                    <h2>Website Information &amp; Informational Scope</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        The information contained on this website is provided solely for general informational, educational, and preliminary marketing purposes regarding Agam Estates developments in Sector 20, Panchkula Extension.
+                    </p>
+                    <p>
+                        The contents do not constitute a binding offer, solicitation, warranty, or contractual commitment on the part of Agam Estates or any of its affiliates. All agreements for sale, booking confirmations, and legal covenants must be executed through formal, verified documentation in accordance with statutory guidelines.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 03: Distinct High-Contrast Property Disclaimer Block -->
+            <article class="terms-article" id="art-03">
+                <div class="article-num-col">
+                    <span class="article-big-num">03</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 03</span>
+                    <h2>Property Information &amp; Regulatory Disclosures</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        Agam Estates endeavors to ensure that all project details, descriptive narratives, and specifications presented on this website are accurate and reflective of ongoing architectural plans. However:
+                    </p>
+                    <ul>
+                        <li>Project plans, structural configurations, amenities, landscaping layouts, and timelines are subject to change as required by competent authorities or ongoing architectural refinements.</li>
+                        <li>RERA registration processes are actively progressing in compliance with the Real Estate (Regulation and Development) Act. Official registration numbers, certified approvals, and statutory disclosures will be formally updated upon completion of regulatory issuances.</li>
+                        <li>Prospective purchasers are advised to verify all relevant approvals, titles, licenses, and unit specifications directly with our sales advisory team prior to making any booking commitments.</li>
+                    </ul>
+
+                    <!-- Visual Callout Disclaimer -->
+                    <div class="terms-disclaimer-card">
+                        <span class="disclaimer-tag">IMPORTANT STATUTORY NOTICE</span>
+                        <p>
+                            Plans, imagery, specifications, prices, and availability are subject to applicable project documentation, statutory approvals, and formal agreements for sale. No content herein shall be construed as a substitute for certified technical drawings.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Article 04 -->
+            <article class="terms-article" id="art-04">
+                <div class="article-num-col">
+                    <span class="article-big-num">04</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 04</span>
+                    <h2>Pricing, Availability &amp; Quotations</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        Any indicative prices, payment milestones, inventory configurations, or cost estimates mentioned on this website, in downloadable brochures, or via phone consultations are indicative and subject to change without prior notice.
+                    </p>
+                    <p>
+                        Formal pricing, applicable statutory duties, GST, stamp registration fees, and specific payment schedules become definitive only upon the issuance of an official written quotation and formal booking application signed by authorized representatives of Agam Estates.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 05: Architectural Blueprint Box -->
+            <article class="terms-article" id="art-05">
+                <div class="article-num-col">
+                    <span class="article-big-num">05</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 05</span>
+                    <h2>Images, Renders, Floor Plans &amp; Illustrations</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        All photographs, artistic impressions, 3D architectural renderings, interior mockups, elevation diagrams, and floor plans displayed on this website are indicative artistic representations and may not represent actual finished inventory to scale.
+                    </p>
+
+                    <!-- Architectural Blueprint Detail -->
+                    <div class="architectural-blueprint-box">
+                        <div class="blueprint-corner blueprint-tl"></div>
+                        <div class="blueprint-corner blueprint-tr"></div>
+                        <div class="blueprint-corner blueprint-bl"></div>
+                        <div class="blueprint-corner blueprint-br"></div>
+                        <div class="blueprint-head">
+                            <span aria-hidden="true">&#9670;</span> ARCHITECTURAL SPECIFICATION NOTE
+                        </div>
+                        <p style="font-size:0.9rem; line-height:1.6; color:#24354A; margin-bottom:0;">
+                            Furniture, decorative fittings, light fixtures, wall treatments, and customized soft furnishings shown in interior renders or sample photographs are for illustrative visualization purposes only and do not form part of the standard handover package unless explicitly enumerated in the formal Agreement for Sale.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Article 06: Split Layout -->
+            <article class="terms-article" id="art-06">
+                <div class="article-num-col">
+                    <span class="article-big-num">06</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 06</span>
+                    <h2>Enquiry Submissions &amp; Communication Consent</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        When you voluntarily submit your name, telephone number, email address, or property preference through any enquiry field or interactive modal on our website, you expressly authorize Agam Estates and its designated sales advisors to contact you.
+                    </p>
+
+                    <div class="enquiry-split-grid">
+                        <div class="enquiry-sub-box">
+                            <h4>Authorized Purpose</h4>
+                            <p>Communication is conducted exclusively to address your inquiry, share verified brochures, and coordinate on-site visit appointments.</p>
+                        </div>
+                        <div class="enquiry-sub-box">
+                            <h4>Consent Withdrawal</h4>
+                            <p>You retain the right to withdraw communication consent at any time by requesting to opt out during consultations or by emailing our desk.</p>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Article 07 -->
+            <article class="terms-article" id="art-07">
+                <div class="article-num-col">
+                    <span class="article-big-num">07</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 07</span>
+                    <h2>Intellectual Property &amp; Brand Copyright</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        All content on this website—including but not limited to text, architectural descriptions, branding, logos, marks, illustrations, digital layout structures, styling, and graphics—is the exclusive intellectual property of Agam Estates and is protected by applicable copyright, trademark, and intellectual property laws.
+                    </p>
+                    <p>
+                        No content from this website may be copied, reproduced, modified, distributed, framed, scraped, or republished without the prior written authorization of Agam Estates.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 08 -->
+            <article class="terms-article" id="art-08">
+                <div class="article-num-col">
+                    <span class="article-big-num">08</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 08</span>
+                    <h2>Third-Party Links &amp; External Platforms</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        This website may contain hyperlinks to external sites or third-party mapping services for user convenience. Agam Estates exercises no editorial control over third-party platforms and assumes no responsibility for their content, availability, or privacy practices. Following external links is done solely at your own risk.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 09 -->
+            <article class="terms-article" id="art-09">
+                <div class="article-num-col">
+                    <span class="article-big-num">09</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 09</span>
+                    <h2>User Conduct &amp; Prohibited Activities</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>In accessing this website, you agree not to:</p>
+                    <ul>
+                        <li>Use automated scripts, bots, scrapers, or spiders to harvest content or flood enquiry submission channels.</li>
+                        <li>Submit fabricated, fraudulent, or impersonated contact information through enquiry forms.</li>
+                        <li>Interfere with or disrupt the normal operation of our web servers, network infrastructure, or security firewalls.</li>
+                        <li>Attempt to gain unauthorized access to staff portal areas, administrative dashboards, or backend databases.</li>
+                    </ul>
+                </div>
+            </article>
+
+            <!-- Article 10 -->
+            <article class="terms-article" id="art-10">
+                <div class="article-num-col">
+                    <span class="article-big-num">10</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 10</span>
+                    <h2>Limitation of Liability &amp; Disclaimers</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        To the fullest extent permitted by applicable law, this website and all information provided on it are provided on an “as is” and “as available” basis without warranties of any kind, whether express or implied.
+                    </p>
+                    <p>
+                        Agam Estates, its directors, employees, and advisors shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising from your access to, use of, or inability to access this website, or any reliance placed upon the general information contained herein.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 11 -->
+            <article class="terms-article" id="art-11">
+                <div class="article-num-col">
+                    <span class="article-big-num">11</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 11</span>
+                    <h2>Modifications to Website &amp; Terms</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        Agam Estates reserves the right to modify, suspend, update, or discontinue any aspect of this website or these Terms &amp; Conditions at any time without prior announcement. The most current version of these terms will always be accessible at this URL, and your continued usage after modifications constitutes binding acceptance.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 12 -->
+            <article class="terms-article" id="art-12">
+                <div class="article-num-col">
+                    <span class="article-big-num">12</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 12</span>
+                    <h2>Governing Law &amp; Jurisdiction</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        These Terms &amp; Conditions and any disputes arising out of or related to your use of this website shall be governed by and construed in accordance with the laws of India.
+                    </p>
+                    <p>
+                        Any legal action, proceeding, or dispute arising hereunder shall be subject to the exclusive jurisdiction of the competent courts having jurisdiction over the Panchkula / Tricity region in the State of Haryana.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 13 -->
+            <article class="terms-article" id="art-13">
+                <div class="article-num-col">
+                    <span class="article-big-num">13</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 13</span>
+                    <h2>Severability &amp; Entire Agreement</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        If any provision of these Terms is determined by a court of competent jurisdiction to be unlawful, void, or unenforceable, that provision shall be deemed severable and shall not affect the validity and enforceability of any remaining provisions.
+                    </p>
+                </div>
+            </article>
+
+            <!-- Article 14: Legal Desk Box -->
+            <article class="terms-article" id="art-14">
+                <div class="article-num-col">
+                    <span class="article-big-num">14</span>
+                </div>
+                <div class="article-content-col">
+                    <span class="article-eyebrow">ARTICLE 14</span>
+                    <h2>Contact Information for Legal Inquiries</h2>
+                    <div class="article-divider-rule"></div>
+                    <p>
+                        For questions, notices, or formal clarifications regarding these Terms &amp; Conditions, please contact our legal desk:
+                    </p>
+
+                    <div class="terms-desk-card">
+                        <h4>@siteSettings.CompanyName — Legal &amp; Compliance Desk</h4>
+                        @if (!string.IsNullOrWhiteSpace(siteSettings.Email))
+                        {
+                            <p><strong>Email:</strong> <a href="mailto:@siteSettings.Email" style="color:var(--primary); font-weight:600;">@siteSettings.Email</a></p>
+                        }
+                        @if (siteSettings.PrimaryPhone != null)
+                        {
+                            <p><strong>Telephone:</strong> <a href="tel:@siteSettings.PrimaryPhone.NumberClean" style="color:var(--primary); font-weight:600;">@siteSettings.PrimaryPhone.PhoneNumber</a></p>
+                        }
+                        <p><strong>Site &amp; Sales Office:</strong> @siteSettings.FormattedAddress</p>
+                        @if (!string.IsNullOrWhiteSpace(siteSettings.BusinessHoursFormatted))
+                        {
+                            <p><strong>Office Hours:</strong> @siteSettings.BusinessHoursFormatted</p>
+                        }
+                    </div>
+                </div>
+            </article>
+        </main>
+    </div>
+</div>
+
+<!-- Final Full-Width Navy Acceptance Panel -->
+<section class="terms-acceptance-banner">
+    <div class="wrap">
+        <div class="terms-acceptance-wrap">
+            <div class="terms-acceptance-text">
+                <h3>Using this website means you agree to these Terms &amp; Conditions.</h3>
+                <p>
+                    Your access to our property materials, brochures, and digital advisory is subject to this legal framework and our data protection standards.
+                </p>
+            </div>
+            <div class="terms-acceptance-actions">
+                <a href="/PrivacyPolicy" class="terms-alt-link">Privacy Policy &rarr;</a>
+                <a href="/#contact" class="nav-contact-btn">Contact Us <span class="nav-arrow" aria-hidden="true">&rarr;</span></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Scroll spy for Terms sticky article index
+    document.addEventListener('DOMContentLoaded', () => {
+        const articles = document.querySelectorAll('.terms-article');
+        const indexLinks = document.querySelectorAll('.terms-index-link');
+        const mobileSelect = document.getElementById('terms-jump-select');
+
+        function updateTermsSpy() {
+            let current = '';
+            articles.forEach(art => {
+                const top = art.getBoundingClientRect().top;
+                if (top <= 140) {
+                    current = art.getAttribute('id');
+                }
+            });
+
+            if (current) {
+                indexLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+                });
+                if (mobileSelect) {
+                    mobileSelect.value = '#' + current;
+                }
+            }
+        }
+
+        window.addEventListener('scroll', updateTermsSpy, { passive: true });
+        updateTermsSpy();
+    });
+</script>

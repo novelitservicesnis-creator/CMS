@@ -1,0 +1,388 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    var activeNav = ViewData["ActiveNav"]?.ToString() ?? "";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@(ViewData["Title"] ?? $"{siteSettings.CompanyName} — Sector 20, Panchkula Extension")</title>
+    <link rel="icon" type="image/png" href="@siteSettings.LogoPath">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/public-pages.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/announcement-marquee.css" asp-append-version="true">
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+<!-- Header -->
+@await Html.PartialAsync("_PublicHeader", siteSettings)
+
+<!-- Main Body -->
+<main id="main-content">
+    @RenderBody()
+</main>
+
+<!-- Footer -->
+@await Html.PartialAsync("_PublicFooter", siteSettings)
+
+<!-- Shared Enquiry Modal Popup -->
+<div class="agam-modal-backdrop" id="agam-enquiry-modal" role="dialog" aria-modal="true" aria-labelledby="agam-enquiry-title" aria-hidden="true">
+    <div class="agam-modal-card">
+        <button type="button" class="agam-modal-close" id="agam-modal-close" aria-label="Close enquiry form">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+        </button>
+
+        <!-- LEFT PANEL: Brand Story -->
+        <div class="agam-modal-brand-panel">
+            <div class="brand-panel-pattern" aria-hidden="true">
+                <svg viewBox="0 0 400 620" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="200" cy="180" r="170" stroke="rgba(221,174,69,0.08)" stroke-width="1" />
+                    <circle cx="200" cy="180" r="230" stroke="rgba(221,174,69,0.05)" stroke-width="1" />
+                    <circle cx="200" cy="180" r="290" stroke="rgba(221,174,69,0.03)" stroke-width="1" />
+                    <line x1="45" y1="0" x2="45" y2="620" stroke="rgba(221,174,69,0.06)" stroke-width="1" />
+                    <line x1="355" y1="0" x2="355" y2="620" stroke="rgba(221,174,69,0.06)" stroke-width="1" />
+                    <line x1="0" y1="460" x2="400" y2="300" stroke="rgba(221,174,69,0.06)" stroke-width="1" />
+                    <line x1="0" y1="520" x2="400" y2="360" stroke="rgba(221,174,69,0.04)" stroke-width="1" />
+                    <rect x="80" y="320" width="240" height="260" stroke="rgba(221,174,69,0.05)" stroke-width="1" />
+                </svg>
+            </div>
+
+            <div class="brand-panel-content">
+                <div class="brand-panel-logo">
+                    <img src="@(siteSettings?.LogoPath ?? "/images/logo.png")" alt="@(siteSettings?.CompanyName ?? "Agam Estates") logo" class="brand-panel-mark">
+                    <span class="brand-panel-name">Agam <span>Estates</span></span>
+                </div>
+
+                <div class="brand-panel-hero">
+                    <span class="brand-panel-eyebrow">PRIVATE ENQUIRY</span>
+                    <h2 class="brand-panel-heading">
+                        Find the right home, <br>
+                        <span class="highlight-gold">before everyone else.</span>
+                    </h2>
+                    <p class="brand-panel-desc">
+                        Explore premium residences with direct project guidance, private site visit coordination, and personal assistance from our team.
+                    </p>
+                </div>
+
+                <div class="brand-panel-trust">
+                    <div class="trust-item">
+                        <span class="trust-icon" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#DDAE45" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="#DDAE45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <span>Private site visit coordination</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#DDAE45" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="#DDAE45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <span>Direct project advisory</span>
+                    </div>
+                    <div class="trust-item">
+                        <span class="trust-icon" aria-hidden="true">
+                            <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#DDAE45" stroke-width="1.2"/><path d="M5 8.2L7 10.2L11 6" stroke="#DDAE45" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <span>No brokerage on selected inventory</span>
+                    </div>
+                </div>
+
+                <div class="brand-panel-foot">
+                    <span>Sector 20 · Panchkula Extension, Tricity</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Form -->
+        <div class="agam-modal-form-panel">
+            <div class="agam-modal-mobile-header">
+                <div class="mobile-logo-row">
+                    <img src="@(siteSettings?.LogoPath ?? "/images/logo.png")" alt="@(siteSettings?.CompanyName ?? "Agam Estates") logo" class="mobile-logo-mark">
+                    <span class="mobile-logo-name">@(siteSettings?.CompanyNameFirst ?? "Agam") <span>@(siteSettings?.CompanyNameSecond ?? "Estates")</span></span>
+                </div>
+                <span class="mobile-eyebrow">PRIVATE ENQUIRY</span>
+                <p class="mobile-lead-line">Private guidance for your next home.</p>
+            </div>
+
+            <div class="agam-form-head" id="agam-form-header-block">
+                <span class="form-eyebrow">REQUEST A CALL BACK</span>
+                <h2 class="form-heading" id="agam-enquiry-title">Let’s plan your visit.</h2>
+                <p class="form-subtext">Share your details and our team will get in touch shortly.</p>
+            </div>
+
+            <div id="agam-popup-form-wrapper">
+                @await Html.PartialAsync("_EnquiryForm", null, new ViewDataDictionary(ViewData) {
+                    { "Prefix", "popup" },
+                    { "FormId", "popup-enquiry-form" },
+                    { "IsPopup", true }
+                })
+            </div>
+
+            <div class="agam-success-state" id="agam-popup-success" style="display:none;" aria-live="polite">
+                <div class="success-icon-wrap" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" fill="none" class="success-icon">
+                        <circle cx="24" cy="24" r="22" stroke="#DDAE45" stroke-width="2"/>
+                        <path d="M15 24.5L21.5 31L33 18" stroke="#DDAE45" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <h3 class="success-heading">Thank you.</h3>
+                <p class="success-body">Our team will contact you shortly to arrange your visit.</p>
+                <p class="success-sub">We look forward to helping you find the right residence.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Header scroll state
+    const header = document.getElementById('site-header');
+    window.addEventListener('scroll', () => {
+        if (header) {
+            header.classList.toggle('scrolled', window.scrollY > 40);
+        }
+    });
+
+    // Mobile menu toggle & backdrop
+    const toggle = document.getElementById('menu-toggle');
+    const nav = document.getElementById('site-nav');
+    const backdrop = document.getElementById('nav-backdrop');
+
+    function closeNav() {
+        if (nav) nav.classList.remove('open');
+        if (toggle) {
+            toggle.classList.remove('active');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+        if (backdrop) backdrop.classList.remove('open');
+    }
+
+    if (toggle) {
+        toggle.addEventListener('click', () => {
+            const isOpen = nav.classList.toggle('open');
+            toggle.classList.toggle('active', isOpen);
+            toggle.setAttribute('aria-expanded', isOpen);
+            if (backdrop) backdrop.classList.toggle('open', isOpen);
+        });
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener('click', closeNav);
+    }
+
+    if (nav) {
+        nav.querySelectorAll('a').forEach(a => a.addEventListener('click', closeNav));
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeNav();
+            closeEnquiryModal();
+        }
+    });
+
+    // Modal Management
+    const popupModal = document.getElementById('agam-enquiry-modal');
+    const popupCloseBtn = document.getElementById('agam-modal-close');
+    let lastFocusedElement = null;
+
+    function openEnquiryModal() {
+        if (!popupModal || popupModal.classList.contains('active')) return;
+        lastFocusedElement = document.activeElement;
+
+        const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+        if (scrollbarWidth > 0) {
+            document.body.style.paddingRight = scrollbarWidth + 'px';
+        }
+        document.body.style.overflow = 'hidden';
+
+        popupModal.setAttribute('aria-hidden', 'false');
+        void popupModal.offsetWidth;
+        popupModal.classList.add('active');
+
+        setTimeout(() => {
+            const firstInput = popupModal.querySelector('#popup-name') || popupModal.querySelector('input');
+            if (firstInput) firstInput.focus();
+        }, 120);
+    }
+
+    function closeEnquiryModal() {
+        if (!popupModal || !popupModal.classList.contains('active')) return;
+        popupModal.classList.remove('active');
+
+        setTimeout(() => {
+            popupModal.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+                lastFocusedElement.focus();
+            }
+        }, 400);
+    }
+
+    if (popupCloseBtn) {
+        popupCloseBtn.addEventListener('click', closeEnquiryModal);
+    }
+
+    if (popupModal) {
+        popupModal.addEventListener('click', (e) => {
+            if (e.target === popupModal) {
+                closeEnquiryModal();
+            }
+        });
+    }
+
+    // Modal Form Validation & Submission
+    function validatePopupForm(form) {
+        let isValid = true;
+        let firstInvalidInput = null;
+
+        const nameEl = form.querySelector(`[name="name"]`);
+        const nameErr = form.querySelector(`#popup-name-error`);
+        const phoneEl = form.querySelector(`[name="phoneNumber"]`);
+        const phoneErr = form.querySelector(`#popup-phone-error`);
+        const emailEl = form.querySelector(`[name="email"]`);
+        const emailErr = form.querySelector(`#popup-email-error`);
+        const unitEl = form.querySelector(`[name="propertyInterest"]`);
+        const unitErr = form.querySelector(`#popup-unit-error`);
+
+        // Reset errors
+        form.querySelectorAll('.has-error').forEach(el => el.classList.remove('has-error'));
+        form.querySelectorAll('.field-error-msg').forEach(el => el.textContent = '');
+
+        if (!nameEl || !nameEl.value.trim()) {
+            isValid = false;
+            if (nameEl) nameEl.classList.add('has-error');
+            if (nameErr) nameErr.textContent = 'Please enter your full name.';
+            if (!firstInvalidInput) firstInvalidInput = nameEl;
+        }
+
+        const phoneVal = phoneEl ? phoneEl.value.trim() : '';
+        const phonePattern = /^[0-9+\s\-()]{7,16}$/;
+        if (!phoneVal) {
+            isValid = false;
+            if (phoneEl) phoneEl.classList.add('has-error');
+            if (phoneErr) phoneErr.textContent = 'Please enter your phone number.';
+            if (!firstInvalidInput) firstInvalidInput = phoneEl;
+        } else if (!phonePattern.test(phoneVal)) {
+            isValid = false;
+            if (phoneEl) phoneEl.classList.add('has-error');
+            if (phoneErr) phoneErr.textContent = 'Please enter a valid phone number.';
+            if (!firstInvalidInput) firstInvalidInput = phoneEl;
+        }
+
+        const emailVal = emailEl ? emailEl.value.trim() : '';
+        const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+        if (emailVal && !emailPattern.test(emailVal)) {
+            isValid = false;
+            if (emailEl) emailEl.classList.add('has-error');
+            if (emailErr) emailErr.textContent = 'Please enter a valid email address.';
+            if (!firstInvalidInput) firstInvalidInput = emailEl;
+        }
+
+        if (!unitEl || !unitEl.value.trim()) {
+            isValid = false;
+            if (unitEl) unitEl.classList.add('has-error');
+            if (unitErr) unitErr.textContent = 'Please select a residence preference.';
+            if (!firstInvalidInput) firstInvalidInput = unitEl;
+        }
+
+        if (firstInvalidInput) {
+            firstInvalidInput.focus();
+        }
+
+        return isValid;
+    }
+
+    const popupForm = document.getElementById('popup-enquiry-form');
+    if (popupForm) {
+        popupForm.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('input', () => {
+                input.classList.remove('has-error');
+                const err = popupForm.querySelector(`#${input.id}-error`);
+                if (err) err.textContent = '';
+            });
+            input.addEventListener('change', () => {
+                input.classList.remove('has-error');
+                const err = popupForm.querySelector(`#${input.id}-error`);
+                if (err) err.textContent = '';
+            });
+        });
+
+        popupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validatePopupForm(popupForm)) return;
+
+            const submitBtn = popupForm.querySelector('.btn-enquiry-submit');
+            const spinner = popupForm.querySelector('.btn-spinner');
+            const btnText = popupForm.querySelector('.btn-text');
+
+            const origText = btnText ? btnText.textContent : 'Request a Call Back';
+            if (submitBtn) submitBtn.disabled = true;
+            if (spinner) spinner.style.display = 'inline-block';
+            if (btnText) btnText.textContent = 'Sending...';
+
+            const payload = {
+                name: popupForm.querySelector(`[name="name"]`)?.value?.trim() || '',
+                phoneNumber: popupForm.querySelector(`[name="phoneNumber"]`)?.value?.trim() || '',
+                email: popupForm.querySelector(`[name="email"]`)?.value?.trim() || '',
+                propertyInterest: popupForm.querySelector(`[name="propertyInterest"]`)?.value?.trim() || '',
+                message: popupForm.querySelector(`[name="message"]`)?.value?.trim() || ''
+            };
+
+            try {
+                const res = await fetch('/Home/SubmitEnquiry', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data && data.success) {
+                    popupForm.reset();
+                    const headerBlock = document.getElementById('agam-form-header-block');
+                    const formWrapper = document.getElementById('agam-popup-form-wrapper');
+                    const successBox = document.getElementById('agam-popup-success');
+                    if (headerBlock) headerBlock.style.display = 'none';
+                    if (formWrapper) formWrapper.style.display = 'none';
+                    if (successBox) successBox.style.display = 'block';
+
+                    setTimeout(() => {
+                        closeEnquiryModal();
+                    }, 2200);
+                } else {
+                    alert((data && data.message) ? data.message : 'Please check your information and try again.');
+                }
+            } catch (err) {
+                const headerBlock = document.getElementById('agam-form-header-block');
+                const formWrapper = document.getElementById('agam-popup-form-wrapper');
+                const successBox = document.getElementById('agam-popup-success');
+                if (headerBlock) headerBlock.style.display = 'none';
+                if (formWrapper) formWrapper.style.display = 'none';
+                if (successBox) successBox.style.display = 'block';
+                setTimeout(() => {
+                    closeEnquiryModal();
+                }, 2200);
+                popupForm.reset();
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+                if (spinner) spinner.style.display = 'none';
+                if (btnText) btnText.textContent = origText;
+            }
+        });
+    }
+
+    const yearSpan = document.getElementById('year');
+    if (yearSpan) {
+        yearSpan.textContent = new Date().getFullYear();
+    }
+</script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
