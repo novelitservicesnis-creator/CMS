@@ -119,75 +119,49 @@ namespace AgamEstates.Web.Controllers
             [FromQuery] string? status,
             [FromQuery] string? priority,
             [FromQuery] int? assignedTo,
-            [FromQuery] string? source)
+            [FromQuery] string? source,
+            [FromQuery] int page = 1)
         {
+            const int pageSize = 10;
+
             var model = new LeadsPageViewModel
             {
                 Search = search,
                 StatusFilter = status,
                 PriorityFilter = priority,
                 AssignedToFilter = assignedTo,
-                SourceFilter = source
+                SourceFilter = source,
+                PageSize = pageSize
             };
 
             try
             {
-                List<LeadDto> allLeads;
                 var isAdmin = User.IsInRole("Admin");
                 var currentUserId = GetCurrentUserId();
 
-                if (isAdmin)
+                if (!isAdmin)
                 {
-                    allLeads = await _leadRepository.GetAllLeadsAsync();
-                }
-                else
-                {
-                    allLeads = await _leadRepository.GetLeadsByAssignedUserAsync(currentUserId);
                     model.AssignedToFilter = currentUserId;
                 }
 
                 model.Statuses = await _leadStatusRepository.GetAllStatusesAsync();
                 model.Users = await _userRepository.GetAllUsersAsync();
 
-                var query = allLeads.AsEnumerable();
+                var pagedResult = await _leadRepository.GetPagedLeadsAsync(
+                    search,
+                    status,
+                    priority,
+                    assignedTo,
+                    source,
+                    isAdmin,
+                    currentUserId,
+                    page,
+                    pageSize);
 
-                // Filter by search keyword
-                if (!string.IsNullOrWhiteSpace(search))
-                {
-                    var term = search.Trim().ToLower();
-                    query = query.Where(l =>
-                        (l.Name != null && l.Name.ToLower().Contains(term)) ||
-                        (l.PhoneNumber != null && l.PhoneNumber.ToLower().Contains(term)) ||
-                        (l.Email != null && l.Email.ToLower().Contains(term)) ||
-                        (l.PropertyInterest != null && l.PropertyInterest.ToLower().Contains(term)) ||
-                        (l.City != null && l.City.ToLower().Contains(term)));
-                }
-
-                // Filter by status
-                if (!string.IsNullOrWhiteSpace(status))
-                {
-                    query = query.Where(l => (l.StatusName ?? "").Equals(status.Trim(), StringComparison.OrdinalIgnoreCase));
-                }
-
-                // Filter by priority
-                if (!string.IsNullOrWhiteSpace(priority))
-                {
-                    query = query.Where(l => (l.Priority ?? "").Equals(priority.Trim(), StringComparison.OrdinalIgnoreCase));
-                }
-
-                // Filter by assigned user (Admin only)
-                if (isAdmin && assignedTo.HasValue && assignedTo.Value > 0)
-                {
-                    query = query.Where(l => l.AssignedTo == assignedTo.Value);
-                }
-
-                // Filter by source
-                if (!string.IsNullOrWhiteSpace(source))
-                {
-                    query = query.Where(l => (l.Source ?? "").Equals(source.Trim(), StringComparison.OrdinalIgnoreCase));
-                }
-
-                model.Leads = query.OrderByDescending(l => l.LeadId).ToList();
+                model.Leads = pagedResult.Leads;
+                model.TotalCount = pagedResult.TotalCount;
+                model.CurrentPage = pagedResult.CurrentPage;
+                model.TotalPages = pagedResult.TotalPages;
             }
             catch (Exception ex)
             {

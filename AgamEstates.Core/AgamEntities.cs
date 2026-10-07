@@ -21,6 +21,7 @@ namespace AgamEstates.Core
         public virtual DbSet<SystemContactNumber> SystemContactNumbers { get; set; } = null!;
         public virtual DbSet<SystemBusinessHour> SystemBusinessHours { get; set; } = null!;
         public virtual DbSet<SystemAnnouncement> SystemAnnouncements { get; set; } = null!;
+        public virtual DbSet<SystemEmailSetting> SystemEmailSettings { get; set; } = null!;
         public virtual DbSet<BlogCategory> BlogCategories { get; set; } = null!;
         public virtual DbSet<BlogPost> BlogPosts { get; set; } = null!;
 
@@ -253,6 +254,25 @@ namespace AgamEstates.Core
                 entity.Property(e => e.LinkUrl).HasMaxLength(500);
                 entity.Property(e => e.IsActive).HasDefaultValue(false);
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
+            });
+
+            // SystemEmailSettings table configuration
+            modelBuilder.Entity<SystemEmailSetting>(entity =>
+            {
+                entity.ToTable("SystemEmailSettings");
+                entity.HasKey(e => e.EmailSettingId);
+                entity.Property(e => e.EmailSettingId).ValueGeneratedOnAdd();
+                entity.Property(e => e.SmtpHost).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.SmtpPort).IsRequired();
+                entity.Property(e => e.SmtpUsername).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.EncryptedPassword).IsRequired();
+                entity.Property(e => e.FromEmail).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.FromName).HasMaxLength(150);
+                entity.Property(e => e.ReceiverEmail).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.EnableSsl).HasDefaultValue(true);
+                entity.Property(e => e.IsActive).HasDefaultValue(true);
+                entity.Property(e => e.LastTestMessage).HasMaxLength(500);
+                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("SYSUTCDATETIME()");
             });
 
             // BlogCategories table configuration

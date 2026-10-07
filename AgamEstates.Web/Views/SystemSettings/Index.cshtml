@@ -9,20 +9,21 @@
     /* Tabs Navigation */
     .settings-nav-tabs {
         display: flex;
-        gap: 8px;
+        gap: 4px;
         border-bottom: 1px solid rgba(221, 174, 69, 0.25);
         margin-bottom: 24px;
         overflow-x: auto;
         padding-bottom: 2px;
         scrollbar-width: thin;
+        flex-wrap: wrap;
     }
     .settings-tab-btn {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 12px 20px;
+        gap: 7px;
+        padding: 11px 15px;
         font-family: var(--sans);
-        font-size: 0.92rem;
+        font-size: 0.88rem;
         font-weight: 500;
         color: var(--fade);
         background: transparent;
@@ -195,8 +196,9 @@
     .badge-expired { background: rgba(220, 38, 38, 0.12); color: #B91C1C; border: 1px solid rgba(220, 38, 38, 0.3); }
     .badge-inactive { background: rgba(100, 116, 139, 0.12); color: #475569; border: 1px solid rgba(100, 116, 139, 0.3); }
 
-    /* Address Grids */
-    .settings-grid-address-lines {
+    /* Address & Email Grids */
+    .settings-grid-address-lines,
+    .settings-grid-email-2col {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 18px;
@@ -207,6 +209,25 @@
         grid-template-columns: repeat(4, 1fr);
         gap: 18px;
         margin-bottom: 22px;
+    }
+    .email-status-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 14px;
+        padding: 14px 18px;
+        background: #FDFBF7;
+        border: 1px solid rgba(221, 174, 69, 0.28);
+        border-radius: 6px;
+        margin-bottom: 22px;
+    }
+    .email-actions-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 8px;
     }
 
     /* Responsive Cards (Phone & Announcement) */
@@ -578,9 +599,6 @@
             height: 15px !important;
             flex-shrink: 0 !important;
         }
-        .settings-tab-btn:nth-child(5) {
-            grid-column: 1 / -1 !important;
-        }
 
         .settings-card {
             padding: 18px 14px;
@@ -601,9 +619,24 @@
             justify-content: center;
         }
         .settings-grid-address-lines,
-        .settings-grid-address-geo {
+        .settings-grid-address-geo,
+        .settings-grid-email-2col {
             grid-template-columns: 1fr !important;
             gap: 14px;
+        }
+        .email-status-bar {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 10px;
+        }
+        .email-actions-row {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+        .email-actions-row .btn {
+            width: 100% !important;
+            min-height: 44px;
+            justify-content: center;
         }
 
         /* Phone & Announcement Switch to Cards */
@@ -830,6 +863,10 @@
     <button type="button" class="settings-tab-btn @(Model.ActiveTab == "social" ? "active" : "")" onclick="switchSettingsTab('social', this)">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
         <span>Social Media</span>
+    </button>
+    <button type="button" class="settings-tab-btn @(Model.ActiveTab == "email" ? "active" : "")" onclick="switchSettingsTab('email', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+        <span>Email Notifications</span>
     </button>
 </div>
 
@@ -1574,6 +1611,135 @@
 </div>
 
 <!-- ==========================================
+     TAB 6: EMAIL NOTIFICATIONS
+========================================== -->
+@{
+    var emailStatusLabel = Model.EmailSettings.ConnectionStatusLabel;
+    var emailBadgeClass = emailStatusLabel switch
+    {
+        "Valid" => "badge-active",
+        "Invalid" => "badge-expired",
+        _ => "badge-inactive"
+    };
+    string? lastTestedFormatted = null;
+    if (Model.EmailSettings.LastTestedAt.HasValue)
+    {
+        var istZone = TimeZoneInfo.FindSystemTimeZoneById("India Standard Time");
+        var istTime = TimeZoneInfo.ConvertTimeFromUtc(
+            DateTime.SpecifyKind(Model.EmailSettings.LastTestedAt.Value, DateTimeKind.Utc),
+            istZone);
+        lastTestedFormatted = istTime.ToString("dd MMM yyyy, hh:mm tt");
+    }
+}
+<div id="tab-pane-email" class="settings-tab-pane @(Model.ActiveTab == "email" ? "active" : "")">
+    <div class="settings-card">
+        <div class="settings-card-header">
+            <div>
+                <h2 class="settings-card-title">Email Notification Settings</h2>
+                <p class="settings-card-subtitle">Configure how website enquiry notifications are sent.</p>
+            </div>
+        </div>
+
+        <!-- Connection Status Bar -->
+        <div class="email-status-bar">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <span style="font-size: 0.82rem; font-weight: 600; color: var(--primary-dark); text-transform: uppercase; letter-spacing: 0.05em;">Connection Status:</span>
+                <span class="badge @emailBadgeClass" style="display: inline-block; padding: 4px 10px; font-weight: 700;">@emailStatusLabel</span>
+                @if (Model.EmailSettings.HasSavedPassword)
+                {
+                    <span class="badge badge-active" style="display: inline-block; padding: 3px 8px; font-size: 0.72rem;">Encrypted Password Stored</span>
+                }
+            </div>
+            <div style="font-size: 0.82rem; color: var(--fade);">
+                @if (!string.IsNullOrWhiteSpace(lastTestedFormatted))
+                {
+                    <span>Last Tested: <strong style="color: var(--primary-dark);">@lastTestedFormatted</strong></span>
+                }
+                else
+                {
+                    <span>Last Tested: <strong>Never tested</strong></span>
+                }
+            </div>
+        </div>
+
+        <form id="email-settings-form" method="post" action="/Admin/SystemSettings/SaveEmailSettings">
+            @Html.AntiForgeryToken()
+
+            <div class="settings-grid-email-2col">
+                <div>
+                    <label for="smtp-host-input" class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">SMTP Host *</label>
+                    <input type="text" id="smtp-host-input" name="SmtpHost" class="form-control" value="@Model.EmailSettings.SmtpHost" placeholder="smtp.gmail.com" required maxlength="200" />
+                </div>
+                <div>
+                    <label for="smtp-port-input" class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">SMTP Port *</label>
+                    <input type="number" id="smtp-port-input" name="SmtpPort" class="form-control" value="@Model.EmailSettings.SmtpPort" min="1" max="65535" placeholder="587" required />
+                </div>
+            </div>
+
+            <div class="settings-grid-email-2col">
+                <div>
+                    <label for="smtp-username-input" class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">Sender Email *</label>
+                    <input type="email" id="smtp-username-input" name="SmtpUsername" class="form-control" value="@Model.EmailSettings.SmtpUsername" placeholder="chandandas.nis@gmail.com" required maxlength="200" oninput="syncFromEmailWithSender(this.value)" />
+                    <span style="font-size: 0.78rem; color: var(--fade); margin-top: 4px; display: block;">Authenticated SMTP username/email used for sending notifications.</span>
+                </div>
+                <div>
+                    <label for="smtp-password-input" class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">SMTP App Password *</label>
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input type="password" id="smtp-password-input" name="SmtpPassword" class="form-control" value="" placeholder="••••••••••••••••" autocomplete="new-password" @(Model.EmailSettings.HasSavedPassword ? "" : "required") maxlength="200" style="width: 100%; padding-right: 68px; box-sizing: border-box;" />
+                        <button type="button" id="toggle-smtp-password" onclick="toggleSmtpPasswordVisibility()" style="position: absolute; right: 10px; background: transparent; border: none; color: var(--primary-dark); font-size: 0.76rem; font-weight: 600; cursor: pointer; padding: 4px 6px; text-transform: uppercase; letter-spacing: 0.04em;">Show</button>
+                    </div>
+                    <span style="font-size: 0.78rem; color: var(--fade); margin-top: 4px; display: block;">Leave blank to keep the existing App Password.</span>
+                </div>
+            </div>
+
+            <div class="settings-grid-email-2col">
+                <div>
+                    <label for="smtp-fromname-input" class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">From Name</label>
+                    <input type="text" id="smtp-fromname-input" name="FromName" class="form-control" value="@Model.EmailSettings.FromName" placeholder="Agam Estates" maxlength="150" />
+                    <span style="font-size: 0.78rem; color: var(--fade); margin-top: 4px; display: block;">Sender display name shown in the recipient's inbox.</span>
+                </div>
+                <div>
+                    <label for="smtp-fromemail-input" class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">From Email</label>
+                    <input type="email" id="smtp-fromemail-input" name="FromEmail" class="form-control" value="@Model.EmailSettings.FromEmail" placeholder="chandandas.nis@gmail.com" required maxlength="200" />
+                    <span style="font-size: 0.78rem; color: var(--fade); margin-top: 4px; display: block;">For Gmail SMTP, From Email should match Sender Email.</span>
+                </div>
+            </div>
+
+            <div class="settings-grid-email-2col" style="margin-bottom: 24px;">
+                <div>
+                    <label for="smtp-receiver-input" class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">Receiver Email *</label>
+                    <input type="email" id="smtp-receiver-input" name="ReceiverEmail" class="form-control" value="@Model.EmailSettings.ReceiverEmail" placeholder="chandanyt20314@gmail.com" required maxlength="200" />
+                    <span style="font-size: 0.78rem; color: var(--fade); margin-top: 4px; display: block;">Website enquiry notifications will be delivered to this email address.</span>
+                </div>
+                <div>
+                    <label class="form-label" style="font-weight: 600; color: var(--primary-dark); display: block; margin-bottom: 6px;">Enable SSL</label>
+                    <div style="display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 6px 14px; background: #FDFBF7; border: 1px solid rgba(221, 174, 69, 0.25); border-radius: 4px; box-sizing: border-box;">
+                        <label class="switch-toggle" title="Toggle SSL/TLS encryption">
+                            <input type="checkbox" id="smtp-enable-ssl" name="EnableSsl" value="true" @(Model.EmailSettings.EnableSsl ? "checked" : "") onchange="updateSslStatusLabel(this.checked)" />
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span id="smtp-ssl-status-text" style="font-size: 0.85rem; font-weight: 700; color: @(Model.EmailSettings.EnableSsl ? "#15803D" : "#64748B");">
+                            @(Model.EmailSettings.EnableSsl ? "ON" : "OFF")
+                        </span>
+                        <span style="font-size: 0.8rem; color: var(--fade);">TLS/STARTTLS encryption (recommended for port 587)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="email-actions-row">
+                <button type="submit" formaction="/Admin/SystemSettings/TestEmailConnection" class="btn btn-outline" id="btn-test-email" style="background: #FFFFFF;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    <span>Test Connection</span>
+                </button>
+                <button type="submit" class="btn btn-gold save-btn" id="btn-save-email">
+                    <span>Save Email Settings</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==========================================
      MODALS
 ========================================== -->
 
@@ -1962,6 +2128,38 @@
     function confirmActivateAnnouncement(id, title) {
         document.getElementById('activate-confirm-id').value = id;
         openModal('activate-confirm-modal');
+    }
+
+    // Email Notifications SSL toggle label & FromEmail sync
+    let lastSyncedSender = '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(Model.EmailSettings.SmtpUsername ?? ""))';
+
+    function updateSslStatusLabel(isChecked) {
+        const label = document.getElementById('smtp-ssl-status-text');
+        if (!label) return;
+        label.innerText = isChecked ? 'ON' : 'OFF';
+        label.style.color = isChecked ? '#15803D' : '#64748B';
+    }
+
+    function syncFromEmailWithSender(senderVal) {
+        const fromEmailInput = document.getElementById('smtp-fromemail-input');
+        if (!fromEmailInput) return;
+        if (!fromEmailInput.value || fromEmailInput.value === lastSyncedSender) {
+            fromEmailInput.value = senderVal;
+        }
+        lastSyncedSender = senderVal;
+    }
+
+    function toggleSmtpPasswordVisibility() {
+        const input = document.getElementById('smtp-password-input');
+        const btn = document.getElementById('toggle-smtp-password');
+        if (!input || !btn) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerText = 'Hide';
+        } else {
+            input.type = 'password';
+            btn.innerText = 'Show';
+        }
     }
 
     // Prevent double submission & show loading

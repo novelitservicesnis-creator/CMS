@@ -164,4 +164,33 @@ namespace AgamEstates.Repository.ViewModel
         public bool IsClosed { get; set; }
         public bool IsOpen => !IsClosed;
     }
+
+    public class SystemEmailSettingDto
+    {
+        public int EmailSettingId { get; set; }
+        public string SmtpHost { get; set; } = "smtp.gmail.com";
+        public int SmtpPort { get; set; } = 587;
+        public string SmtpUsername { get; set; } = string.Empty;
+        public bool HasSavedPassword { get; set; }
+        public string FromEmail { get; set; } = string.Empty;
+        public string? FromName { get; set; } = "Agam Estates";
+        public string ReceiverEmail { get; set; } = string.Empty;
+        public bool EnableSsl { get; set; } = true;
+        public bool IsActive { get; set; } = true;
+        public DateTime? LastTestedAt { get; set; }
+        public bool? LastTestSucceeded { get; set; }
+        public string? LastTestMessage { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public int? UpdatedBy { get; set; }
+
+        public string ConnectionStatusLabel
+        {
+            get
+            {
+                if (!LastTestedAt.HasValue || !LastTestSucceeded.HasValue)
+                    return "Not tested";
+                return LastTestSucceeded.Value ? "Valid" : "Invalid";
+            }
+        }
+    }
 }

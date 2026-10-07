@@ -644,7 +644,7 @@ namespace AgamEstates.Repository.Repository
                 {
                     CompanyName = "Agam Estates",
                     LogoPath = "/images/logo.png",
-                    Email = "sales@agamestates.in",
+                    Email = "chandanyt20314@gmail.com",
                     AddressLine1 = "Sector 20, Panchkula Extension",
                     AddressLine2 = "Tdi South Extension II",
                     City = "Panchkula",
@@ -713,6 +713,172 @@ namespace AgamEstates.Repository.Repository
                 DataContext.SystemAnnouncements.Add(announcement);
                 await DataContext.SaveChangesAsync();
             }
+
+            if (!await DataContext.SystemEmailSettings.AnyAsync())
+            {
+                var defaultEmailSetting = new SystemEmailSetting
+                {
+                    SmtpHost = "smtp.gmail.com",
+                    SmtpPort = 587,
+                    SmtpUsername = "chandandas.nis@gmail.com",
+                    EncryptedPassword = string.Empty,
+                    FromEmail = "chandandas.nis@gmail.com",
+                    FromName = "Agam Estates",
+                    ReceiverEmail = "chandanyt20314@gmail.com",
+                    EnableSsl = true,
+                    IsActive = true,
+                    UpdatedAt = DateTime.UtcNow
+                };
+                DataContext.SystemEmailSettings.Add(defaultEmailSetting);
+                await DataContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task<SystemEmailSetting?> GetActiveEmailSettingEntityAsync()
+        {
+            var emailSetting = await DataContext.SystemEmailSettings
+                .OrderByDescending(e => e.IsActive)
+                .ThenBy(e => e.EmailSettingId)
+                .FirstOrDefaultAsync();
+
+            if (emailSetting == null)
+            {
+                await EnsureDefaultSettingsSeededAsync();
+                emailSetting = await DataContext.SystemEmailSettings
+                    .OrderByDescending(e => e.IsActive)
+                    .ThenBy(e => e.EmailSettingId)
+                    .FirstOrDefaultAsync();
+            }
+
+            return emailSetting;
+        }
+
+        public async Task<SystemEmailSettingDto> GetEmailSettingsDtoAsync()
+        {
+            var entity = await GetActiveEmailSettingEntityAsync();
+            if (entity == null)
+            {
+                return new SystemEmailSettingDto();
+            }
+
+            return new SystemEmailSettingDto
+            {
+                EmailSettingId = entity.EmailSettingId,
+                SmtpHost = entity.SmtpHost,
+                SmtpPort = entity.SmtpPort,
+                SmtpUsername = entity.SmtpUsername,
+                HasSavedPassword = !string.IsNullOrWhiteSpace(entity.EncryptedPassword),
+                FromEmail = string.IsNullOrWhiteSpace(entity.FromEmail) ? entity.SmtpUsername : entity.FromEmail,
+                FromName = string.IsNullOrWhiteSpace(entity.FromName) ? "Agam Estates" : entity.FromName,
+                ReceiverEmail = entity.ReceiverEmail,
+                EnableSsl = entity.EnableSsl,
+                IsActive = entity.IsActive,
+                LastTestedAt = entity.LastTestedAt,
+                LastTestSucceeded = entity.LastTestSucceeded,
+                LastTestMessage = entity.LastTestMessage,
+                UpdatedAt = entity.UpdatedAt,
+                UpdatedBy = entity.UpdatedBy
+            };
+        }
+
+        public async Task<bool> SaveEmailSettingsAsync(
+            string smtpHost,
+            int smtpPort,
+            string smtpUsername,
+            string? newEncryptedPassword,
+            string fromEmail,
+            string? fromName,
+            string receiverEmail,
+            bool enableSsl,
+            int? updatedBy)
+        {
+            var entity = await GetActiveEmailSettingEntityAsync();
+            if (entity == null)
+            {
+                entity = new SystemEmailSetting
+                {
+                    SmtpHost = smtpHost.Trim(),
+                    SmtpPort = smtpPort,
+                    SmtpUsername = smtpUsername.Trim(),
+                    EncryptedPassword = newEncryptedPassword ?? string.Empty,
+                    FromEmail = fromEmail.Trim(),
+                    FromName = string.IsNullOrWhiteSpace(fromName) ? "Agam Estates" : fromName.Trim(),
+                    ReceiverEmail = receiverEmail.Trim(),
+                    EnableSsl = enableSsl,
+                    IsActive = true,
+                    UpdatedAt = DateTime.UtcNow,
+                    UpdatedBy = updatedBy
+                };
+                DataContext.SystemEmailSettings.Add(entity);
+                await DataContext.SaveChangesAsync();
+                return true;
+            }
+
+            var cleanHost = smtpHost.Trim();
+            var cleanUsername = smtpUsername.Trim();
+            var cleanFromEmail = fromEmail.Trim();
+            var cleanFromName = string.IsNullOrWhiteSpace(fromName) ? "Agam Estates" : fromName.Trim();
+            var cleanReceiver = receiverEmail.Trim();
+
+            bool connectionChanged =
+                !string.Equals(entity.SmtpHost, cleanHost, StringComparison.OrdinalIgnoreCase) ||
+                entity.SmtpPort != smtpPort ||
+                !string.Equals(entity.SmtpUsername, cleanUsername, StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(entity.FromEmail, cleanFromEmail, StringComparison.OrdinalIgnoreCase) ||
+                entity.EnableSsl != enableSsl ||
+                !string.IsNullOrWhiteSpace(newEncryptedPassword);
+
+            entity.SmtpHost = cleanHost;
+            entity.SmtpPort = smtpPort;
+            entity.SmtpUsername = cleanUsername;
+            if (!string.IsNullOrWhiteSpace(newEncryptedPassword))
+            {
+                entity.EncryptedPassword = newEncryptedPassword;
+            }
+            entity.FromEmail = cleanFromEmail;
+            entity.FromName = cleanFromName;
+            entity.ReceiverEmail = cleanReceiver;
+            entity.EnableSsl = enableSsl;
+            entity.IsActive = true;
+            entity.UpdatedAt = DateTime.UtcNow;
+            entity.UpdatedBy = updatedBy;
+
+            if (connectionChanged)
+            {
+                entity.LastTestedAt = null;
+                entity.LastTestSucceeded = null;
+                entity.LastTestMessage = null;
+            }
+
+            // Ensure any duplicate legacy rows (if any ever existed) are deactivated/removed so only ONE active record exists
+            var extraRows = await DataContext.SystemEmailSettings
+                .Where(e => e.EmailSettingId != entity.EmailSettingId)
+                .ToListAsync();
+            if (extraRows.Any())
+            {
+                DataContext.SystemEmailSettings.RemoveRange(extraRows);
+            }
+
+            await DataContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> UpdateEmailTestStatusAsync(bool succeeded, string? message, int? updatedBy)
+        {
+            var entity = await GetActiveEmailSettingEntityAsync();
+            if (entity == null) return false;
+
+            entity.LastTestedAt = DateTime.UtcNow;
+            entity.LastTestSucceeded = succeeded;
+            entity.LastTestMessage = message?.Length > 500 ? message.Substring(0, 500) : message;
+            entity.UpdatedAt = DateTime.UtcNow;
+            if (updatedBy.HasValue)
+            {
+                entity.UpdatedBy = updatedBy;
+            }
+
+            await DataContext.SaveChangesAsync();
+            return true;
         }
 
         private static string FormatTime(TimeSpan? time)

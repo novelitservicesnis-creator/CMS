@@ -284,7 +284,12 @@
 
         const emailVal = emailEl ? emailEl.value.trim() : '';
         const emailPattern = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
-        if (emailVal && !emailPattern.test(emailVal)) {
+        if (!emailVal) {
+            isValid = false;
+            if (emailEl) emailEl.classList.add('has-error');
+            if (emailErr) emailErr.textContent = 'Please enter your email address.';
+            if (!firstInvalidInput) firstInvalidInput = emailEl;
+        } else if (!emailPattern.test(emailVal)) {
             isValid = false;
             if (emailEl) emailEl.classList.add('has-error');
             if (emailErr) emailErr.textContent = 'Please enter a valid email address.';

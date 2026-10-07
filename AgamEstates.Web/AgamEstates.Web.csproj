@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RollForward>Major</RollForward>
+    <UserSecretsId>agam-estates-web-secrets-2026</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

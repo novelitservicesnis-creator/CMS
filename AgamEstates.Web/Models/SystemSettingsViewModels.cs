@@ -11,6 +11,7 @@ namespace AgamEstates.Web.Models
         public SystemSettingDto Settings { get; set; } = new();
         public List<SystemAnnouncementDto> Announcements { get; set; } = new();
         public List<GroupedBusinessHourItem> GroupedBusinessHours { get; set; } = new();
+        public SystemEmailSettingDto EmailSettings { get; set; } = new();
         public string ActiveTab { get; set; } = "general";
     }
 
@@ -109,5 +110,37 @@ namespace AgamEstates.Web.Models
 
         [StringLength(500)]
         public string? YouTubeUrl { get; set; }
+    }
+
+    public class UpdateEmailSettingsInputModel
+    {
+        [Required(ErrorMessage = "SMTP Host is required.")]
+        [StringLength(200, ErrorMessage = "SMTP Host cannot exceed 200 characters.")]
+        public string SmtpHost { get; set; } = string.Empty;
+
+        [Range(1, 65535, ErrorMessage = "SMTP Port must be between 1 and 65535.")]
+        public int SmtpPort { get; set; } = 587;
+
+        [Required(ErrorMessage = "Sender Email is required.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid Sender Email address.")]
+        [StringLength(200, ErrorMessage = "Sender Email cannot exceed 200 characters.")]
+        public string SmtpUsername { get; set; } = string.Empty;
+
+        [StringLength(200, ErrorMessage = "SMTP App Password cannot exceed 200 characters.")]
+        public string? SmtpPassword { get; set; }
+
+        [EmailAddress(ErrorMessage = "Please enter a valid From Email address.")]
+        [StringLength(200, ErrorMessage = "From Email cannot exceed 200 characters.")]
+        public string? FromEmail { get; set; }
+
+        [StringLength(150, ErrorMessage = "From Name cannot exceed 150 characters.")]
+        public string? FromName { get; set; }
+
+        [Required(ErrorMessage = "Receiver Email is required.")]
+        [EmailAddress(ErrorMessage = "Please enter a valid Receiver Email address.")]
+        [StringLength(200, ErrorMessage = "Receiver Email cannot exceed 200 characters.")]
+        public string ReceiverEmail { get; set; } = string.Empty;
+
+        public bool EnableSsl { get; set; }
     }
 }

@@ -4,6 +4,7 @@ using AgamEstates.Repository.Base;
 using AgamEstates.Repository.Interface;
 using AgamEstates.Repository.ViewModel;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,6 +42,106 @@ namespace AgamEstates.Repository.Repository
                     CreatedAt = l.CreatedAt
                 })
                 .ToListAsync();
+        }
+
+        public async Task<(List<LeadDto> Leads, int TotalCount, int CurrentPage, int TotalPages)> GetPagedLeadsAsync(
+            string? search,
+            string? status,
+            string? priority,
+            int? assignedTo,
+            string? source,
+            bool isAdmin,
+            int currentUserId,
+            int page = 1,
+            int pageSize = 10)
+        {
+            if (pageSize < 1)
+            {
+                pageSize = 10;
+            }
+
+            var query = DataContext.Leads
+                .AsNoTracking()
+                .Include(l => l.Status)
+                .Include(l => l.AssignedUser)
+                .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(l => l.AssignedTo == currentUserId);
+            }
+            else if (assignedTo.HasValue && assignedTo.Value > 0)
+            {
+                query = query.Where(l => l.AssignedTo == assignedTo.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim().ToLower();
+                query = query.Where(l =>
+                    (l.Name != null && l.Name.ToLower().Contains(term)) ||
+                    (l.PhoneNumber != null && l.PhoneNumber.ToLower().Contains(term)) ||
+                    (l.Email != null && l.Email.ToLower().Contains(term)) ||
+                    (l.PropertyInterest != null && l.PropertyInterest.ToLower().Contains(term)) ||
+                    (l.City != null && l.City.ToLower().Contains(term)));
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                var statusTerm = status.Trim().ToLower();
+                query = query.Where(l => l.Status != null && l.Status.StatusName != null && l.Status.StatusName.ToLower() == statusTerm);
+            }
+
+            if (!string.IsNullOrWhiteSpace(priority))
+            {
+                var priorityTerm = priority.Trim().ToLower();
+                query = query.Where(l => l.Priority != null && l.Priority.ToLower() == priorityTerm);
+            }
+
+            if (!string.IsNullOrWhiteSpace(source))
+            {
+                var sourceTerm = source.Trim().ToLower();
+                query = query.Where(l => l.Source != null && l.Source.ToLower() == sourceTerm);
+            }
+
+            var totalCount = await query.CountAsync();
+            var totalPages = totalCount > 0 ? (int)Math.Ceiling((double)totalCount / pageSize) : 0;
+
+            if (page < 1)
+            {
+                page = 1;
+            }
+
+            if (page > totalPages && totalPages > 0)
+            {
+                page = totalPages;
+            }
+
+            var pagedLeads = await query
+                .OrderByDescending(l => l.LeadId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(l => new LeadDto
+                {
+                    LeadId = l.LeadId,
+                    Name = l.Name,
+                    PhoneNumber = l.PhoneNumber,
+                    Email = l.Email,
+                    PropertyInterest = l.PropertyInterest,
+                    Budget = l.Budget,
+                    City = l.City,
+                    Source = l.Source,
+                    StatusId = l.StatusId,
+                    StatusName = l.Status != null ? l.Status.StatusName : null,
+                    AssignedTo = l.AssignedTo,
+                    AssignedToName = l.AssignedUser != null ? l.AssignedUser.FullName : null,
+                    Priority = l.Priority,
+                    Notes = l.Notes,
+                    CreatedAt = l.CreatedAt
+                })
+                .ToListAsync();
+
+            return (pagedLeads, totalCount, page, totalPages);
         }
 
         public async Task<LeadDto?> GetLeadByIdAsync(int id)

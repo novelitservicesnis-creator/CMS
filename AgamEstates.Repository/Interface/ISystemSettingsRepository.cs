@@ -35,6 +35,20 @@ namespace AgamEstates.Repository.Interface
         Task<bool> DeactivateAnnouncementAsync(int announcementId, int? updatedBy);
         Task<bool> DeleteAnnouncementAsync(int announcementId);
 
+        Task<SystemEmailSetting?> GetActiveEmailSettingEntityAsync();
+        Task<SystemEmailSettingDto> GetEmailSettingsDtoAsync();
+        Task<bool> SaveEmailSettingsAsync(
+            string smtpHost,
+            int smtpPort,
+            string smtpUsername,
+            string? newEncryptedPassword,
+            string fromEmail,
+            string? fromName,
+            string receiverEmail,
+            bool enableSsl,
+            int? updatedBy);
+        Task<bool> UpdateEmailTestStatusAsync(bool succeeded, string? message, int? updatedBy);
+
         Task EnsureDefaultSettingsSeededAsync();
     }
 }

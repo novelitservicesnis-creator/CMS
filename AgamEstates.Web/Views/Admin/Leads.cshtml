@@ -1,4 +1,4 @@
-﻿@model AgamEstates.Web.Models.LeadsPageViewModel
+@model AgamEstates.Web.Models.LeadsPageViewModel
 @{
     Layout = "_AdminLayout";
     ViewData["Title"] = "Leads";
@@ -15,6 +15,54 @@
             Url = null
         }
     };
+
+    var isAdminUser = User.IsInRole("Admin");
+}
+
+@section Styles {
+    <style>
+        .table-pagination .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .table-pagination .page-num-btn,
+        .table-pagination .page-nav-btn {
+            min-width: 34px;
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .table-pagination .page-nav-btn[disabled] {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        @@media (max-width: 576px) {
+            .pagination-leads-suffix,
+            .page-nav-label {
+                display: none;
+            }
+            .table-pagination {
+                padding: 14px 12px;
+                gap: 10px;
+            }
+            .table-pagination .pagination-controls {
+                justify-content: center;
+                gap: 6px;
+            }
+            .table-pagination .page-num-btn,
+            .table-pagination .page-nav-btn {
+                min-width: 38px;
+                min-height: 38px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
 }
 
 <div class="page-head">
@@ -287,14 +335,42 @@
     </div>
 
     <!-- Pagination Footer -->
-    @if (Model.Leads.Any())
+    @if (Model.TotalCount > 0)
     {
-        <div class="table-pagination">
-            <span>Showing <strong>@Model.Leads.Count</strong> total lead(s)</span>
-            <div class="pagination-controls">
-                <button type="button" class="btn btn-sm btn-outline" disabled>&larr; Previous</button>
-                <button type="button" class="btn btn-sm btn-navy">1</button>
-                <button type="button" class="btn btn-sm btn-outline" disabled>Next &rarr;</button>
+        <div class="table-pagination" id="leads-pagination">
+            <span class="pagination-summary" id="leads-pagination-summary">
+                Showing <strong>@Model.StartRecord–@Model.EndRecord</strong> of <strong>@Model.TotalCount</strong><span class="pagination-leads-suffix"> @(Model.TotalCount == 1 ? "lead" : "leads")</span>
+            </span>
+            <div class="pagination-controls" role="navigation" aria-label="Leads pagination">
+                @if (Model.HasPreviousPage)
+                {
+                    <a href="@Model.BuildPageUrl(Model.CurrentPage - 1, isAdminUser)" class="btn btn-sm btn-outline page-nav-btn" id="leads-page-prev" aria-label="Previous page"><span>&larr;</span><span class="page-nav-label">&nbsp;Previous</span></a>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-sm btn-outline page-nav-btn" id="leads-page-prev" disabled aria-disabled="true" aria-label="Previous page"><span>&larr;</span><span class="page-nav-label">&nbsp;Previous</span></button>
+                }
+
+                @for (int p = 1; p <= Math.Max(1, Model.TotalPages); p++)
+                {
+                    if (p == Model.CurrentPage)
+                    {
+                        <a href="@Model.BuildPageUrl(p, isAdminUser)" class="btn btn-sm btn-navy page-num-btn active" data-page="@p" aria-current="page">@p</a>
+                    }
+                    else
+                    {
+                        <a href="@Model.BuildPageUrl(p, isAdminUser)" class="btn btn-sm btn-outline page-num-btn" data-page="@p">@p</a>
+                    }
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <a href="@Model.BuildPageUrl(Model.CurrentPage + 1, isAdminUser)" class="btn btn-sm btn-outline page-nav-btn" id="leads-page-next" aria-label="Next page"><span class="page-nav-label">Next&nbsp;</span><span>&rarr;</span></a>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-sm btn-outline page-nav-btn" id="leads-page-next" disabled aria-disabled="true" aria-label="Next page"><span class="page-nav-label">Next&nbsp;</span><span>&rarr;</span></button>
+                }
             </div>
         </div>
     }

@@ -23,6 +23,8 @@ namespace AgamEstates.Web.Controllers
     {
         private readonly ISystemSettingsRepository _settingsRepository;
         private readonly ISystemSettingsService _settingsService;
+        private readonly IEmailSettingsService _emailSettingsService;
+        private readonly IEmailService _emailService;
         private readonly IFileStorageService _fileStorageService;
         private readonly IWebHostEnvironment _env;
 
@@ -36,6 +38,8 @@ namespace AgamEstates.Web.Controllers
             ILogger<SystemSettingsController> logger,
             ISystemSettingsRepository settingsRepository,
             ISystemSettingsService settingsService,
+            IEmailSettingsService emailSettingsService,
+            IEmailService emailService,
             IFileStorageService fileStorageService,
             IWebHostEnvironment env,
             IMemoryCache? cache = null)
@@ -43,6 +47,8 @@ namespace AgamEstates.Web.Controllers
         {
             _settingsRepository = settingsRepository;
             _settingsService = settingsService;
+            _emailSettingsService = emailSettingsService;
+            _emailService = emailService;
             _fileStorageService = fileStorageService;
             _env = env;
         }
@@ -71,12 +77,14 @@ namespace AgamEstates.Web.Controllers
             var settingsDto = await _settingsRepository.GetSettingsDtoAsync() ?? new SystemSettingDto();
             var announcements = await _settingsRepository.GetAllAnnouncementsAsync();
             var publicSettings = await _settingsRepository.GetPublicSiteSettingsAsync();
+            var emailSettings = await _emailSettingsService.GetAdminViewSettingsAsync();
 
             var vm = new SystemSettingsPageViewModel
             {
                 Settings = settingsDto,
                 Announcements = announcements,
                 GroupedBusinessHours = publicSettings?.AllGroupedBusinessHours ?? new(),
+                EmailSettings = emailSettings,
                 ActiveTab = string.IsNullOrWhiteSpace(tab) ? "general" : tab.ToLowerInvariant()
             };
 
@@ -543,6 +551,94 @@ namespace AgamEstates.Web.Controllers
             }
 
             return RedirectToAction(nameof(Index), new { tab = "social" });
+        }
+
+        [HttpPost("/Admin/SystemSettings/SaveEmailSettings")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveEmailSettings(UpdateEmailSettingsInputModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var firstError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .FirstOrDefault(m => !string.IsNullOrWhiteSpace(m));
+                TempData["ErrorMessage"] = firstError ?? "Please check the email notification settings entered.";
+                return RedirectToAction(nameof(Index), new { tab = "email" });
+            }
+
+            var adminId = GetCurrentAdminUserId();
+            try
+            {
+                var (success, message) = await _emailSettingsService.SaveEmailSettingsAsync(model, adminId);
+                if (success)
+                {
+                    TempData["SuccessMessage"] = message;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = message;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to save email notification settings.");
+                TempData["ErrorMessage"] = "Unable to save email notification settings.";
+            }
+
+            return RedirectToAction(nameof(Index), new { tab = "email" });
+        }
+
+        [HttpPost("/Admin/SystemSettings/TestEmailConnection")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TestEmailConnection(UpdateEmailSettingsInputModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var firstError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .FirstOrDefault(m => !string.IsNullOrWhiteSpace(m));
+                TempData["ErrorMessage"] = firstError ?? "Please complete all required email configuration fields before testing.";
+                return RedirectToAction(nameof(Index), new { tab = "email" });
+            }
+
+            var adminId = GetCurrentAdminUserId();
+
+            try
+            {
+                var (saveSuccess, saveMessage) = await _emailSettingsService.SaveEmailSettingsAsync(model, adminId);
+                if (!saveSuccess)
+                {
+                    TempData["ErrorMessage"] = saveMessage;
+                    return RedirectToAction(nameof(Index), new { tab = "email" });
+                }
+
+                var resolvedConfig = await _emailSettingsService.GetResolvedRuntimeConfigAsync();
+                if (string.IsNullOrWhiteSpace(resolvedConfig.DecryptedPassword))
+                {
+                    const string missingPwdMsg = "Configuration invalid. Unable to connect/send using the supplied SMTP configuration.";
+                    await _emailSettingsService.UpdateTestStatusAsync(false, missingPwdMsg, adminId);
+                    TempData["ErrorMessage"] = missingPwdMsg;
+                    return RedirectToAction(nameof(Index), new { tab = "email" });
+                }
+
+                await _emailService.SendTestConnectionEmailAsync(resolvedConfig);
+
+                const string validMsg = "Configuration valid. Test email sent successfully.";
+                await _emailSettingsService.UpdateTestStatusAsync(true, validMsg, adminId);
+                _logger.LogInformation("SMTP test email sent successfully via {Host}:{Port} to {ReceiverEmail}.", resolvedConfig.SmtpHost, resolvedConfig.SmtpPort, resolvedConfig.ReceiverEmail);
+                TempData["SuccessMessage"] = validMsg;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "SMTP test connection failed for host {Host}:{Port}.", model.SmtpHost, model.SmtpPort);
+                const string invalidMsg = "Configuration invalid. Unable to connect/send using the supplied SMTP configuration.";
+                await _emailSettingsService.UpdateTestStatusAsync(false, invalidMsg, adminId);
+                TempData["ErrorMessage"] = invalidMsg;
+            }
+
+            return RedirectToAction(nameof(Index), new { tab = "email" });
         }
 
         private static bool TryParseTime(string? str, out TimeSpan time)

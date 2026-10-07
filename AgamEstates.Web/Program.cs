@@ -34,6 +34,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 // Memory cache, HttpContextAccessor, Logging
+builder.Configuration.AddUserSecrets<Program>(optional: true);
+builder.Configuration.AddEnvironmentVariables();
+builder.Configuration.AddCommandLine(args);
+builder.Services.Configure<AgamEstates.Web.Models.SmtpSettings>(
+    builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.AddDataProtection();
 builder.Services.AddMemoryCache();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddLogging();
@@ -47,6 +53,8 @@ builder.Services.AddScoped<ISystemSettingsRepository, SystemSettingsRepository>(
 builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 builder.Services.AddScoped<AgamEstates.Web.Services.ISystemSettingsService, AgamEstates.Web.Services.SystemSettingsService>();
 builder.Services.AddScoped<AgamEstates.Web.Services.IFileStorageService, AgamEstates.Web.Services.FileStorageService>();
+builder.Services.AddScoped<AgamEstates.Web.Services.IEmailSettingsService, AgamEstates.Web.Services.EmailSettingsService>();
+builder.Services.AddScoped<AgamEstates.Web.Services.IEmailService, AgamEstates.Web.Services.EmailService>();
 
 // Also register concrete types for direct injection or UnitOfWork resolution
 builder.Services.AddScoped<UserRepository>();

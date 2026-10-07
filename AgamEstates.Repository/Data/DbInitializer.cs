@@ -270,7 +270,7 @@ namespace AgamEstates.Repository.Data
                     {
                         CompanyName = "Agam Estates",
                         LogoPath = "/images/logo.png",
-                        Email = "sales@agamestates.in",
+                        Email = "chandanyt20314@gmail.com",
                         AddressLine1 = "Sector 20, Panchkula Extension",
                         AddressLine2 = "Tdi South Extension II",
                         City = "Panchkula",
@@ -323,6 +323,18 @@ namespace AgamEstates.Repository.Data
                     }
 
                     await context.SaveChangesAsync();
+                }
+                else
+                {
+                    var activeSetting = await context.SystemSettings.FirstOrDefaultAsync(s => s.IsActive);
+                    if (activeSetting != null &&
+                        (string.IsNullOrWhiteSpace(activeSetting.Email) ||
+                         string.Equals(activeSetting.Email.Trim(), "sales@agamestates.in", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        activeSetting.Email = "chandanyt20314@gmail.com";
+                        activeSetting.UpdatedAt = DateTime.UtcNow;
+                        await context.SaveChangesAsync();
+                    }
                 }
 
                 // 5. Seed SystemAnnouncements if not present
@@ -387,8 +399,49 @@ END
 IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE object_id = OBJECT_ID('dbo.BlogPosts') AND name = 'AuthorName')
 BEGIN
     ALTER TABLE dbo.BlogPosts ADD AuthorName NVARCHAR(150) NULL;
+END
+
+IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'SystemEmailSettings')
+BEGIN
+    CREATE TABLE dbo.SystemEmailSettings (
+        EmailSettingId INT IDENTITY(1,1) PRIMARY KEY,
+        SmtpHost NVARCHAR(200) NOT NULL,
+        SmtpPort INT NOT NULL,
+        SmtpUsername NVARCHAR(200) NOT NULL,
+        EncryptedPassword NVARCHAR(MAX) NOT NULL,
+        FromEmail NVARCHAR(200) NOT NULL,
+        FromName NVARCHAR(150) NULL,
+        ReceiverEmail NVARCHAR(200) NOT NULL,
+        EnableSsl BIT NOT NULL DEFAULT 1,
+        IsActive BIT NOT NULL DEFAULT 1,
+        LastTestedAt DATETIME2 NULL,
+        LastTestSucceeded BIT NULL,
+        LastTestMessage NVARCHAR(500) NULL,
+        UpdatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UpdatedBy INT NULL
+    );
 END";
                 await context.Database.ExecuteSqlRawAsync(blogTablesSql);
+
+                // Seed single active SystemEmailSettings row if not present
+                if (!await context.SystemEmailSettings.AnyAsync())
+                {
+                    var defaultEmailSetting = new SystemEmailSetting
+                    {
+                        SmtpHost = "smtp.gmail.com",
+                        SmtpPort = 587,
+                        SmtpUsername = "chandandas.nis@gmail.com",
+                        EncryptedPassword = string.Empty,
+                        FromEmail = "chandandas.nis@gmail.com",
+                        FromName = "Agam Estates",
+                        ReceiverEmail = "chandanyt20314@gmail.com",
+                        EnableSsl = true,
+                        IsActive = true,
+                        UpdatedAt = DateTime.UtcNow
+                    };
+                    context.SystemEmailSettings.Add(defaultEmailSetting);
+                    await context.SaveChangesAsync();
+                }
 
                 // 7. Seed default BlogCategories if not present
                 if (!await context.BlogCategories.AnyAsync())

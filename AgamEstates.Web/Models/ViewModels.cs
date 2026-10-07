@@ -48,6 +48,44 @@ namespace AgamEstates.Web.Models
         public string? PriorityFilter { get; set; }
         public int? AssignedToFilter { get; set; }
         public string? SourceFilter { get; set; }
+
+        public int CurrentPage { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public int TotalCount { get; set; }
+        public int TotalPages { get; set; }
+
+        public int StartRecord => TotalCount == 0 ? 0 : ((CurrentPage - 1) * PageSize) + 1;
+        public int EndRecord => TotalCount == 0 ? 0 : Math.Min(CurrentPage * PageSize, TotalCount);
+        public bool HasPreviousPage => CurrentPage > 1;
+        public bool HasNextPage => CurrentPage < TotalPages;
+
+        public string BuildPageUrl(int targetPage, bool isAdmin = true)
+        {
+            var queryParams = new List<string> { $"page={targetPage}" };
+
+            if (!string.IsNullOrWhiteSpace(Search))
+            {
+                queryParams.Add($"search={Uri.EscapeDataString(Search)}");
+            }
+            if (!string.IsNullOrWhiteSpace(StatusFilter))
+            {
+                queryParams.Add($"status={Uri.EscapeDataString(StatusFilter)}");
+            }
+            if (!string.IsNullOrWhiteSpace(PriorityFilter))
+            {
+                queryParams.Add($"priority={Uri.EscapeDataString(PriorityFilter)}");
+            }
+            if (isAdmin && AssignedToFilter.HasValue && AssignedToFilter.Value > 0)
+            {
+                queryParams.Add($"assignedTo={AssignedToFilter.Value}");
+            }
+            if (!string.IsNullOrWhiteSpace(SourceFilter))
+            {
+                queryParams.Add($"source={Uri.EscapeDataString(SourceFilter)}");
+            }
+
+            return "/Leads?" + string.Join("&", queryParams);
+        }
     }
 
     public class LeadDetailsPageViewModel
