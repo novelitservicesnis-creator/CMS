@@ -1,0 +1,95 @@
+@using System.Text.Json
+@model WebsiteSettingsViewModel
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    var seoPage = SiteSeo.Find(action);
+}
+@if (seoPage == null)
+{
+    <title>@(ViewData["Title"] ?? "Page") — VS Moving Services</title>
+    <meta name="robots" content="noindex, nofollow" />
+}
+else
+{
+    var canonical = SiteSeo.Url(seoPage.Path);
+    var imageUrl = SiteSeo.Url("/images/hero-truck.png");
+    <title>@seoPage.Title</title>
+    <meta name="description" content="@seoPage.Description" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href="@canonical" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_CA" />
+    <meta property="og:site_name" content="@SiteSeo.Name" />
+    <meta property="og:title" content="@seoPage.Title" />
+    <meta property="og:description" content="@seoPage.Description" />
+    <meta property="og:url" content="@canonical" />
+    <meta property="og:image" content="@imageUrl" />
+    <meta property="og:image:alt" content="VS Moving Services moving truck and crew" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@seoPage.Title" />
+    <meta name="twitter:description" content="@seoPage.Description" />
+    <meta name="twitter:image" content="@imageUrl" />
+    <meta name="twitter:image:alt" content="VS Moving Services moving truck and crew" />
+
+    var businessId = SiteSeo.Url("/#business");
+    var websiteId = SiteSeo.Url("/#website");
+    var graph = new List<object>
+    {
+        new Dictionary<string, object>
+        {
+            ["@type"] = "WebSite", ["@id"] = websiteId,
+            ["url"] = SiteSeo.Url("/"), ["name"] = SiteSeo.Name, ["inLanguage"] = "en-CA"
+        },
+        new Dictionary<string, object>
+        {
+            ["@type"] = seoPage.SchemaType, ["@id"] = canonical + "#webpage",
+            ["url"] = canonical, ["name"] = seoPage.Title, ["description"] = seoPage.Description,
+            ["inLanguage"] = "en-CA", ["isPartOf"] = new Dictionary<string, object> { ["@id"] = websiteId }
+        }
+    };
+    if (seoPage.Action is "Index" or "AboutUs")
+    {
+        var business = new Dictionary<string, object>
+        {
+            ["@type"] = "MovingCompany", ["@id"] = businessId,
+            ["name"] = SiteSeo.Name, ["url"] = SiteSeo.Url("/"),
+            ["logo"] = SiteSeo.Url("/images/logo.png"), ["image"] = imageUrl,
+            ["description"] = "Residential and commercial moving, packing, furniture handling and junk removal in Halifax, Nova Scotia and surrounding communities.",
+            ["areaServed"] = new[] { "Halifax", "Dartmouth", "Cole Harbour", "Bedford", "Sackville" }
+        };
+        if (Model.HasPrimaryPhone) business["telephone"] = Model.PrimaryPhone!;
+        if (Model.HasWebsiteEmail) business["email"] = Model.WebsiteEmail!;
+        if (Model.HasBusinessAddress) business["address"] = Model.BusinessAddress!;
+        var social = new[] { Model.FacebookUrl, Model.InstagramUrl }
+            .Where(url => Uri.TryCreate(url, UriKind.Absolute, out var uri) && (uri.Scheme == "https" || uri.Scheme == "http")).ToArray();
+        if (social.Length > 0) business["sameAs"] = social;
+        graph.Add(business);
+        if (seoPage.Action == "Index")
+        {
+            foreach (var service in new[] { "Residential moving", "Commercial moving", "Packing and unpacking", "Furniture disassembly and assembly", "Loading and unloading", "Local moving", "Household junk removal", "Furniture and appliance removal", "Renovation and construction debris removal", "Yard waste removal", "Garage, basement and attic cleanouts", "Estate and property cleanouts" })
+            {
+                graph.Add(new Dictionary<string, object>
+                {
+                    ["@type"] = "Service", ["name"] = service,
+                    ["provider"] = new Dictionary<string, object> { ["@id"] = businessId },
+                    ["areaServed"] = "Halifax, Nova Scotia and surrounding communities",
+                    ["url"] = SiteSeo.Url("/#services")
+                });
+            }
+        }
+    }
+    if (seoPage.Path != "/")
+    {
+        graph.Add(new Dictionary<string, object>
+        {
+            ["@type"] = "BreadcrumbList",
+            ["itemListElement"] = new object[]
+            {
+                new Dictionary<string, object> { ["@type"] = "ListItem", ["position"] = 1, ["name"] = "Home", ["item"] = SiteSeo.Url("/") },
+                new Dictionary<string, object> { ["@type"] = "ListItem", ["position"] = 2, ["name"] = ViewData["Title"] ?? seoPage.Title, ["item"] = canonical }
+            }
+        });
+    }
+    var structuredData = new Dictionary<string, object> { ["@context"] = "https://schema.org", ["@graph"] = graph };
+    <script type="application/ld+json">@Html.Raw(JsonSerializer.Serialize(structuredData))</script>
+}

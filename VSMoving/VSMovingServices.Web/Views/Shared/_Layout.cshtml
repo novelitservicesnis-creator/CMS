@@ -2,7 +2,6 @@
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
     var isHome = string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
     var anchorPrefix = isHome ? "" : Url.Action("Index", "Home");
-    var pageTitle = ViewData["Title"] as string;
     var ws = ViewData["WebsiteSettings"] as WebsiteSettingsViewModel
              ?? Model as WebsiteSettingsViewModel
              ?? new WebsiteSettingsViewModel
@@ -20,8 +19,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="icon" type="image/png" sizes="48x48" href="~/favicon.png" />
-<title>@(string.IsNullOrWhiteSpace(pageTitle) ? "VS Moving Services — Moving & Junk Removal in Halifax, NS" : $"{pageTitle} — VS Moving Services")</title>
-<meta name="description" content="Fast, reliable, affordable moving and junk removal in Halifax, Nova Scotia and surrounding areas. Residential and commercial moving, packing, cleanouts and junk hauling from VS Moving Services." />
+<partial name="_Seo" model="ws" />
 
 <script src="https://cdn.jsdelivr.net/npm/@@tailwindcss/browser@@4"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
