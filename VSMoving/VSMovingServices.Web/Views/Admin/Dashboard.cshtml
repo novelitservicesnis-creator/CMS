@@ -1,0 +1,191 @@
+@model DashboardViewModel
+@using System.Globalization
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard";
+    ViewData["ActiveNav"] = "Dashboard";
+}
+
+<!-- ============ METRIC CARDS ============ -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
+  <!-- Total Leads -->
+  <div class="admin-card p-5 sm:p-6 flex items-start justify-between gap-4">
+    <div>
+      <div class="text-xs font-mono2 uppercase tracking-[0.18em] text-steel">Total Leads</div>
+      <div class="font-display text-3xl sm:text-4xl text-ink mt-2">@Model.TotalLeads</div>
+      <div class="text-xs text-steel mt-1.5">All website enquiries</div>
+    </div>
+    <div class="w-12 h-12 rounded-xl bg-ink text-white flex items-center justify-center text-lg shrink-0">
+      <i class="fa-solid fa-layer-group"></i>
+    </div>
+  </div>
+
+  <!-- New Leads -->
+  <div class="admin-card p-5 sm:p-6 flex items-start justify-between gap-4 border-l-4 border-l-red">
+    <div>
+      <div class="text-xs font-mono2 uppercase tracking-[0.18em] text-red">New Leads</div>
+      <div class="font-display text-3xl sm:text-4xl text-ink mt-2">@Model.NewLeads</div>
+      <div class="text-xs text-steel mt-1.5">Awaiting review</div>
+    </div>
+    <div class="w-12 h-12 rounded-xl bg-red/10 text-red flex items-center justify-center text-lg shrink-0">
+      <i class="fa-solid fa-bell"></i>
+    </div>
+  </div>
+
+  <!-- Read Leads -->
+  <div class="admin-card p-5 sm:p-6 flex items-start justify-between gap-4">
+    <div>
+      <div class="text-xs font-mono2 uppercase tracking-[0.18em] text-steel">Read Leads</div>
+      <div class="font-display text-3xl sm:text-4xl text-ink mt-2">@Model.ReadLeads</div>
+      <div class="text-xs text-steel mt-1.5">Reviewed by team</div>
+    </div>
+    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center text-lg shrink-0">
+      <i class="fa-solid fa-envelope-open-text"></i>
+    </div>
+  </div>
+
+  <!-- Today's Leads -->
+  <div class="admin-card p-5 sm:p-6 flex items-start justify-between gap-4">
+    <div>
+      <div class="text-xs font-mono2 uppercase tracking-[0.18em] text-steel">Today's Leads</div>
+      <div class="font-display text-3xl sm:text-4xl text-ink mt-2">@Model.TodaysLeads</div>
+      <div class="text-xs text-steel mt-1.5">@DateTime.Today.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</div>
+    </div>
+    <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center text-lg shrink-0">
+      <i class="fa-solid fa-calendar-day"></i>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RECENT LEADS ============ -->
+<div class="admin-card mt-6 sm:mt-8 overflow-hidden">
+  <div class="px-5 sm:px-6 py-4 border-b border-line flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <span class="text-[11px] font-mono2 uppercase tracking-[0.2em] text-red">Latest Enquiries</span>
+      <h2 class="font-display text-xl tracking-wide text-ink">RECENT LEADS</h2>
+    </div>
+    <a href="/Leads" class="btn-outline-ink px-4 py-2 rounded-lg text-xs inline-flex items-center gap-1.5">
+      <span>View All Leads</span>
+      <i class="fa-solid fa-arrow-right text-[11px]"></i>
+    </a>
+  </div>
+
+  @if (Model.RecentLeads.Count == 0)
+  {
+    <div class="p-10 text-center">
+      <div class="w-12 h-12 mx-auto rounded-full bg-fog text-steel flex items-center justify-center text-lg mb-3">
+        <i class="fa-regular fa-folder-open"></i>
+      </div>
+      <p class="font-semibold text-ink text-sm">No website enquiries yet</p>
+      <p class="text-xs text-steel mt-1">New requests submitted through the public Free Quote form will appear here automatically.</p>
+    </div>
+  }
+  else
+  {
+    <!-- Desktop Table -->
+    <div class="hidden md:block overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-fog/70 border-b border-line text-[11px] font-mono2 uppercase tracking-wider text-steel">
+            <th class="py-3.5 px-5">Reference</th>
+            <th class="py-3.5 px-5">Customer</th>
+            <th class="py-3.5 px-5">Phone / Email</th>
+            <th class="py-3.5 px-5">Date</th>
+            <th class="py-3.5 px-5">Status</th>
+            <th class="py-3.5 px-5 text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line text-sm">
+          @foreach (var lead in Model.RecentLeads)
+          {
+            <tr class="hover:bg-fog/50 transition-colors @(!lead.IsRead ? "bg-red/[0.02]" : "")">
+              <td class="py-3.5 px-5 font-mono2 text-xs font-semibold text-ink">#@lead.LeadId</td>
+              <td class="py-3.5 px-5">
+                <div class="font-semibold text-ink">@lead.FullName</div>
+                <div class="text-xs text-steel">@lead.Source</div>
+              </td>
+              <td class="py-3.5 px-5 text-xs space-y-0.5">
+                @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber))
+                {
+                  <div class="text-ink font-medium"><i class="fa-solid fa-phone text-red mr-1.5 text-[10px]"></i>@lead.PhoneNumber</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(lead.Email))
+                {
+                  <div class="text-steel break-all"><i class="fa-solid fa-envelope text-steel mr-1.5 text-[10px]"></i>@lead.Email</div>
+                }
+              </td>
+              <td class="py-3.5 px-5 text-xs text-steel whitespace-nowrap">
+                <div>@lead.CreatedAt.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</div>
+                <div class="text-[11px]">@lead.CreatedAt.ToString("hh:mm tt", CultureInfo.InvariantCulture)</div>
+              </td>
+              <td class="py-3.5 px-5">
+                @if (!lead.IsRead)
+                {
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-semibold bg-red/10 text-red border border-red/25">
+                    <span class="w-1.5 h-1.5 rounded-full bg-red"></span> New
+                  </span>
+                }
+                else
+                {
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-medium bg-fog text-steel border border-line">
+                    Read
+                  </span>
+                }
+              </td>
+              <td class="py-3.5 px-5 text-right">
+                <a href="/LeadDetails/@lead.LeadId" class="px-3.5 py-1.5 rounded-lg bg-ink hover:bg-red text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
+                  <span>View</span>
+                  <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Stacked Cards -->
+    <div class="md:hidden divide-y divide-line">
+      @foreach (var lead in Model.RecentLeads)
+      {
+        <div class="p-4 space-y-2.5 @(!lead.IsRead ? "bg-red/[0.02]" : "")">
+          <div class="flex items-center justify-between gap-2">
+            <span class="font-mono2 text-xs font-semibold text-red">#@lead.LeadId</span>
+            @if (!lead.IsRead)
+            {
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono2 font-semibold bg-red/10 text-red border border-red/25">
+                New
+              </span>
+            }
+            else
+            {
+              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-mono2 font-medium bg-fog text-steel border border-line">
+                Read
+              </span>
+            }
+          </div>
+          <div>
+            <div class="font-semibold text-ink text-sm">@lead.FullName</div>
+            <div class="text-xs text-steel mt-0.5">@lead.CreatedAt.ToString("dd MMM yyyy, hh:mm tt", CultureInfo.InvariantCulture)</div>
+          </div>
+          <div class="text-xs space-y-1 text-steel">
+            @if (!string.IsNullOrWhiteSpace(lead.PhoneNumber))
+            {
+              <div><i class="fa-solid fa-phone text-red mr-1.5"></i>@lead.PhoneNumber</div>
+            }
+            @if (!string.IsNullOrWhiteSpace(lead.Email))
+            {
+              <div class="break-all"><i class="fa-solid fa-envelope text-steel mr-1.5"></i>@lead.Email</div>
+            }
+          </div>
+          <div class="pt-1">
+            <a href="/LeadDetails/@lead.LeadId" class="w-full py-2 px-3 rounded-lg bg-ink hover:bg-red text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors">
+              <span>View Enquiry Details</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

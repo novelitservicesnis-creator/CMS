@@ -1,0 +1,222 @@
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "Index";
+    var isHome = string.Equals(currentAction, "Index", StringComparison.OrdinalIgnoreCase);
+    var anchorPrefix = isHome ? "" : Url.Action("Index", "Home");
+    var pageTitle = ViewData["Title"] as string;
+    var ws = ViewData["WebsiteSettings"] as WebsiteSettingsViewModel
+             ?? Model as WebsiteSettingsViewModel
+             ?? new WebsiteSettingsViewModel
+             {
+                 WhatsAppNumber = "15149999790",
+                 WebsiteEmail = "vsshippingservicespvt@gmail.com",
+                 PrimaryPhone = "514 999 9790",
+                 SecondaryPhone = "438 990 8055",
+                 BusinessAddress = "Halifax, Nova Scotia"
+             };
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>@(string.IsNullOrWhiteSpace(pageTitle) ? "VS Moving Services — Moving & Junk Removal in Halifax, NS" : $"{pageTitle} — VS Moving Services")</title>
+<meta name="description" content="Fast, reliable, affordable moving and junk removal in Halifax, Nova Scotia and surrounding areas. Residential and commercial moving, packing, cleanouts and junk hauling from VS Moving Services." />
+
+<script src="https://cdn.jsdelivr.net/npm/@@tailwindcss/browser@@4"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wgh
+
+t@400;500;600;700&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+<style type="text/tailwindcss">
+@@theme {
+  --color-ink: #131316;
+  --color-red: #e01e26;
+  --color-reddeep: #9c1319;
+  --color-fog: #f4f5f7;
+  --color-steel: #5b6270;
+  --color-asphalt: #1a1b1e;
+  --color-line: #e7e8eb;
+  --font-display: "Oswald", sans-serif;
+  --font-body: "Inter", sans-serif;
+  --font-mono2: "IBM Plex Mono", monospace;
+}
+</style>
+
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+@await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="bg-white text-ink">
+
+<!-- ============ TOP INFO BAR ============ -->
+<div class="hazard-thin h-[5px] w-full"></div>
+<div class="bg-ink text-white/90 text-[12px] font-mono2">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 py-2 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-5">
+      @if (ws.HasAnySocial)
+      {
+      <div class="flex items-center gap-3 pr-5 border-r border-white/20 text-[15px]">
+        @if (ws.HasFacebook)
+        {
+          <a href="@ws.FacebookUrl" target="_blank" rel="noopener" aria-label="Facebook" class="hover:text-red transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+        }
+        @if (ws.HasInstagram)
+        {
+          <a href="@ws.InstagramUrl" target="_blank" rel="noopener" aria-label="Instagram" class="hover:text-red transition-colors"><i class="fa-brands fa-instagram"></i></a>
+        }
+        @if (ws.HasWhatsApp)
+        {
+          <a href="@ws.WhatsAppUrl" target="_blank" rel="noopener" aria-label="WhatsApp" class="hover:text-red transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+        }
+      </div>
+      }
+      @if (ws.HasPrimaryPhone)
+      {
+        <a href="tel:@ws.CleanPrimaryPhoneTel" class="flex items-center gap-2 hover:text-red transition-colors"><i class="fa-solid fa-phone"></i> @ws.PrimaryPhone</a>
+      }
+      @if (ws.HasWebsiteEmail)
+      {
+        <a href="mailto:@ws.WebsiteEmail" class="hidden sm:flex items-center gap-2 hover:text-red transition-colors"><i class="fa-solid fa-envelope"></i> @ws.WebsiteEmail</a>
+      }
+    </div>
+    @if (ws.HasBusinessAddress)
+    {
+    <div class="flex items-center gap-2 text-white/70">
+      <i class="fa-solid fa-location-dot text-red"></i> @ws.BusinessAddress &middot; Serving Halifax &amp; surrounding areas
+    </div>
+    }
+  </div>
+</div>
+
+<!-- ============ NAVBAR ============ -->
+<header id="navbar" class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-line transition-shadow">
+  <div class="max-w-7xl mx-auto px-5 md:px-8 h-20 flex items-center justify-between">
+    <a href="@(anchorPrefix)#home" class="flex items-center gap-3">
+      <img src="~/images/logo.png" alt="VS Moving Services" class="h-12 w-auto" />
+      <div class="leading-tight">
+        <div class="font-display text-lg tracking-wide">VS MOVING <span class="text-red">SERVICES</span></div>
+        <div class="text-[11px] font-mono2 text-steel tracking-[0.15em]">FAST &middot; RELIABLE &middot; AFFORDABLE</div>
+      </div>
+    </a>
+    <nav class="hidden lg:flex items-center gap-8 text-[14px] font-medium">
+      <a href="@(anchorPrefix)#services" class="nav-link">Services</a>
+      <a href="@(anchorPrefix)#route" class="nav-link">How It Works</a>
+      <a href="@(anchorPrefix)#why" class="nav-link">Why Us</a>
+      <a href="@(anchorPrefix)#areas" class="nav-link">Service Area</a>
+      <a href="@(anchorPrefix)#reviews" class="nav-link">Reviews</a>
+      <a href="@(anchorPrefix)#quote" class="nav-link">Contact</a>
+    </nav>
+    <div class="hidden lg:flex items-center gap-3">
+      @if (ws.HasPrimaryPhone)
+      {
+        <a href="tel:@ws.CleanPrimaryPhoneTel" class="btn-outline-ink px-4 py-2.5 rounded-md text-sm inline-flex items-center gap-2"><i class="fa-solid fa-phone"></i> Call Now</a>
+      }
+      <a href="@(anchorPrefix)#quote" class="btn-red px-5 py-2.5 rounded-md text-sm">GET FREE QUOTE</a>
+    </div>
+    <button id="menuBtn" class="lg:hidden w-10 h-10 flex items-center justify-center text-xl"><i class="fa-solid fa-bars"></i></button>
+  </div>
+  <div id="mobileMenu" class="hidden lg:hidden border-t border-line bg-white px-5 py-4 space-y-3 text-sm font-medium">
+    <a href="@(anchorPrefix)#services" class="block py-1">Services</a>
+    <a href="@(anchorPrefix)#route" class="block py-1">How It Works</a>
+    <a href="@(anchorPrefix)#why" class="block py-1">Why Us</a>
+    <a href="@(anchorPrefix)#areas" class="block py-1">Service Area</a>
+    <a href="@(anchorPrefix)#reviews" class="block py-1">Reviews</a>
+    <a href="@(anchorPrefix)#quote" class="block py-1">Contact</a>
+    <a href="@(anchorPrefix)#quote" class="btn-red block text-center px-5 py-3 rounded-md mt-2">GET FREE QUOTE</a>
+  </div>
+</header>
+
+@RenderBody()
+
+<!-- ============ FOOTER ============ -->
+<footer class="bg-ink text-white/70 pt-16 pb-8">
+  <div class="max-w-7xl mx-auto px-5 md:px-8">
+    <div class="grid md:grid-cols-4 gap-12">
+      <div>
+        <div class="flex items-center gap-3 mb-4">
+          <img src="~/images/logo.png" alt="VS Moving Services" class="h-11 w-auto" />
+        </div>
+        <p class="text-sm">Fast. Reliable. Affordable. Professional moving and junk removal in Halifax and surrounding areas — we handle everything with care.</p>
+        @if (ws.HasAnySocial)
+        {
+        <div class="flex items-center gap-4 mt-5 text-lg">
+          @if (ws.HasFacebook)
+          {
+            <a href="@ws.FacebookUrl" target="_blank" rel="noopener" aria-label="Facebook" class="hover:text-red transition-colors"><i class="fa-brands fa-facebook-f"></i></a>
+          }
+          @if (ws.HasInstagram)
+          {
+            <a href="@ws.InstagramUrl" target="_blank" rel="noopener" aria-label="Instagram" class="hover:text-red transition-colors"><i class="fa-brands fa-instagram"></i></a>
+          }
+          @if (ws.HasWhatsApp)
+          {
+            <a href="@ws.WhatsAppUrl" target="_blank" rel="noopener" aria-label="WhatsApp" class="hover:text-red transition-colors"><i class="fa-brands fa-whatsapp"></i></a>
+          }
+        </div>
+        }
+      </div>
+      <div>
+        <h4 class="font-mono2 text-red text-xs tracking-[0.25em] uppercase mb-5">Explore</h4>
+        <ul class="space-y-2.5 text-[13px]">
+          <li><a href="@(anchorPrefix)#services" class="foot-link inline-flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px] text-red/70"></i> Services</a></li>
+          <li><a href="@(anchorPrefix)#route" class="foot-link inline-flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px] text-red/70"></i> How It Works</a></li>
+          <li><a href="@(anchorPrefix)#why" class="foot-link inline-flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px] text-red/70"></i> Why Choose Us</a></li>
+          <li><a href="@(anchorPrefix)#areas" class="foot-link inline-flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px] text-red/70"></i> Service Area</a></li>
+          <li><a href="@(anchorPrefix)#reviews" class="foot-link inline-flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px] text-red/70"></i> Reviews</a></li>
+          <li><a asp-controller="Home" asp-action="AboutUs" class="foot-link inline-flex items-center gap-2"><i class="fa-solid fa-chevron-right text-[8px] text-red/70"></i> About Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-mono2 text-red text-xs tracking-[0.25em] uppercase mb-5">Services</h4>
+        <ul class="space-y-2.5 text-[13px]">
+          <li>Residential Moving</li>
+          <li>Commercial Moving</li>
+          <li>Packing &amp; Unpacking</li>
+          <li>Furniture Disassembly &amp; Assembly</li>
+          <li>Local Moving</li>
+          <li>Junk Removal</li>
+          <li>Cleanouts &amp; Debris Hauling</li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-mono2 text-red text-xs tracking-[0.25em] uppercase mb-5">Contact</h4>
+        <ul class="space-y-3 text-[13px]">
+          @if (ws.HasWebsiteEmail)
+          {
+            <li class="flex items-center gap-2"><i class="fa-solid fa-envelope text-red"></i> <a href="mailto:@ws.WebsiteEmail" class="hover:text-red transition-colors">@ws.WebsiteEmail</a></li>
+          }
+          @if (ws.HasPrimaryPhone)
+          {
+            <li class="flex items-center gap-2"><i class="fa-solid fa-phone text-red"></i> <a href="tel:@ws.CleanPrimaryPhoneTel" class="hover:text-red transition-colors">@ws.PrimaryPhone</a></li>
+          }
+          @if (ws.HasSecondaryPhone)
+          {
+            <li class="flex items-center gap-2"><i class="fa-solid fa-phone text-red"></i> <a href="tel:@ws.CleanSecondaryPhoneTel" class="hover:text-red transition-colors">@ws.SecondaryPhone</a></li>
+          }
+          @if (ws.HasBusinessAddress)
+          {
+            <li class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-red"></i> @ws.BusinessAddress</li>
+          }
+        </ul>
+      </div>
+    </div>
+    <div class="mt-14 pt-6 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+      <p>&copy; 2026 VS Moving Services. All rights reserved.</p>
+      <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <a asp-controller="Home" asp-action="TermsAndConditions" class="hover:text-red transition-colors">Terms &amp; Conditions</a>
+        <a asp-controller="Home" asp-action="PrivacyPolicy" class="hover:text-red transition-colors">Privacy Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<button id="toTop" class="hide fixed bottom-6 right-6 z-50 w-12 h-12 rounded-md bg-red text-white shadow-xl shadow-red/40 hover:bg-reddeep hover:-translate-y-1 transition-all" aria-label="Back to top">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

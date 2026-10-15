@@ -1,0 +1,460 @@
+@model SystemEmailSettingsViewModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "System Settings";
+    ViewData["ActiveNav"] = "SystemSettings";
+}
+
+<!-- ============ HEADER STATUS SUMMARY ============ -->
+<div class="admin-card p-5 sm:p-6">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div>
+      <span class="text-[11px] font-mono2 uppercase tracking-[0.2em] text-red">Admin Only &middot; System Configuration</span>
+      <h2 class="font-display text-2xl tracking-wide text-ink mt-0.5">EMAIL NOTIFICATIONS</h2>
+      <p class="text-xs text-steel mt-1">Configure SMTP credentials for delivering automated website enquiry email alerts.</p>
+    </div>
+
+    <!-- Live Status Badges -->
+    <div class="flex flex-wrap items-center gap-2.5">
+      <!-- Connection Status Badge -->
+      <div class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-fog border border-line">
+        <span class="text-[11px] font-mono2 text-steel uppercase">Connection Status:</span>
+        <span id="connStatusBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono2 font-semibold">
+          @Model.ConnectionStatus
+        </span>
+      </div>
+
+      <!-- Encrypted Password Stored Badge -->
+      <div id="encryptedPwdBadge" class="@(Model.HasStoredPassword ? "inline-flex" : "hidden") items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500/10 text-emerald-800 border border-emerald-500/25 text-xs font-mono2 font-semibold">
+        <i class="fa-solid fa-lock text-emerald-600"></i>
+        <span>Encrypted Password Stored</span>
+      </div>
+
+      <!-- Last Tested Timestamp -->
+      <div class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-fog border border-line text-xs">
+        <i class="fa-regular fa-clock text-steel"></i>
+        <span class="text-steel">Last Tested:</span>
+        <strong id="lastTestedText" class="font-mono2 text-ink">@(string.IsNullOrWhiteSpace(Model.LastTestedAtFormatted) ? "Not Tested" : Model.LastTestedAtFormatted)</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ SMTP CONFIGURATION CARD ============ -->
+<div class="admin-card mt-5 overflow-hidden">
+  <div class="px-6 py-4 bg-ink text-white flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <i class="fa-solid fa-envelope-circle-check text-red"></i>
+      <span class="font-display text-lg tracking-wide">SMTP SERVER &amp; CREDENTIALS</span>
+    </div>
+    <span class="text-[11px] font-mono2 text-white/60 hidden sm:inline">AES / DataProtection Encrypted</span>
+  </div>
+
+  <form id="smtpSettingsForm" class="p-6 sm:p-8 space-y-6" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- SMTP Host -->
+      <div>
+        <label for="smtpHost" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">SMTP Host *</label>
+        <input id="smtpHost" name="SmtpHost" type="text" required maxlength="200" value="@Model.SmtpHost" data-critical="true" class="lf-input" placeholder="smtp.gmail.com" />
+      </div>
+
+      <!-- SMTP Port -->
+      <div>
+        <label for="smtpPort" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">SMTP Port *</label>
+        <input id="smtpPort" name="SmtpPort" type="number" required min="1" max="65535" value="@Model.SmtpPort" data-critical="true" class="lf-input" placeholder="587" />
+      </div>
+
+      <!-- Sender Email -->
+      <div>
+        <label for="senderEmail" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">Sender Email *</label>
+        <input id="senderEmail" name="SenderEmail" type="email" required maxlength="150" value="@Model.SenderEmail" data-critical="true" class="lf-input" placeholder="vsshippingservicespvt@gmail.com" />
+        <p class="text-[11px] text-steel mt-1.5">Authenticated SMTP username/email used for sending notifications.</p>
+      </div>
+
+      <!-- SMTP App Password -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label for="smtpPassword" class="block text-xs font-semibold uppercase tracking-wider text-ink">SMTP App Password *</label>
+          <span id="pwdStoredLabel" class="@(Model.HasStoredPassword ? "inline-flex" : "hidden") items-center gap-1 text-[11px] font-mono2 text-emerald-700 font-semibold">
+            <i class="fa-solid fa-shield-halved"></i> Encrypted Password Stored
+          </span>
+        </div>
+        <div class="relative">
+          <input id="smtpPassword" name="SmtpPassword" type="password" autocomplete="new-password" value="" data-critical="true" class="lf-input pr-20!" placeholder="@(Model.HasStoredPassword ? "••••••••••••••••" : "Enter SMTP App Password")" />
+          <button type="button" id="showSmtpPwdBtn" class="absolute inset-y-0 right-0 px-3.5 flex items-center text-xs font-mono2 font-semibold text-steel hover:text-red transition-colors cursor-pointer" aria-label="Show typed password">
+            <span id="showSmtpPwdText">Show</span>
+          </button>
+        </div>
+        <p class="text-[11px] text-steel mt-1.5">Leave blank to keep the existing App Password.</p>
+      </div>
+
+      <!-- From Name -->
+      <div>
+        <label for="fromName" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">From Name</label>
+        <input id="fromName" name="FromName" type="text" maxlength="120" value="@Model.FromName" class="lf-input" placeholder="VS Moving Services" />
+        <p class="text-[11px] text-steel mt-1.5">Sender display name shown in the recipient's inbox.</p>
+      </div>
+
+      <!-- From Email -->
+      <div>
+        <label for="fromEmail" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">From Email</label>
+        <input id="fromEmail" name="FromEmail" type="email" maxlength="150" value="@Model.FromEmail" data-critical="true" class="lf-input" placeholder="vsshippingservicespvt@gmail.com" />
+        <p class="text-[11px] text-steel mt-1.5">For Gmail SMTP, From Email should match Sender Email.</p>
+      </div>
+
+      <!-- Receiver Email -->
+      <div>
+        <label for="receiverEmail" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">Receiver Email *</label>
+        <input id="receiverEmail" name="ReceiverEmail" type="email" required maxlength="150" value="@Model.ReceiverEmail" class="lf-input" placeholder="vsshippingservicespvt@gmail.com" />
+        <p class="text-[11px] text-steel mt-1.5">Website enquiry notifications will be delivered to this email address.</p>
+      </div>
+
+      <!-- Enable SSL -->
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">Enable SSL</label>
+        <div class="p-3.5 rounded-xl bg-fog/70 border border-line flex items-center justify-between gap-4">
+          <div>
+            <div class="text-xs font-semibold text-ink">TLS / STARTTLS Encryption</div>
+            <p class="text-[11px] text-steel mt-0.5">TLS/STARTTLS encryption (recommended for port 587)</p>
+          </div>
+          <label class="inline-flex items-center gap-2 cursor-pointer select-none shrink-0">
+            <input id="enableSsl" name="EnableSsl" type="checkbox" value="true" @(Model.EnableSsl ? "checked" : "") data-critical="true" class="w-4 h-4 accent-red rounded cursor-pointer" />
+            <span id="sslStateLabel" class="font-mono2 text-xs font-bold @(Model.EnableSsl ? "text-red" : "text-steel")">@(Model.EnableSsl ? "ON" : "OFF")</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline Status Banner -->
+    <div id="smtpFeedbackBanner" class="@(string.IsNullOrWhiteSpace(Model.LastTestMessage) ? "hidden" : "flex") items-start gap-3 p-4 rounded-xl border text-xs @(Model.LastTestSucceeded == true && Model.ConnectionStatus == "Valid" ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-800" : Model.ConnectionStatus == "Configuration Changed" ? "bg-amber-500/10 border-amber-500/30 text-amber-800" : "bg-red/10 border-red/30 text-red")" role="status">
+      <i id="smtpFeedbackIcon" class="fa-solid @(Model.LastTestSucceeded == true && Model.ConnectionStatus == "Valid" ? "fa-circle-check" : "fa-circle-info") mt-0.5"></i>
+      <span id="smtpFeedbackText" class="font-medium">@Model.LastTestMessage</span>
+    </div>
+
+    <!-- Action Footer -->
+    <div class="pt-5 border-t border-line flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
+      <button type="button" id="testConnBtn" class="btn-outline-ink px-6 py-3 rounded-lg text-xs inline-flex items-center justify-center gap-2 cursor-pointer">
+        <i id="testConnIcon" class="fa-solid fa-plug-circle-check"></i>
+        <span id="testConnText">Test Connection</span>
+      </button>
+
+      <button type="submit" id="saveSettingsBtn" class="btn-red px-6 py-3 rounded-lg text-xs inline-flex items-center justify-center gap-2 cursor-pointer">
+        <i id="saveSettingsIcon" class="fa-solid fa-floppy-disk"></i>
+        <span id="saveSettingsText">Save Email Settings</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- ============ WEBSITE & SOCIAL SETTINGS CARD ============ -->
+<div class="admin-card mt-6 overflow-hidden">
+  <div class="px-6 py-4 bg-ink text-white flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <i class="fa-solid fa-globe text-red"></i>
+      <span class="font-display text-lg tracking-wide">WEBSITE &amp; SOCIAL SETTINGS</span>
+    </div>
+    <span class="text-[11px] font-mono2 text-white/60 hidden sm:inline">Public Website Contact &amp; Social Links</span>
+  </div>
+
+  <form id="websiteSettingsForm" class="p-6 sm:p-8 space-y-6" novalidate>
+    @Html.AntiForgeryToken()
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Facebook URL -->
+      <div>
+        <label for="facebookUrl" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">
+          <i class="fa-brands fa-facebook-f text-red mr-1"></i> Facebook URL
+        </label>
+        <input id="facebookUrl" name="FacebookUrl" type="url" maxlength="300" value="@Model.FacebookUrl" class="lf-input" placeholder="https://facebook.com/..." />
+        <p class="text-[11px] text-steel mt-1.5">Leave blank to hide the Facebook icon on the public website.</p>
+      </div>
+
+      <!-- Instagram URL -->
+      <div>
+        <label for="instagramUrl" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">
+          <i class="fa-brands fa-instagram text-red mr-1"></i> Instagram URL
+        </label>
+        <input id="instagramUrl" name="InstagramUrl" type="url" maxlength="300" value="@Model.InstagramUrl" class="lf-input" placeholder="https://instagram.com/..." />
+        <p class="text-[11px] text-steel mt-1.5">Leave blank to hide the Instagram icon on the public website.</p>
+      </div>
+
+      <!-- WhatsApp Number -->
+      <div>
+        <label for="whatsAppNumber" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">
+          <i class="fa-brands fa-whatsapp text-red mr-1"></i> WhatsApp Number
+        </label>
+        <input id="whatsAppNumber" name="WhatsAppNumber" type="tel" maxlength="40" value="@Model.WhatsAppNumber" class="lf-input" placeholder="15149999790" />
+        <p class="text-[11px] text-steel mt-1.5">Use full international format where possible.</p>
+      </div>
+
+      <!-- Website Email -->
+      <div>
+        <label for="websiteEmail" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">
+          <i class="fa-solid fa-envelope text-red mr-1"></i> Website Email
+        </label>
+        <input id="websiteEmail" name="WebsiteEmail" type="email" maxlength="150" value="@Model.WebsiteEmail" class="lf-input" placeholder="vsshippingservicespvt@gmail.com" />
+        <p class="text-[11px] text-steel mt-1.5">Public contact email displayed in the top bar, quote section, and footer.</p>
+      </div>
+
+      <!-- Primary Phone -->
+      <div>
+        <label for="primaryPhone" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">
+          <i class="fa-solid fa-phone text-red mr-1"></i> Primary Phone
+        </label>
+        <input id="primaryPhone" name="PrimaryPhone" type="tel" maxlength="40" value="@Model.PrimaryPhone" class="lf-input" placeholder="514 999 9790" />
+        <p class="text-[11px] text-steel mt-1.5">Main phone number used for Top Bar, Navbar Call Now, Hero button, and Footer.</p>
+      </div>
+
+      <!-- Secondary Phone -->
+      <div>
+        <label for="secondaryPhone" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">
+          <i class="fa-solid fa-phone-volume text-red mr-1"></i> Secondary Phone
+        </label>
+        <input id="secondaryPhone" name="SecondaryPhone" type="tel" maxlength="40" value="@Model.SecondaryPhone" class="lf-input" placeholder="438 990 8055" />
+        <p class="text-[11px] text-steel mt-1.5">Optional secondary phone number shown in Service Area, Quote section, and Footer.</p>
+      </div>
+
+      <!-- Business Address -->
+      <div class="md:col-span-2">
+        <label for="businessAddress" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-2">
+          <i class="fa-solid fa-location-dot text-red mr-1"></i> Business Address
+        </label>
+        <input id="businessAddress" name="BusinessAddress" type="text" maxlength="250" value="@Model.BusinessAddress" class="lf-input" placeholder="Halifax, Nova Scotia" />
+        <p class="text-[11px] text-steel mt-1.5">Public location text displayed in the top bar, service area card, quote section, and footer.</p>
+      </div>
+    </div>
+
+    <!-- Inline Status Banner for Website Settings -->
+    <div id="websiteFeedbackBanner" class="hidden items-start gap-3 p-4 rounded-xl border text-xs" role="status">
+      <i id="websiteFeedbackIcon" class="fa-solid fa-circle-check mt-0.5"></i>
+      <span id="websiteFeedbackText" class="font-medium"></span>
+    </div>
+
+    <!-- Action Footer -->
+    <div class="pt-5 border-t border-line flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3">
+      <button type="submit" id="saveWebsiteSettingsBtn" class="btn-red px-6 py-3 rounded-lg text-xs inline-flex items-center justify-center gap-2 cursor-pointer">
+        <i id="saveWebsiteSettingsIcon" class="fa-solid fa-floppy-disk"></i>
+        <span id="saveWebsiteSettingsText">Save Website Settings</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+@section Scripts {
+<script>
+  let currentConnectionStatus = '@Model.ConnectionStatus';
+
+  function renderStatusBadge(status) {
+    currentConnectionStatus = status;
+    const badge = document.getElementById('connStatusBadge');
+    if (!badge) return;
+
+    badge.textContent = status;
+    if (status === 'Valid') {
+      badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono2 font-semibold bg-emerald-500/15 text-emerald-700 border border-emerald-500/30';
+    } else if (status === 'Invalid') {
+      badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono2 font-semibold bg-red/15 text-red border border-red/30';
+    } else if (status === 'Configuration Changed') {
+      badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono2 font-semibold bg-amber-500/15 text-amber-800 border border-amber-500/30';
+    } else if (status === 'Testing...') {
+      badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono2 font-semibold bg-ink text-white';
+    } else {
+      badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-mono2 font-semibold bg-white text-steel border border-line';
+    }
+  }
+
+  renderStatusBadge(currentConnectionStatus);
+
+  // Show/Hide button for currently typed password only (never decrypts stored password)
+  const smtpPwdInput = document.getElementById('smtpPassword');
+  const showSmtpPwdBtn = document.getElementById('showSmtpPwdBtn');
+  const showSmtpPwdText = document.getElementById('showSmtpPwdText');
+  if (smtpPwdInput && showSmtpPwdBtn) {
+    showSmtpPwdBtn.addEventListener('click', () => {
+      const isHidden = smtpPwdInput.type === 'password';
+      smtpPwdInput.type = isHidden ? 'text' : 'password';
+      showSmtpPwdText.textContent = isHidden ? 'Hide' : 'Show';
+    });
+  }
+
+  // Enable SSL ON/OFF label
+  const enableSslCheckbox = document.getElementById('enableSsl');
+  const sslStateLabel = document.getElementById('sslStateLabel');
+  if (enableSslCheckbox && sslStateLabel) {
+    enableSslCheckbox.addEventListener('change', () => {
+      const on = enableSslCheckbox.checked;
+      sslStateLabel.textContent = on ? 'ON' : 'OFF';
+      sslStateLabel.className = 'font-mono2 text-xs font-bold ' + (on ? 'text-red' : 'text-steel');
+    });
+  }
+
+  // Configuration Changed detection when editing any connection-critical field after a Valid test
+  document.querySelectorAll('[data-critical="true"]').forEach(el => {
+    const handler = () => {
+      if (currentConnectionStatus === 'Valid') {
+        renderStatusBadge('Configuration Changed');
+      }
+    };
+    el.addEventListener('input', handler);
+    el.addEventListener('change', handler);
+  });
+
+  function updateUiFromViewModel(vm, message, isOk) {
+    if (vm) {
+      renderStatusBadge(vm.connectionStatus || 'Not Tested');
+      const lastTested = document.getElementById('lastTestedText');
+      if (lastTested) {
+        lastTested.textContent = vm.lastTestedAtFormatted || 'Not Tested';
+      }
+      const encBadge = document.getElementById('encryptedPwdBadge');
+      const pwdLabel = document.getElementById('pwdStoredLabel');
+      if (vm.hasStoredPassword) {
+        if (encBadge) { encBadge.classList.remove('hidden'); encBadge.classList.add('inline-flex'); }
+        if (pwdLabel) { pwdLabel.classList.remove('hidden'); pwdLabel.classList.add('inline-flex'); }
+        if (smtpPwdInput) {
+          smtpPwdInput.value = '';
+          smtpPwdInput.type = 'password';
+          if (showSmtpPwdText) showSmtpPwdText.textContent = 'Show';
+          smtpPwdInput.placeholder = '••••••••••••••••';
+        }
+      }
+    }
+
+    const banner = document.getElementById('smtpFeedbackBanner');
+    const bannerText = document.getElementById('smtpFeedbackText');
+    const bannerIcon = document.getElementById('smtpFeedbackIcon');
+    if (banner && bannerText && message) {
+      bannerText.textContent = message;
+      banner.className = 'flex items-start gap-3 p-4 rounded-xl border text-xs ' +
+        (isOk ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800' : 'bg-red/10 border-red/30 text-red');
+      bannerIcon.className = 'fa-solid ' + (isOk ? 'fa-circle-check' : 'fa-triangle-exclamation') + ' mt-0.5';
+    }
+  }
+
+  function buildFormData() {
+    const form = document.getElementById('smtpSettingsForm');
+    const fd = new FormData(form);
+    if (!document.getElementById('enableSsl').checked) {
+      fd.set('EnableSsl', 'false');
+    }
+    return fd;
+  }
+
+  // Save Email Settings
+  document.getElementById('smtpSettingsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saveBtn = document.getElementById('saveSettingsBtn');
+    const saveText = document.getElementById('saveSettingsText');
+    const saveIcon = document.getElementById('saveSettingsIcon');
+
+    saveBtn.disabled = true;
+    saveBtn.classList.add('opacity-60');
+    saveText.textContent = 'Saving...';
+    saveIcon.className = 'fa-solid fa-spinner fa-spin';
+
+    try {
+      const res = await fetch('/Admin/SystemSettings/SaveEmailSettings', {
+        method: 'POST',
+        body: buildFormData()
+      });
+      const payload = await res.json().catch(() => ({}));
+      const ok = res.ok && payload.success;
+      updateUiFromViewModel(payload.data, payload.message, ok);
+      showAdminToast(payload.message || (ok ? 'Settings saved.' : 'Failed to save settings.'), ok);
+    } catch (err) {
+      showAdminToast('Unable to save settings. Please try again.', false);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.classList.remove('opacity-60');
+      saveText.textContent = 'Save Email Settings';
+      saveIcon.className = 'fa-solid fa-floppy-disk';
+    }
+  });
+
+  // Test Connection
+  document.getElementById('testConnBtn').addEventListener('click', async () => {
+    const testBtn = document.getElementById('testConnBtn');
+    const testText = document.getElementById('testConnText');
+    const testIcon = document.getElementById('testConnIcon');
+
+    testBtn.disabled = true;
+    testBtn.classList.add('opacity-60');
+    testText.textContent = 'Testing...';
+    testIcon.className = 'fa-solid fa-spinner fa-spin';
+    renderStatusBadge('Testing...');
+
+    try {
+      const res = await fetch('/Admin/SystemSettings/TestConnection', {
+        method: 'POST',
+        body: buildFormData()
+      });
+      const payload = await res.json().catch(() => ({}));
+      const ok = res.ok && payload.success;
+      updateUiFromViewModel(payload.data, payload.message, ok);
+      showAdminToast(payload.message || (ok ? 'SMTP connection verified.' : 'SMTP connection test failed.'), ok);
+    } catch (err) {
+      renderStatusBadge('Invalid');
+      showAdminToast('Unable to test SMTP connection.', false);
+    } finally {
+      testBtn.disabled = false;
+      testBtn.classList.remove('opacity-60');
+      testText.textContent = 'Test Connection';
+      testIcon.className = 'fa-solid fa-plug-circle-check';
+    }
+  });
+
+  // Save Website & Social Settings
+  document.getElementById('websiteSettingsForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const saveBtn = document.getElementById('saveWebsiteSettingsBtn');
+    const saveText = document.getElementById('saveWebsiteSettingsText');
+    const saveIcon = document.getElementById('saveWebsiteSettingsIcon');
+    const banner = document.getElementById('websiteFeedbackBanner');
+    const bannerText = document.getElementById('websiteFeedbackText');
+    const bannerIcon = document.getElementById('websiteFeedbackIcon');
+
+    saveBtn.disabled = true;
+    saveBtn.classList.add('opacity-60');
+    saveText.textContent = 'Saving...';
+    saveIcon.className = 'fa-solid fa-spinner fa-spin';
+
+    try {
+      const form = document.getElementById('websiteSettingsForm');
+      const res = await fetch('/Admin/SystemSettings/SaveWebsiteSettings', {
+        method: 'POST',
+        body: new FormData(form)
+      });
+      const payload = await res.json().catch(() => ({}));
+      const ok = res.ok && payload.success;
+
+      if (ok && payload.data) {
+        document.getElementById('facebookUrl').value = payload.data.facebookUrl || '';
+        document.getElementById('instagramUrl').value = payload.data.instagramUrl || '';
+        document.getElementById('whatsAppNumber').value = payload.data.whatsAppNumber || '';
+        document.getElementById('websiteEmail').value = payload.data.websiteEmail || '';
+        document.getElementById('primaryPhone').value = payload.data.primaryPhone || '';
+        document.getElementById('secondaryPhone').value = payload.data.secondaryPhone || '';
+        document.getElementById('businessAddress').value = payload.data.businessAddress || '';
+      }
+
+      if (banner && bannerText && payload.message) {
+        bannerText.textContent = payload.message;
+        banner.className = 'flex items-start gap-3 p-4 rounded-xl border text-xs ' +
+          (ok ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800' : 'bg-red/10 border-red/30 text-red');
+        bannerIcon.className = 'fa-solid ' + (ok ? 'fa-circle-check' : 'fa-triangle-exclamation') + ' mt-0.5';
+      }
+
+      showAdminToast(payload.message || (ok ? 'Website settings saved.' : 'Failed to save website settings.'), ok);
+    } catch (err) {
+      showAdminToast('Unable to save website settings. Please try again.', false);
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.classList.remove('opacity-60');
+      saveText.textContent = 'Save Website Settings';
+      saveIcon.className = 'fa-solid fa-floppy-disk';
+    }
+  });
+</script>
+}

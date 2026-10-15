@@ -1,0 +1,21 @@
+@model int
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Lead Not Found";
+    ViewData["ActiveNav"] = "Leads";
+}
+
+<div class="py-12 max-w-lg mx-auto text-center">
+  <div class="admin-card p-8 sm:p-10">
+    <div class="w-14 h-14 mx-auto rounded-2xl bg-red/10 text-red flex items-center justify-center text-2xl mb-4">
+      <i class="fa-solid fa-magnifying-glass"></i>
+    </div>
+    <h2 class="font-display text-2xl tracking-wide text-ink">LEAD #@Model NOT FOUND</h2>
+    <p class="text-xs text-steel mt-2">The requested customer enquiry could not be found.</p>
+    <div class="mt-6">
+      <a href="/Leads" class="btn-red px-6 py-2.5 rounded-lg text-xs inline-flex items-center gap-2">
+        <i class="fa-solid fa-arrow-left"></i> Back to Leads
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,446 @@
+@model UsersListViewModel
+@using System.Globalization
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "User Management";
+    ViewData["ActiveNav"] = "Users";
+}
+
+<!-- ============ HEADER BAR ============ -->
+<div class="admin-card p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+  <div>
+    <span class="text-[11px] font-mono2 uppercase tracking-[0.2em] text-red">Admin Only &middot; Access Control</span>
+    <h2 class="font-display text-2xl tracking-wide text-ink mt-0.5">TEAM ACCOUNTS</h2>
+    <p class="text-xs text-steel mt-1">Manage Administrator and Agent credentials and role permissions.</p>
+  </div>
+  <button type="button" onclick="openCreateUserModal()" class="btn-red px-5 py-3 rounded-lg text-xs inline-flex items-center justify-center gap-2 cursor-pointer shrink-0">
+    <i class="fa-solid fa-user-plus"></i>
+    <span>CREATE USER</span>
+  </button>
+</div>
+
+<!-- ============ USERS TABLE / CARDS ============ -->
+<div class="admin-card mt-5 overflow-hidden">
+  <!-- Desktop Table -->
+  <div class="hidden md:block overflow-x-auto">
+    <table class="w-full text-left border-collapse">
+      <thead>
+        <tr class="bg-fog/70 border-b border-line text-[11px] font-mono2 uppercase tracking-wider text-steel">
+          <th class="py-3.5 px-5">Full Name</th>
+          <th class="py-3.5 px-5">Email</th>
+          <th class="py-3.5 px-5">Phone</th>
+          <th class="py-3.5 px-5">Role</th>
+          <th class="py-3.5 px-5">Active Status</th>
+          <th class="py-3.5 px-5">Created Date</th>
+          <th class="py-3.5 px-5 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-line text-sm">
+        @foreach (var u in Model.Users)
+        {
+          var isSelf = u.UserId == Model.CurrentUserId;
+          <tr class="hover:bg-fog/50 transition-colors">
+            <td class="py-3.5 px-5">
+              <div class="font-semibold text-ink flex items-center gap-2">
+                <span>@u.FullName</span>
+                @if (isSelf)
+                {
+                  <span class="px-2 py-0.5 rounded bg-fog border border-line text-[10px] font-mono2 text-steel">YOU</span>
+                }
+              </div>
+            </td>
+            <td class="py-3.5 px-5 text-xs text-steel break-all">@u.Email</td>
+            <td class="py-3.5 px-5 text-xs text-ink whitespace-nowrap">@(!string.IsNullOrWhiteSpace(u.PhoneNumber) ? u.PhoneNumber : "—")</td>
+            <td class="py-3.5 px-5">
+              @if (string.Equals(u.Role, "Admin", StringComparison.OrdinalIgnoreCase))
+              {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-semibold bg-red/10 text-red border border-red/25">
+                  <i class="fa-solid fa-shield-halved text-[10px]"></i> Admin
+                </span>
+              }
+              else
+              {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-semibold bg-ink/10 text-ink border border-ink/20">
+                  <i class="fa-solid fa-headset text-[10px]"></i> Agent
+                </span>
+              }
+            </td>
+            <td class="py-3.5 px-5">
+              @if (u.IsActive)
+              {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-semibold bg-emerald-500/10 text-emerald-700 border border-emerald-500/25">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Active
+                </span>
+              }
+              else
+              {
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-medium bg-fog text-steel border border-line">
+                  <span class="w-1.5 h-1.5 rounded-full bg-steel"></span> Inactive
+                </span>
+              }
+            </td>
+            <td class="py-3.5 px-5 text-xs text-steel whitespace-nowrap">
+              @u.CreatedAt.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)
+            </td>
+            <td class="py-3.5 px-5 text-right whitespace-nowrap space-x-1.5">
+              <button type="button"
+                      onclick="openEditUserModal(@u.UserId, '@Html.Raw(u.FullName.Replace("'", "\\'"))', '@Html.Raw(u.Email.Replace("'", "\\'"))', '@Html.Raw((u.PhoneNumber ?? "").Replace("'", "\\'"))', '@u.Role', @(u.IsActive ? "true" : "false"))"
+                      class="px-3 py-1.5 rounded-lg border border-line hover:border-ink text-xs font-semibold text-ink inline-flex items-center gap-1 transition-colors cursor-pointer">
+                <i class="fa-solid fa-pen text-[10px]"></i> Edit
+              </button>
+              <button type="button"
+                      onclick="openResetPwdModal(@u.UserId, '@Html.Raw(u.FullName.Replace("'", "\\'"))')"
+                      class="px-3 py-1.5 rounded-lg border border-line hover:border-red text-xs font-semibold text-steel hover:text-red inline-flex items-center gap-1 transition-colors cursor-pointer">
+                <i class="fa-solid fa-key text-[10px]"></i> Password
+              </button>
+              @if (!isSelf)
+              {
+                <button type="button"
+                        onclick="toggleUserStatus(@u.UserId)"
+                        class="px-3 py-1.5 rounded-lg border text-xs font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer @(u.IsActive ? "border-red/30 text-red hover:bg-red hover:text-white" : "border-emerald-600/30 text-emerald-700 hover:bg-emerald-600 hover:text-white")">
+                  <i class="fa-solid @(u.IsActive ? "fa-ban" : "fa-check") text-[10px]"></i>
+                  <span>@(u.IsActive ? "Deactivate" : "Activate")</span>
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Responsive Cards -->
+  <div class="md:hidden divide-y divide-line">
+    @foreach (var u in Model.Users)
+    {
+      var isSelf = u.UserId == Model.CurrentUserId;
+      <div class="p-4 space-y-3">
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <div class="font-semibold text-ink text-sm flex items-center gap-2 flex-wrap">
+              <span>@u.FullName</span>
+              @if (isSelf)
+              {
+                <span class="px-1.5 py-0.5 rounded bg-fog border border-line text-[10px] font-mono2 text-steel">YOU</span>
+              }
+            </div>
+            <div class="text-xs text-steel break-all mt-0.5">@u.Email</div>
+            @if (!string.IsNullOrWhiteSpace(u.PhoneNumber))
+            {
+              <div class="text-xs text-steel mt-0.5"><i class="fa-solid fa-phone text-red mr-1 text-[10px]"></i>@u.PhoneNumber</div>
+            }
+          </div>
+          <div class="flex flex-col items-end gap-1.5 shrink-0">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono2 font-semibold @(u.Role == "Admin" ? "bg-red/10 text-red border border-red/25" : "bg-ink/10 text-ink border border-ink/20")">
+              @u.Role
+            </span>
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono2 font-semibold @(u.IsActive ? "bg-emerald-500/10 text-emerald-700" : "bg-fog text-steel")">
+              @(u.IsActive ? "Active" : "Inactive")
+            </span>
+          </div>
+        </div>
+        <div class="text-[11px] text-steel">Created @u.CreatedAt.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</div>
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <button type="button"
+                  onclick="openEditUserModal(@u.UserId, '@Html.Raw(u.FullName.Replace("'", "\\'"))', '@Html.Raw(u.Email.Replace("'", "\\'"))', '@Html.Raw((u.PhoneNumber ?? "").Replace("'", "\\'"))', '@u.Role', @(u.IsActive ? "true" : "false"))"
+                  class="flex-1 py-2 px-3 rounded-lg border border-line text-xs font-semibold text-ink inline-flex items-center justify-center gap-1">
+            <i class="fa-solid fa-pen text-[10px]"></i> Edit
+          </button>
+          <button type="button"
+                  onclick="openResetPwdModal(@u.UserId, '@Html.Raw(u.FullName.Replace("'", "\\'"))')"
+                  class="flex-1 py-2 px-3 rounded-lg border border-line text-xs font-semibold text-ink inline-flex items-center justify-center gap-1">
+            <i class="fa-solid fa-key text-[10px]"></i> Password
+          </button>
+          @if (!isSelf)
+          {
+            <button type="button"
+                    onclick="toggleUserStatus(@u.UserId)"
+                    class="w-full py-2 px-3 rounded-lg border text-xs font-semibold inline-flex items-center justify-center gap-1 @(u.IsActive ? "border-red/30 text-red" : "border-emerald-600/30 text-emerald-700")">
+              @(u.IsActive ? "Deactivate User" : "Activate User")
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ============ CREATE USER MODAL ============ -->
+<div id="createUserModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white rounded-2xl border border-line shadow-2xl max-w-lg w-full overflow-hidden my-8">
+    <div class="px-6 py-4 bg-ink text-white flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-mono2 uppercase tracking-[0.2em] text-red block">New Account</span>
+        <h3 class="font-display text-xl tracking-wide">CREATE USER</h3>
+      </div>
+      <button type="button" onclick="closeModal('createUserModal')" class="text-white/70 hover:text-white cursor-pointer" aria-label="Close modal">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <form id="createUserForm" class="p-6 space-y-4" novalidate>
+      @Html.AntiForgeryToken()
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-semibold mb-1.5">Full Name *</label>
+          <input name="FullName" type="text" required maxlength="120" class="lf-input" placeholder="Sarah Jenkins" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Email *</label>
+          <input name="Email" type="email" required maxlength="150" class="lf-input" placeholder="sarah@vsmovingservices.com" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Phone</label>
+          <input name="PhoneNumber" type="tel" maxlength="30" class="lf-input" placeholder="902 555 0199" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Role *</label>
+          <select name="Role" class="lf-input">
+            <option value="Agent">Agent (Dashboard + Leads)</option>
+            <option value="Admin">Admin (Full Access)</option>
+          </select>
+        </div>
+        <div class="flex items-end pb-2">
+          <label class="inline-flex items-center gap-2.5 text-sm font-medium text-ink cursor-pointer">
+            <input name="IsActive" type="checkbox" value="true" checked class="w-4 h-4 accent-red rounded" />
+            <span>Active Account</span>
+          </label>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Password *</label>
+          <input name="Password" type="password" required minlength="6" class="lf-input" placeholder="Min. 6 characters" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Confirm Password *</label>
+          <input name="ConfirmPassword" type="password" required minlength="6" class="lf-input" placeholder="Re-enter password" />
+        </div>
+      </div>
+
+      <p id="createUserError" class="text-xs text-red font-medium hidden"></p>
+
+      <div class="pt-3 border-t border-line flex items-center justify-end gap-3">
+        <button type="button" onclick="closeModal('createUserModal')" class="px-4 py-2.5 rounded-lg border border-line text-xs font-semibold text-steel hover:text-ink cursor-pointer">
+          Cancel
+        </button>
+        <button type="submit" id="createUserSubmitBtn" class="btn-red px-5 py-2.5 rounded-lg text-xs inline-flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-check"></i>
+          <span>Create User</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ EDIT USER MODAL ============ -->
+<div id="editUserModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white rounded-2xl border border-line shadow-2xl max-w-lg w-full overflow-hidden my-8">
+    <div class="px-6 py-4 bg-ink text-white flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-mono2 uppercase tracking-[0.2em] text-red block">Update Account</span>
+        <h3 class="font-display text-xl tracking-wide">EDIT USER</h3>
+      </div>
+      <button type="button" onclick="closeModal('editUserModal')" class="text-white/70 hover:text-white cursor-pointer" aria-label="Close modal">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <form id="editUserForm" class="p-6 space-y-4" novalidate>
+      @Html.AntiForgeryToken()
+      <input type="hidden" name="UserId" id="edit_UserId" />
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-semibold mb-1.5">Full Name *</label>
+          <input name="FullName" id="edit_FullName" type="text" required maxlength="120" class="lf-input" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Email *</label>
+          <input name="Email" id="edit_Email" type="email" required maxlength="150" class="lf-input" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Phone</label>
+          <input name="PhoneNumber" id="edit_PhoneNumber" type="tel" maxlength="30" class="lf-input" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1.5">Role *</label>
+          <select name="Role" id="edit_Role" class="lf-input">
+            <option value="Agent">Agent</option>
+            <option value="Admin">Admin</option>
+          </select>
+        </div>
+        <div class="flex items-end pb-2">
+          <label class="inline-flex items-center gap-2.5 text-sm font-medium text-ink cursor-pointer">
+            <input name="IsActive" id="edit_IsActive" type="checkbox" value="true" class="w-4 h-4 accent-red rounded" />
+            <span>Active Account</span>
+          </label>
+        </div>
+      </div>
+
+      <p id="editUserError" class="text-xs text-red font-medium hidden"></p>
+
+      <div class="pt-3 border-t border-line flex items-center justify-end gap-3">
+        <button type="button" onclick="closeModal('editUserModal')" class="px-4 py-2.5 rounded-lg border border-line text-xs font-semibold text-steel hover:text-ink cursor-pointer">
+          Cancel
+        </button>
+        <button type="submit" id="editUserSubmitBtn" class="btn-red px-5 py-2.5 rounded-lg text-xs inline-flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>Save Changes</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ RESET PASSWORD MODAL ============ -->
+<div id="resetPwdModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white rounded-2xl border border-line shadow-2xl max-w-md w-full overflow-hidden my-8">
+    <div class="px-6 py-4 bg-ink text-white flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-mono2 uppercase tracking-[0.2em] text-red block">Security Flow</span>
+        <h3 class="font-display text-xl tracking-wide">CHANGE PASSWORD</h3>
+      </div>
+      <button type="button" onclick="closeModal('resetPwdModal')" class="text-white/70 hover:text-white cursor-pointer" aria-label="Close modal">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <form id="resetPwdForm" class="p-6 space-y-4" novalidate>
+      @Html.AntiForgeryToken()
+      <input type="hidden" name="UserId" id="reset_UserId" />
+      <p class="text-xs text-steel">Set a new password for <strong id="reset_UserName" class="text-ink"></strong>.</p>
+
+      <div>
+        <label class="block text-xs font-semibold mb-1.5">New Password *</label>
+        <input name="NewPassword" type="password" required minlength="6" class="lf-input" placeholder="Min. 6 characters" />
+      </div>
+      <div>
+        <label class="block text-xs font-semibold mb-1.5">Confirm New Password *</label>
+        <input name="ConfirmPassword" type="password" required minlength="6" class="lf-input" placeholder="Re-enter new password" />
+      </div>
+
+      <p id="resetPwdError" class="text-xs text-red font-medium hidden"></p>
+
+      <div class="pt-3 border-t border-line flex items-center justify-end gap-3">
+        <button type="button" onclick="closeModal('resetPwdModal')" class="px-4 py-2.5 rounded-lg border border-line text-xs font-semibold text-steel hover:text-ink cursor-pointer">
+          Cancel
+        </button>
+        <button type="submit" class="btn-red px-5 py-2.5 rounded-lg text-xs inline-flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-key"></i>
+          <span>Update Password</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+  function openCreateUserModal() {
+    document.getElementById('createUserForm').reset();
+    document.getElementById('createUserError').classList.add('hidden');
+    document.getElementById('createUserModal').classList.remove('hidden');
+  }
+
+  function openEditUserModal(id, fullName, email, phone, role, isActive) {
+    document.getElementById('edit_UserId').value = id;
+    document.getElementById('edit_FullName').value = fullName;
+    document.getElementById('edit_Email').value = email;
+    document.getElementById('edit_PhoneNumber').value = phone || '';
+    document.getElementById('edit_Role').value = role;
+    document.getElementById('edit_IsActive').checked = !!isActive;
+    document.getElementById('editUserError').classList.add('hidden');
+    document.getElementById('editUserModal').classList.remove('hidden');
+  }
+
+  function openResetPwdModal(id, fullName) {
+    document.getElementById('resetPwdForm').reset();
+    document.getElementById('reset_UserId').value = id;
+    document.getElementById('reset_UserName').textContent = fullName;
+    document.getElementById('resetPwdError').classList.add('hidden');
+    document.getElementById('resetPwdModal').classList.remove('hidden');
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+  }
+
+  document.getElementById('createUserForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const errEl = document.getElementById('createUserError');
+    errEl.classList.add('hidden');
+
+    const fd = new FormData(form);
+    if (!form.querySelector('[name="IsActive"]').checked) {
+      fd.set('IsActive', 'false');
+    }
+
+    const res = await fetch('/Admin/Users/Create', { method: 'POST', body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      errEl.textContent = data.message || 'Unable to create user.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    closeModal('createUserModal');
+    showAdminToast(data.message || 'User created.', true);
+    setTimeout(() => window.location.reload(), 600);
+  });
+
+  document.getElementById('editUserForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const errEl = document.getElementById('editUserError');
+    errEl.classList.add('hidden');
+
+    const fd = new FormData(form);
+    if (!document.getElementById('edit_IsActive').checked) {
+      fd.set('IsActive', 'false');
+    }
+
+    const res = await fetch('/Admin/Users/Edit', { method: 'POST', body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      errEl.textContent = data.message || 'Unable to update user.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    closeModal('editUserModal');
+    showAdminToast(data.message || 'User updated.', true);
+    setTimeout(() => window.location.reload(), 600);
+  });
+
+  document.getElementById('resetPwdForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const errEl = document.getElementById('resetPwdError');
+    errEl.classList.add('hidden');
+
+    const fd = new FormData(form);
+    const res = await fetch('/Admin/Users/ResetPassword', { method: 'POST', body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      errEl.textContent = data.message || 'Unable to update password.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    closeModal('resetPwdModal');
+    showAdminToast(data.message || 'Password updated.', true);
+  });
+
+  async function toggleUserStatus(userId) {
+    const token = document.querySelector('#createUserForm input[name="__RequestVerificationToken"]').value;
+    const fd = new FormData();
+    fd.append('userId', userId);
+    fd.append('__RequestVerificationToken', token);
+
+    const res = await fetch('/Admin/Users/ToggleStatus', { method: 'POST', body: fd });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || !data.success) {
+      showAdminToast(data.message || 'Unable to update user status.', false);
+      return;
+    }
+    showAdminToast(data.message, true);
+    setTimeout(() => window.location.reload(), 600);
+  }
+</script>
+}

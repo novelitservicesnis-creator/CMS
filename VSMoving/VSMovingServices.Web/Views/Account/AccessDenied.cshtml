@@ -1,0 +1,25 @@
+@{
+    Layout = User.Identity?.IsAuthenticated == true ? "_AdminLayout" : "_Layout";
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="py-12 sm:py-16 max-w-xl mx-auto text-center">
+  <div class="admin-card p-8 sm:p-10 bg-white border border-line rounded-2xl shadow-sm">
+    <div class="w-16 h-16 mx-auto rounded-2xl bg-red/10 text-red flex items-center justify-center text-3xl mb-5">
+      <i class="fa-solid fa-user-lock"></i>
+    </div>
+    <span class="text-xs font-mono2 uppercase tracking-[0.2em] text-red">403 &middot; Administrator Permission Required</span>
+    <h2 class="font-display text-3xl tracking-wide text-ink mt-2">ACCESS RESTRICTED</h2>
+    <p class="text-steel text-sm mt-3 leading-relaxed">
+      Your account does not have permission to view this section. User Management and System Settings are restricted to <strong class="text-ink">Admin</strong> accounts.
+    </p>
+    <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
+      <a href="/AdminPanel" class="btn-red px-6 py-3 rounded-lg text-sm inline-flex items-center gap-2">
+        <i class="fa-solid fa-gauge-high"></i> Return to Dashboard
+      </a>
+      <a href="/Leads" class="btn-outline-ink px-6 py-3 rounded-lg text-sm inline-flex items-center gap-2">
+        <i class="fa-solid fa-inbox"></i> View Leads
+      </a>
+    </div>
+  </div>
+</div>

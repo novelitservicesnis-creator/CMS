@@ -1,0 +1,696 @@
+@model TestimonialsListViewModel
+@using System.Globalization
+@using System.Text.Json
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Testimonials";
+    ViewData["ActiveNav"] = "Testimonials";
+    var currentStatus = (Model.StatusFilter ?? "").ToLowerInvariant();
+}
+
+<!-- ============ HEADER & STATS BAR ============ -->
+<div class="admin-card p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+  <div>
+    <span class="text-[11px] font-mono2 uppercase tracking-[0.2em] text-red">Admin Only &middot; Public Website Content</span>
+    <h2 class="font-display text-2xl tracking-wide text-ink mt-0.5">CUSTOMER TESTIMONIALS</h2>
+    <p class="text-xs text-steel mt-1">Manage customer reviews displayed in the &ldquo;WHAT CUSTOMERS SAY&rdquo; slider on the public website.</p>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-3">
+    <div class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-fog border border-line text-xs">
+      <span class="font-mono2 text-steel uppercase text-[11px]">Published:</span>
+      <strong class="font-mono2 text-emerald-700 font-bold">@Model.PublishedCount</strong>
+      <span class="text-steel">/ @Model.TotalCount</span>
+    </div>
+
+    <button type="button" onclick="openCreateModal(@Model.NextDisplayOrder)" class="btn-red px-5 py-3 rounded-lg text-xs inline-flex items-center justify-center gap-2 cursor-pointer shrink-0">
+      <i class="fa-solid fa-plus"></i>
+      <span>ADD TESTIMONIAL</span>
+    </button>
+  </div>
+</div>
+
+<!-- ============ FILTER TABS & SEARCH BAR ============ -->
+<div class="admin-card p-4 sm:p-5 mt-5">
+  <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <!-- Status Tabs -->
+    <div class="flex flex-wrap items-center gap-2">
+      <a href="@Url.Action("Index", "Testimonials", new { search = Model.Search, status = (string?)null })"
+         class="px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors @(string.IsNullOrEmpty(currentStatus) ? "bg-ink text-white" : "bg-fog text-steel hover:text-ink")">
+        All <span class="ml-1 font-mono2 opacity-75">(@Model.TotalCount)</span>
+      </a>
+      <a href="@Url.Action("Index", "Testimonials", new { search = Model.Search, status = "published" })"
+         class="px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors @(currentStatus == "published" ? "bg-red text-white" : "bg-fog text-steel hover:text-ink")">
+        Published <span class="ml-1 font-mono2 opacity-75">(@Model.PublishedCount)</span>
+      </a>
+      <a href="@Url.Action("Index", "Testimonials", new { search = Model.Search, status = "unpublished" })"
+         class="px-3.5 py-2 rounded-lg text-xs font-semibold transition-colors @(currentStatus == "unpublished" ? "bg-ink text-white" : "bg-fog text-steel hover:text-ink")">
+        Hidden <span class="ml-1 font-mono2 opacity-75">(@Model.UnpublishedCount)</span>
+      </a>
+    </div>
+
+    <!-- Search by Customer Name -->
+    <form method="get" action="/Admin/Testimonials" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 flex-1 max-w-xl">
+      @if (!string.IsNullOrWhiteSpace(Model.StatusFilter))
+      {
+        <input type="hidden" name="status" value="@Model.StatusFilter" />
+      }
+      <div class="relative flex-1">
+        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-steel pointer-events-none">
+          <i class="fa-solid fa-magnifying-glass text-xs"></i>
+        </span>
+        <input type="search" name="search" value="@Model.Search" placeholder="Search by customer name or location..." class="lf-input pl-9! py-2! text-xs!" />
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="submit" class="btn-red px-4 py-2.5 rounded-lg text-xs inline-flex items-center justify-center gap-1.5 cursor-pointer flex-1 sm:flex-initial">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <span>Search</span>
+        </button>
+        @if (!string.IsNullOrWhiteSpace(Model.Search) || !string.IsNullOrWhiteSpace(Model.StatusFilter))
+        {
+          <a href="/Admin/Testimonials" class="px-3.5 py-2.5 rounded-lg border border-line hover:border-red text-xs font-medium text-steel hover:text-red inline-flex items-center justify-center">
+            Reset
+          </a>
+        }
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ TESTIMONIALS TABLE / MOBILE CARDS ============ -->
+<div class="admin-card mt-5 overflow-hidden">
+  @if (Model.Testimonials.Count == 0)
+  {
+    <div class="p-12 text-center">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-fog text-red flex items-center justify-center text-2xl mb-3">
+        <i class="fa-solid fa-quote-right"></i>
+      </div>
+      <h3 class="font-display text-xl tracking-wide text-ink">NO TESTIMONIALS FOUND</h3>
+      <p class="text-xs text-steel mt-1 max-w-md mx-auto">
+        @if (!string.IsNullOrWhiteSpace(Model.Search) || !string.IsNullOrWhiteSpace(Model.StatusFilter))
+        {
+          <span>No customer testimonials matched your current search or filter.</span>
+        }
+        else
+        {
+          <span>Add your first customer review to showcase it in the &ldquo;WHAT CUSTOMERS SAY&rdquo; section on the homepage.</span>
+        }
+      </p>
+      <div class="mt-5">
+        <button type="button" onclick="openCreateModal(@Model.NextDisplayOrder)" class="btn-red px-5 py-2.5 rounded-lg text-xs inline-flex items-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-plus"></i>
+          <span>ADD TESTIMONIAL</span>
+        </button>
+      </div>
+    </div>
+  }
+  else
+  {
+    <!-- Desktop Table -->
+    <div class="hidden md:block overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-fog/70 border-b border-line text-[11px] font-mono2 uppercase tracking-wider text-steel">
+            <th class="py-3.5 px-5 w-28">Order</th>
+            <th class="py-3.5 px-5">Customer</th>
+            <th class="py-3.5 px-5">Rating</th>
+            <th class="py-3.5 px-5">Review</th>
+            <th class="py-3.5 px-5">Status</th>
+            <th class="py-3.5 px-5">Created</th>
+            <th class="py-3.5 px-5 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-line text-sm">
+          @foreach (var item in Model.Testimonials)
+          {
+            var rating = Math.Clamp(item.Rating, 1, 5);
+            var itemJson = JsonSerializer.Serialize(new
+            {
+                testimonialId = item.TestimonialId,
+                customerName = item.CustomerName,
+                location = item.Location ?? "",
+                reviewText = item.ReviewText,
+                rating = rating,
+                displayOrder = item.DisplayOrder,
+                isPublished = item.IsPublished
+            });
+
+            <tr class="hover:bg-fog/50 transition-colors">
+              <!-- Display Order -->
+              <td class="py-3.5 px-5 whitespace-nowrap">
+                <div class="inline-flex items-center gap-1.5">
+                  <input type="number"
+                         min="0"
+                         max="9999"
+                         value="@item.DisplayOrder"
+                         aria-label="Display Order for @item.CustomerName"
+                         onchange="updateDisplayOrder(@item.TestimonialId, this.value)"
+                         class="w-16 px-2.5 py-1.5 rounded-lg border border-line bg-white font-mono2 text-xs font-semibold text-ink text-center focus:outline-none focus:border-red" />
+                </div>
+              </td>
+
+              <!-- Customer Name & Location -->
+              <td class="py-3.5 px-5 whitespace-nowrap">
+                <div class="font-semibold text-ink">@item.CustomerName</div>
+                @if (!string.IsNullOrWhiteSpace(item.Location))
+                {
+                  <div class="text-xs text-steel mt-0.5 flex items-center gap-1">
+                    <i class="fa-solid fa-location-dot text-red text-[10px]"></i>
+                    <span>@item.Location</span>
+                  </div>
+                }
+                else
+                {
+                  <div class="text-[11px] text-steel/60 italic mt-0.5">No location</div>
+                }
+              </td>
+
+              <!-- Star Rating -->
+              <td class="py-3.5 px-5 whitespace-nowrap">
+                <div class="inline-flex items-center gap-1 text-red text-xs" title="@rating out of 5 stars">
+                  @for (int s = 1; s <= 5; s++)
+                  {
+                    if (s <= rating)
+                    {
+                      <i class="fa-solid fa-star"></i>
+                    }
+                    else
+                    {
+                      <i class="fa-regular fa-star text-line"></i>
+                    }
+                  }
+                  <span class="ml-1 font-mono2 text-[11px] text-steel">(@rating/5)</span>
+                </div>
+              </td>
+
+              <!-- Review Text -->
+              <td class="py-3.5 px-5 max-w-md">
+                <p class="text-xs text-ink leading-relaxed line-clamp-2">&ldquo;@item.ReviewText&rdquo;</p>
+              </td>
+
+              <!-- Publish Status -->
+              <td class="py-3.5 px-5 whitespace-nowrap">
+                @if (item.IsPublished)
+                {
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-semibold bg-emerald-500/10 text-emerald-700 border border-emerald-500/25">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Published
+                  </span>
+                }
+                else
+                {
+                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono2 font-medium bg-fog text-steel border border-line">
+                    <span class="w-1.5 h-1.5 rounded-full bg-steel"></span> Hidden
+                  </span>
+                }
+              </td>
+
+              <!-- Created Date -->
+              <td class="py-3.5 px-5 text-xs text-steel whitespace-nowrap">
+                @item.CreatedAt.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)
+              </td>
+
+              <!-- Actions -->
+              <td class="py-3.5 px-5 text-right whitespace-nowrap space-x-1.5">
+                <button type="button"
+                        data-testimonial="@itemJson"
+                        onclick="openEditModalFromBtn(this)"
+                        class="px-3 py-1.5 rounded-lg border border-line hover:border-ink text-xs font-semibold text-ink inline-flex items-center gap-1 transition-colors cursor-pointer">
+                  <i class="fa-solid fa-pen text-[10px]"></i> Edit
+                </button>
+                <button type="button"
+                        onclick="togglePublish(@item.TestimonialId)"
+                        class="px-3 py-1.5 rounded-lg border text-xs font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer @(item.IsPublished ? "border-amber-500/40 text-amber-800 hover:bg-amber-500 hover:text-white" : "border-emerald-600/30 text-emerald-700 hover:bg-emerald-600 hover:text-white")">
+                  <i class="fa-solid @(item.IsPublished ? "fa-eye-slash" : "fa-eye") text-[10px]"></i>
+                  <span>@(item.IsPublished ? "Unpublish" : "Publish")</span>
+                </button>
+                <button type="button"
+                        data-id="@item.TestimonialId"
+                        data-name="@item.CustomerName"
+                        onclick="openDeleteModalFromBtn(this)"
+                        class="px-3 py-1.5 rounded-lg border border-red/30 text-red hover:bg-red hover:text-white text-xs font-semibold inline-flex items-center gap-1 transition-colors cursor-pointer">
+                  <i class="fa-solid fa-trash-can text-[10px]"></i> Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobile Responsive Cards -->
+    <div class="md:hidden divide-y divide-line">
+      @foreach (var item in Model.Testimonials)
+      {
+        var rating = Math.Clamp(item.Rating, 1, 5);
+        var itemJson = JsonSerializer.Serialize(new
+        {
+            testimonialId = item.TestimonialId,
+            customerName = item.CustomerName,
+            location = item.Location ?? "",
+            reviewText = item.ReviewText,
+            rating = rating,
+            displayOrder = item.DisplayOrder,
+            isPublished = item.IsPublished
+        });
+
+        <div class="p-4 space-y-3">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="font-semibold text-ink text-sm flex items-center gap-2 flex-wrap">
+                <span>@item.CustomerName</span>
+                <span class="px-2 py-0.5 rounded bg-fog border border-line text-[10px] font-mono2 text-steel">Order #@item.DisplayOrder</span>
+              </div>
+              @if (!string.IsNullOrWhiteSpace(item.Location))
+              {
+                <div class="text-xs text-steel mt-0.5"><i class="fa-solid fa-location-dot text-red mr-1 text-[10px]"></i>@item.Location</div>
+              }
+              <div class="flex items-center gap-1 text-red text-xs mt-1.5">
+                @for (int s = 1; s <= 5; s++)
+                {
+                  if (s <= rating)
+                  {
+                    <i class="fa-solid fa-star"></i>
+                  }
+                  else
+                  {
+                    <i class="fa-regular fa-star text-line"></i>
+                  }
+                }
+                <span class="ml-1 font-mono2 text-[11px] text-steel">(@rating/5)</span>
+              </div>
+            </div>
+
+            <div class="shrink-0">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-mono2 font-semibold @(item.IsPublished ? "bg-emerald-500/10 text-emerald-700 border border-emerald-500/25" : "bg-fog text-steel border border-line")">
+                @(item.IsPublished ? "Published" : "Hidden")
+              </span>
+            </div>
+          </div>
+
+          <p class="text-xs text-ink bg-fog/60 rounded-xl p-3 border border-line leading-relaxed">&ldquo;@item.ReviewText&rdquo;</p>
+
+          <div class="flex items-center justify-between text-[11px] text-steel">
+            <span>Created @item.CreatedAt.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</span>
+            <label class="inline-flex items-center gap-1.5 font-mono2">
+              <span>Order:</span>
+              <input type="number"
+                     min="0"
+                     max="9999"
+                     value="@item.DisplayOrder"
+                     onchange="updateDisplayOrder(@item.TestimonialId, this.value)"
+                     class="w-14 px-2 py-1 rounded border border-line bg-white text-ink text-center font-semibold" />
+            </label>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <button type="button"
+                    data-testimonial="@itemJson"
+                    onclick="openEditModalFromBtn(this)"
+                    class="flex-1 py-2 px-3 rounded-lg border border-line text-xs font-semibold text-ink inline-flex items-center justify-center gap-1">
+              <i class="fa-solid fa-pen text-[10px]"></i> Edit
+            </button>
+            <button type="button"
+                    onclick="togglePublish(@item.TestimonialId)"
+                    class="flex-1 py-2 px-3 rounded-lg border text-xs font-semibold inline-flex items-center justify-center gap-1 @(item.IsPublished ? "border-amber-500/40 text-amber-800" : "border-emerald-600/30 text-emerald-700")">
+              <i class="fa-solid @(item.IsPublished ? "fa-eye-slash" : "fa-eye") text-[10px]"></i>
+              <span>@(item.IsPublished ? "Unpublish" : "Publish")</span>
+            </button>
+            <button type="button"
+                    data-id="@item.TestimonialId"
+                    data-name="@item.CustomerName"
+                    onclick="openDeleteModalFromBtn(this)"
+                    class="py-2 px-3 rounded-lg border border-red/30 text-xs font-semibold text-red inline-flex items-center justify-center gap-1">
+              <i class="fa-solid fa-trash-can text-[10px]"></i> Delete
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- ============ ADD / EDIT TESTIMONIAL MODAL ============ -->
+<div id="testimonialModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white rounded-2xl border border-line shadow-2xl max-w-lg w-full overflow-hidden my-8">
+    <div class="px-6 py-4 bg-ink text-white flex items-center justify-between">
+      <div>
+        <span id="modalEyebrow" class="text-[10px] font-mono2 uppercase tracking-[0.2em] text-red block">Customer Feedback</span>
+        <h3 id="modalTitle" class="font-display text-xl tracking-wide">ADD TESTIMONIAL</h3>
+      </div>
+      <button type="button" onclick="closeModal('testimonialModal')" class="text-white/70 hover:text-white cursor-pointer" aria-label="Close modal">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <form id="testimonialForm" class="p-6 space-y-4" novalidate>
+      @Html.AntiForgeryToken()
+      <input type="hidden" name="TestimonialId" id="f_TestimonialId" value="0" />
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="f_CustomerName" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-1.5">Customer Name *</label>
+          <input id="f_CustomerName" name="CustomerName" type="text" required maxlength="120" class="lf-input" placeholder="e.g. Sarah Jenkins" />
+        </div>
+
+        <div>
+          <label for="f_Location" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-1.5">Location <span class="text-steel font-normal lowercase">(optional)</span></label>
+          <input id="f_Location" name="Location" type="text" maxlength="120" class="lf-input" placeholder="e.g. Dartmouth, NS" />
+        </div>
+      </div>
+
+      <!-- Interactive Star Rating Selector -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label class="block text-xs font-semibold uppercase tracking-wider text-ink">Star Rating *</label>
+          <span id="starRatingLabel" class="text-xs font-mono2 font-semibold text-red">5 / 5 Stars</span>
+        </div>
+        <input type="hidden" name="Rating" id="f_Rating" value="5" />
+        <div class="p-3 rounded-xl bg-fog/70 border border-line flex items-center justify-between">
+          <div id="starSelector" class="flex items-center gap-2 text-2xl">
+            @for (int s = 1; s <= 5; s++)
+            {
+              <button type="button"
+                      data-star="@s"
+                      onclick="selectStarRating(@s)"
+                      onmouseenter="previewStarRating(@s)"
+                      onmouseleave="restoreStarRating()"
+                      class="star-btn text-red hover:scale-110 transition-transform cursor-pointer focus:outline-none"
+                      aria-label="Rate @s out of 5 stars">
+                <i class="fa-solid fa-star"></i>
+              </button>
+            }
+          </div>
+          <span class="text-[11px] text-steel">Click a star to set rating</span>
+        </div>
+      </div>
+
+      <!-- Review Text -->
+      <div>
+        <div class="flex items-center justify-between mb-1.5">
+          <label for="f_ReviewText" class="block text-xs font-semibold uppercase tracking-wider text-ink">Customer Review *</label>
+          <span id="reviewCharCount" class="text-[11px] font-mono2 text-steel">0 / 1000</span>
+        </div>
+        <textarea id="f_ReviewText" name="ReviewText" rows="4" required maxlength="1000" class="lf-input" placeholder="Write the customer's review text here..."></textarea>
+      </div>
+
+      <!-- Display Order & Publish Status -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+        <div>
+          <label for="f_DisplayOrder" class="block text-xs font-semibold uppercase tracking-wider text-ink mb-1.5">Display Order</label>
+          <input id="f_DisplayOrder" name="DisplayOrder" type="number" min="0" max="9999" value="1" class="lf-input" />
+          <p class="text-[11px] text-steel mt-1">Lower numbers appear first in the slider.</p>
+        </div>
+
+        <div class="pt-2 sm:pt-5">
+          <label class="p-3.5 rounded-xl bg-fog/70 border border-line flex items-center justify-between gap-3 cursor-pointer select-none">
+            <div>
+              <div class="text-xs font-semibold text-ink">Publish on Website</div>
+              <div class="text-[11px] text-steel">Visible in public slider</div>
+            </div>
+            <input id="f_IsPublished" name="IsPublished" type="checkbox" value="true" checked class="w-4 h-4 accent-red rounded cursor-pointer" />
+          </label>
+        </div>
+      </div>
+
+      <p id="testimonialFormError" class="text-xs text-red font-medium hidden"></p>
+
+      <div class="pt-3 border-t border-line flex items-center justify-end gap-3">
+        <button type="button" onclick="closeModal('testimonialModal')" class="px-4 py-2.5 rounded-lg border border-line text-xs font-semibold text-steel hover:text-ink cursor-pointer">
+          Cancel
+        </button>
+        <button type="submit" id="testimonialSubmitBtn" class="btn-red px-5 py-2.5 rounded-lg text-xs inline-flex items-center gap-2 cursor-pointer">
+          <i id="testimonialSubmitIcon" class="fa-solid fa-floppy-disk"></i>
+          <span id="testimonialSubmitText">Save Testimonial</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ DELETE CONFIRMATION MODAL ============ -->
+<div id="deleteTestimonialModal" class="fixed inset-0 z-50 hidden bg-ink/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div class="bg-white rounded-2xl border border-line shadow-2xl max-w-md w-full overflow-hidden my-8">
+    <div class="px-6 py-4 bg-ink text-white flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-mono2 uppercase tracking-[0.2em] text-red block">Confirm Removal</span>
+        <h3 class="font-display text-xl tracking-wide">DELETE TESTIMONIAL</h3>
+      </div>
+      <button type="button" onclick="closeModal('deleteTestimonialModal')" class="text-white/70 hover:text-white cursor-pointer" aria-label="Close modal">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <div class="p-6 space-y-4">
+      <input type="hidden" id="del_TestimonialId" value="0" />
+      <p class="text-sm text-steel leading-relaxed">
+        Are you sure you want to permanently delete the testimonial from <strong id="del_CustomerName" class="text-ink"></strong>? This action cannot be undone.
+      </p>
+
+      <div class="pt-3 border-t border-line flex items-center justify-end gap-3">
+        <button type="button" onclick="closeModal('deleteTestimonialModal')" class="px-4 py-2.5 rounded-lg border border-line text-xs font-semibold text-steel hover:text-ink cursor-pointer">
+          Cancel
+        </button>
+        <button type="button" id="confirmDeleteBtn" onclick="confirmDeleteTestimonial()" class="btn-red px-5 py-2.5 rounded-lg text-xs inline-flex items-center gap-2 cursor-pointer">
+          <i id="confirmDeleteIcon" class="fa-solid fa-trash-can"></i>
+          <span id="confirmDeleteText">Delete Permanently</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+  let isEditMode = false;
+  let selectedRating = 5;
+
+  const reviewTextarea = document.getElementById('f_ReviewText');
+  const reviewCharCount = document.getElementById('reviewCharCount');
+  if (reviewTextarea && reviewCharCount) {
+    reviewTextarea.addEventListener('input', () => {
+      reviewCharCount.textContent = `${reviewTextarea.value.length} / 1000`;
+    });
+  }
+
+  function renderStarButtons(activeCount) {
+    const buttons = document.querySelectorAll('#starSelector .star-btn');
+    buttons.forEach(btn => {
+      const starVal = parseInt(btn.getAttribute('data-star'), 10);
+      const icon = btn.querySelector('i');
+      if (starVal <= activeCount) {
+        icon.className = 'fa-solid fa-star text-red';
+      } else {
+        icon.className = 'fa-regular fa-star text-steel/40';
+      }
+    });
+    const label = document.getElementById('starRatingLabel');
+    if (label) {
+      label.textContent = `${activeCount} / 5 Star${activeCount === 1 ? '' : 's'}`;
+    }
+  }
+
+  function selectStarRating(rating) {
+    selectedRating = Math.min(Math.max(parseInt(rating, 10) || 5, 1), 5);
+    document.getElementById('f_Rating').value = selectedRating;
+    renderStarButtons(selectedRating);
+  }
+
+  function previewStarRating(rating) {
+    renderStarButtons(rating);
+  }
+
+  function restoreStarRating() {
+    renderStarButtons(selectedRating);
+  }
+
+  function openCreateModal(nextOrder) {
+    isEditMode = false;
+    const form = document.getElementById('testimonialForm');
+    form.reset();
+    document.getElementById('f_TestimonialId').value = '0';
+    document.getElementById('f_DisplayOrder').value = nextOrder || 1;
+    document.getElementById('f_IsPublished').checked = true;
+    selectStarRating(5);
+    if (reviewCharCount) reviewCharCount.textContent = '0 / 1000';
+
+    document.getElementById('modalEyebrow').textContent = 'New Customer Review';
+    document.getElementById('modalTitle').textContent = 'ADD TESTIMONIAL';
+    document.getElementById('testimonialSubmitText').textContent = 'Add Testimonial';
+    document.getElementById('testimonialFormError').classList.add('hidden');
+    document.getElementById('testimonialModal').classList.remove('hidden');
+  }
+
+  function openEditModalFromBtn(btn) {
+    try {
+      const data = JSON.parse(btn.getAttribute('data-testimonial'));
+      isEditMode = true;
+      document.getElementById('f_TestimonialId').value = data.testimonialId;
+      document.getElementById('f_CustomerName').value = data.customerName || '';
+      document.getElementById('f_Location').value = data.location || '';
+      document.getElementById('f_ReviewText').value = data.reviewText || '';
+      document.getElementById('f_DisplayOrder').value = data.displayOrder ?? 1;
+      document.getElementById('f_IsPublished').checked = !!data.isPublished;
+      selectStarRating(data.rating || 5);
+      if (reviewCharCount) reviewCharCount.textContent = `${(data.reviewText || '').length} / 1000`;
+
+      document.getElementById('modalEyebrow').textContent = 'Update Customer Review';
+      document.getElementById('modalTitle').textContent = 'EDIT TESTIMONIAL';
+      document.getElementById('testimonialSubmitText').textContent = 'Save Changes';
+      document.getElementById('testimonialFormError').classList.add('hidden');
+      document.getElementById('testimonialModal').classList.remove('hidden');
+    } catch (e) {
+      showAdminToast('Unable to open testimonial editor.', false);
+    }
+  }
+
+  function openDeleteModalFromBtn(btn) {
+    const id = btn.getAttribute('data-id');
+    const name = btn.getAttribute('data-name');
+    document.getElementById('del_TestimonialId').value = id;
+    document.getElementById('del_CustomerName').textContent = name || 'this customer';
+    document.getElementById('deleteTestimonialModal').classList.remove('hidden');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.add('hidden');
+  }
+
+  function getAntiForgeryToken() {
+    const input = document.querySelector('#testimonialForm input[name="__RequestVerificationToken"]');
+    return input ? input.value : '';
+  }
+
+  // Create or Edit submit
+  document.getElementById('testimonialForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const errEl = document.getElementById('testimonialFormError');
+    const submitBtn = document.getElementById('testimonialSubmitBtn');
+    const submitIcon = document.getElementById('testimonialSubmitIcon');
+    const submitText = document.getElementById('testimonialSubmitText');
+    errEl.classList.add('hidden');
+
+    const customerName = document.getElementById('f_CustomerName').value.trim();
+    const reviewText = document.getElementById('f_ReviewText').value.trim();
+    if (!customerName) {
+      errEl.textContent = 'Customer Name is required.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    if (!reviewText) {
+      errEl.textContent = 'Customer Review text is required.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+
+    const fd = new FormData(form);
+    if (!document.getElementById('f_IsPublished').checked) {
+      fd.set('IsPublished', 'false');
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.classList.add('opacity-60');
+    submitIcon.className = 'fa-solid fa-spinner fa-spin';
+    submitText.textContent = 'Saving...';
+
+    const url = isEditMode ? '/Admin/Testimonials/Edit' : '/Admin/Testimonials/Create';
+    try {
+      const res = await fetch(url, { method: 'POST', body: fd });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok || !payload.success) {
+        errEl.textContent = payload.message || 'Unable to save testimonial.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      closeModal('testimonialModal');
+      showAdminToast(payload.message || 'Testimonial saved.', true);
+      setTimeout(() => window.location.reload(), 500);
+    } catch (err) {
+      errEl.textContent = 'Network error while saving testimonial.';
+      errEl.classList.remove('hidden');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-60');
+      submitIcon.className = 'fa-solid fa-floppy-disk';
+      submitText.textContent = isEditMode ? 'Save Changes' : 'Add Testimonial';
+    }
+  });
+
+  // Delete confirmation
+  async function confirmDeleteTestimonial() {
+    const id = document.getElementById('del_TestimonialId').value;
+    const btn = document.getElementById('confirmDeleteBtn');
+    const icon = document.getElementById('confirmDeleteIcon');
+    const text = document.getElementById('confirmDeleteText');
+
+    btn.disabled = true;
+    btn.classList.add('opacity-60');
+    icon.className = 'fa-solid fa-spinner fa-spin';
+    text.textContent = 'Deleting...';
+
+    try {
+      const fd = new FormData();
+      fd.append('testimonialId', id);
+      fd.append('__RequestVerificationToken', getAntiForgeryToken());
+
+      const res = await fetch('/Admin/Testimonials/Delete', { method: 'POST', body: fd });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok || !payload.success) {
+        showAdminToast(payload.message || 'Unable to delete testimonial.', false);
+        return;
+      }
+      closeModal('deleteTestimonialModal');
+      showAdminToast(payload.message || 'Testimonial deleted.', true);
+      setTimeout(() => window.location.reload(), 500);
+    } catch (err) {
+      showAdminToast('Network error while deleting testimonial.', false);
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('opacity-60');
+      icon.className = 'fa-solid fa-trash-can';
+      text.textContent = 'Delete Permanently';
+    }
+  }
+
+  // Publish / Unpublish toggle
+  async function togglePublish(testimonialId) {
+    try {
+      const fd = new FormData();
+      fd.append('testimonialId', testimonialId);
+      fd.append('__RequestVerificationToken', getAntiForgeryToken());
+
+      const res = await fetch('/Admin/Testimonials/TogglePublish', { method: 'POST', body: fd });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok || !payload.success) {
+        showAdminToast(payload.message || 'Unable to update publication status.', false);
+        return;
+      }
+      showAdminToast(payload.message || 'Publication status updated.', true);
+      setTimeout(() => window.location.reload(), 500);
+    } catch (err) {
+      showAdminToast('Unable to update publication status.', false);
+    }
+  }
+
+  // Inline Display Order change
+  async function updateDisplayOrder(testimonialId, newOrder) {
+    try {
+      const fd = new FormData();
+      fd.append('testimonialId', testimonialId);
+      fd.append('displayOrder', newOrder);
+      fd.append('__RequestVerificationToken', getAntiForgeryToken());
+
+      const res = await fetch('/Admin/Testimonials/UpdateOrder', { method: 'POST', body: fd });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok || !payload.success) {
+        showAdminToast(payload.message || 'Unable to update display order.', false);
+        return;
+      }
+      showAdminToast(payload.message || 'Display order updated.', true);
+      setTimeout(() => window.location.reload(), 500);
+    } catch (err) {
+      showAdminToast('Unable to update display order.', false);
+    }
+  }
+</script>
+}

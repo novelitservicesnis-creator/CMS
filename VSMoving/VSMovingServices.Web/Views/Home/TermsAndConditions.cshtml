@@ -1,0 +1,64 @@
+@model WebsiteSettingsViewModel
+@{
+    ViewData["Title"] = "Terms & Conditions";
+}
+
+<!-- ============ PAGE HERO ============ -->
+<section class="relative overflow-hidden bg-fog border-b border-line">
+  <div class="absolute inset-0 grid-dots opacity-40 pointer-events-none"></div>
+  <div class="max-w-4xl mx-auto px-5 md:px-8 py-14 md:py-20 relative">
+    <span class="inline-flex items-center gap-2 text-[12px] font-mono2 tracking-[0.2em] text-red bg-red/10 px-3 py-1.5 rounded-full">
+      <i class="fa-solid fa-file-contract"></i> SERVICE TERMS
+    </span>
+    <h1 class="font-display text-4xl sm:text-5xl leading-[0.95] mt-5 tracking-tight">
+      TERMS &amp; <span class="text-red">CONDITIONS.</span>
+    </h1>
+    <p class="mt-4 text-steel text-base">
+      Standard service terms for moving and junk removal services provided by VS Moving Services in Halifax, Nova Scotia and surrounding areas.
+    </p>
+  </div>
+</section>
+
+<!-- ============ CONTENT ============ -->
+<section class="py-16 md:py-20 max-w-4xl mx-auto px-5 md:px-8 space-y-8">
+  <div class="bg-white border border-line rounded-2xl p-7 md:p-9 space-y-6">
+    <div>
+      <h2 class="font-display text-2xl tracking-wide text-ink">1. QUOTES &amp; ESTIMATES</h2>
+      <p class="text-steel text-sm mt-2 leading-relaxed">
+        All quotes provided by VS Moving Services are based on the inventory, locations, access conditions (stairs, elevators, carry distances), and service scope described by the customer. Significant changes to the scope of work on service day may adjust the final rate.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-display text-2xl tracking-wide text-ink">2. SCHEDULING &amp; CANCELLATIONS</h2>
+      <p class="text-steel text-sm mt-2 leading-relaxed">
+        We understand plans can change. If you need to reschedule or cancel your move or junk removal appointment, please notify us as early as possible
+        @if (Model.HasPrimaryPhone)
+        {
+          <text>at <a href="tel:@Model.CleanPrimaryPhoneTel" class="text-red font-medium hover:underline">@Model.PrimaryPhone</a> </text>
+        }
+        so we can adjust our crew schedule accordingly.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-display text-2xl tracking-wide text-ink">3. PROHIBITED &amp; HAZARDOUS ITEMS</h2>
+      <p class="text-steel text-sm mt-2 leading-relaxed">
+        For safety and regulatory compliance, VS Moving Services cannot transport or haul hazardous materials, pressurized fuel tanks, explosives, flammable liquids, or illegal substances.
+      </p>
+    </div>
+
+    <div>
+      <h2 class="font-display text-2xl tracking-wide text-ink">4. CARE, HANDLING &amp; INSURANCE</h2>
+      <p class="text-steel text-sm mt-2 leading-relaxed">
+        Our crew uses modern moving equipment, blankets, and straps to protect your furniture and property. Additional insurance coverage options are available upon request prior to your move.
+      </p>
+    </div>
+  </div>
+
+  <div>
+    <a href="/" class="btn-outline-ink px-6 py-3 rounded-md text-sm inline-flex items-center gap-2">
+      <i class="fa-solid fa-arrow-left"></i> Back to Home
+    </a>
+  </div>
+</section>
