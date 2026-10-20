@@ -277,8 +277,8 @@ namespace AgamEstates.Repository.Data
                         State = "Haryana",
                         PostalCode = "134116",
                         Country = "India",
-                        FacebookUrl = "https://facebook.com/agamestates",
-                        InstagramUrl = "https://instagram.com/agamestates",
+                        FacebookUrl = "https://www.facebook.com/p/Agam-Estates-61591928282407/",
+                        InstagramUrl = "https://www.instagram.com/agam.estates?dlrf=YWh2OTJ2eDk1bDY5",
                         YouTubeUrl = "https://youtube.com/agamestates",
                         IsActive = true,
                         UpdatedAt = DateTime.UtcNow
@@ -324,6 +324,22 @@ namespace AgamEstates.Repository.Data
 
                     await context.SaveChangesAsync();
                 }
+
+                // Replace only the old seeded placeholders; preserve links edited in admin settings.
+                var legacySocialSettings = await context.SystemSettings
+                    .Where(setting => setting.FacebookUrl == "https://facebook.com/agamestates"
+                        || setting.InstagramUrl == "https://instagram.com/agamestates")
+                    .ToListAsync();
+                foreach (var setting in legacySocialSettings)
+                {
+                    if (setting.FacebookUrl == "https://facebook.com/agamestates")
+                        setting.FacebookUrl = "https://www.facebook.com/p/Agam-Estates-61591928282407/";
+                    if (setting.InstagramUrl == "https://instagram.com/agamestates")
+                        setting.InstagramUrl = "https://www.instagram.com/agam.estates?dlrf=YWh2OTJ2eDk1bDY5";
+                    setting.UpdatedAt = DateTime.UtcNow;
+                }
+                if (legacySocialSettings.Count > 0)
+                    await context.SaveChangesAsync();
 
                 // 5. Seed SystemAnnouncements if not present
                 if (!await context.SystemAnnouncements.AnyAsync())
