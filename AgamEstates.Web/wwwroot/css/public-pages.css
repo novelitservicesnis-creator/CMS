@@ -235,11 +235,11 @@ header .wrap {
 }
 
 .brand-mark {
-  width: 44px;
-  height: 44px;
+  width: 63px;
+  height: 46px;
   flex-shrink: 0;
   border-radius: 50%;
-  box-shadow: 0 0 0 1px rgba(221, 174, 69, 0.5);
+  /*box-shadow: 0 0 0 1px rgba(221, 174, 69, 0.5);*/
 }
 
 .brand-name {
