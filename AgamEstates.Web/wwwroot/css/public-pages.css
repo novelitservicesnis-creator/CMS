@@ -2164,6 +2164,10 @@ footer {
   }
 }
 
+@media (max-width: 760px) {
+  .topbar { display: none; }
+}
+
 @media (max-width: 600px) {
   .topbar-right a:not(.topbar-social-wrap) {
     display: none;
