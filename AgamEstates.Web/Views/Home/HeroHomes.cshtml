@@ -1,0 +1,202 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Hero Homes | Leafsong Retreat, Sector 99 Mohali — Agam Estates";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+    var gallery = new[] {
+        ("pool-residences", "Poolside perspectives", "Swimming pool with residential towers beyond"),
+        ("club-pool-evening", "Reflections at dusk", "Colourful clubhouse reflected in the pool at dusk"),
+        ("garden-walk", "A greener everyday", "Garden pathway lined with palms and residential towers"),
+        ("courtyard-evening", "Evenings at home", "Illuminated residential courtyard and landscaped paths"),
+        ("club-landscape", "Space to unwind", "Elevated view of the clubhouse, pool and surrounding gardens"),
+        ("tower-panorama", "A view of the skyline", "Panoramic view of residential towers beneath a cloudy sky"),
+        ("club-entrance", "A colourful welcome", "Clubhouse entrance with colourful facade panels"),
+        ("night-aerial", "After the sun sets", "Hero Homes Mohali aerial photograph with a tower lit in tricolour")
+    };
+    var amenities = new[] {
+        ("Water & pools", "Lagoon-style swimming pool, kids’ pool, pool deck, Jacuzzi, lily ponds, stepped water feature with sculpture, shallow water features with bubblers, and sculpture court."),
+        ("Gardens & nature", "Central lawn, bird-watching zone, butterfly, reflexology, Zen, stepped, ornamental, flower and herb gardens; edible landscape, mound and succulent gardens, bamboo grove, forest, forest trail, and picnic lawn."),
+        ("Sports & fitness", "Walking and cycle tracks, tennis, badminton, half basketball court, box cricket, Pilates, yoga and meditation deck, open gym, and indoor kids’ play area."),
+        ("Leisure & community", "Kids’ play area, tree court with hammocks, seating deck and pods, open-air theatre, play maze, tree house, canopies, gazebo seating, party pavilion, senior citizen park, and pet park."),
+        ("Learning & creativity", "Co-working lounge, meeting rooms, workstations, library, art display wall, art studio, pottery studio, and dance studio."),
+        ("Wellness & rejuvenation", "Yoga studio, steam room, juice bar, spa and sauna, gardening terrace, gym, and salon."),
+        ("Dining & social spaces", "Café, fine dining, banquet hall, miniplex, card room, snooker, board games, live chess and ludo, table tennis, air hockey, foosball, squash court, open library, senior lounge, and barbeque hut."),
+        ("Family & convenience", "Crèche, sand pit, hopscotch, traffic-free zones, wheelchair-accessible complex, convenience shops, OPD service and doctor on call, planned senior activities, ironing service, delivery runner, and pet walker/stroller on call."),
+        ("Home & mobility", "Gardening and horticulture service, plumber and electrician on call, car cleaning and repair on call, EV charging, electrical golf cart services, and dedicated car parking."),
+        ("Health & safety", "Emergency alarm system, intercom, RWA and maintenance office, smoke detectors, power backup, and a guard on duty 24×7.")
+    };
+    var specifications = new[] {
+        ("Living room", "Imported marble flooring, low-VOC acrylic emulsion walls, false ceiling and lighting as designed, pre-hung fire-rated entrance door with veneer finish and polish on both sides, and a smart door lock with provision for a door camera."),
+        ("Bedrooms", "Laminated wooden flooring, low-VOC acrylic emulsion on walls and ceilings, and pre-hung doors with veneer polish on one side and laminate on the other."),
+        ("Kitchen", "Imported marble flooring; low-VOC paint with vitrified tile/stone backsplash up to 2 feet above the counter; granite countertop with double-bowl sink; modular cabinetry, hob and chimney, RO, geyser, convection microwave, washing machine, refrigerator, and dishwasher."),
+        ("Bathrooms", "Anti-skid vitrified flooring, wall tiles up to the false ceiling, laminated doors, UPVC/aluminium windows or ventilators, and granite/composite-stone countertops. Master bathroom includes vanity, mirror, shower partition, and geyser. Other bathroom fittings vary by layout."),
+        ("Store / study", "Vitrified flooring, low-VOC acrylic emulsion walls and ceiling, and pre-hung doors with veneer polish on one side and laminate on the other."),
+        ("Balconies & windows", "Anti-skid vitrified balcony flooring, weather-shield external finishes, glass and metal railings as designed, and masonry with MS railing for utility balconies. UPVC/aluminium glazing with mesh shutters on balcony doors; wraparound balconies in selected locations."),
+        ("Electrical & air conditioning", "ISI-marked PVC conduits and copper wiring, modular switches and sockets, provisions for fans and ceiling lights, and VRV air conditioning with high-wall units. Premium CP fittings and chinaware as per approved make and design."),
+        ("Common areas", "Air-conditioned entrance lobbies with marble/stone floors, vitrified tiles in typical floor lift lobbies, stone/Indian marble stairs, four lifts including a service lift, and multi-tier township security.")
+    };
+}
+
+@section Styles {
+    <link rel="stylesheet" href="/css/herohomes.css" asp-append-version="true">
+}
+
+<section class="page-hero">
+    <div class="page-hero-bg"><img src="/images/propertycardimages/Hero_Homes.png" alt="Hero Homes project illustration" fetchpriority="high"></div>
+    <div class="wrap page-hero-content">
+        <a href="/#developers" class="eyebrow">&larr; Back to properties</a>
+        <h1>Hero Homes<br><em>Leafsong Retreat.</em></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">A sanctuary beyond the urban rush in Sector 99, Mohali. Discover homes planned around 3.5 acres of overall green, a pedestrian-first landscape, and spaces for wellbeing, creativity, and community.</p>
+        <div class="page-hero-actions">
+            <button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request a Site Visit</button>
+            <a href="#residences" class="btn btn-outline-gold">Explore Residences &darr;</a>
+        </div>
+        <div class="hero-meta-strip">
+            <div class="hero-meta-item"><span class="hero-meta-label">Address</span><span class="hero-meta-val">Sector 99, Mohali</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Residences</span><span class="hero-meta-val">2 BHK + Study &amp; 3 BHK</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Landscape</span><span class="hero-meta-val">3.5 acres of overall green</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Lifestyle</span><span class="hero-meta-val">99 curated experiences</span></div>
+        </div>
+    </div>
+</section>
+<nav class="hh-section-nav" aria-label="Project sections"><div class="wrap">
+    <a href="#overview">Overview</a><a href="#gallery">Gallery</a><a href="#residences">Residences</a><a href="#amenities">Amenities</a><a href="#sustainability">Green living</a><a href="#specifications">Specifications</a><a href="#location">Location</a><a href="#project-details">Project details</a>
+</div></nav>
+
+<section class="editorial-sec" id="overview">
+    <div class="wrap editorial-split">
+        <figure class="editorial-frame">
+            <img src="/images/herohomes/courtyard-evening.jpg" alt="Hero Homes residential courtyard at dusk" loading="lazy" decoding="async" width="1600" height="1200">
+            <figcaption class="editorial-caption">HERO HOMES · REFERENCE PHOTOGRAPH</figcaption>
+        </figure>
+        <div class="editorial-body">
+            <span class="eyebrow">A HERO’S PROMISE</span><h2>Nature sets the rhythm.<br>You find your flow.</h2>
+            <p class="lead">Leafsong Retreat brings homes, pathways, and shared spaces together around a generous green landscape.</p>
+            <p>Vehicular movement is directed to a basement drop-off, reclaiming the surface for a pedestrian-first environment. Tower façades frame the landscape, with wraparound balconies in selected locations connecting residences to the greenery.</p>
+            <p>Hero Realty, part of Hero Enterprise, describes its approach through the values of Trust, Care, and Nurture. Six design pillars shape its vision: innovation, community, sustainability, design essentials, creativity, and wellbeing.</p>
+            <button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Enquire About Leafsong Retreat</button>
+        </div>
+    </div>
+</section>
+
+<section class="editorial-sec hh-gallery-section" id="gallery">
+    <div class="wrap">
+        <div class="hh-gallery-heading">
+            <div class="section-head"><span class="eyebrow">HERO HOMES IN PICTURES</span><h2>A closer look at life here.</h2></div>
+            <p>Architecture, green spaces, and moments by the water.<br>Select a photograph to explore the full view.</p>
+        </div>
+        <div class="hh-gallery">
+            @foreach (var photo in gallery) {
+                <a class="hh-gallery-item" href="/images/herohomes/@(photo.Item1).jpg" target="_blank" rel="noopener" aria-label="@(photo.Item2 + " — open full photograph in a new tab")">
+                    <figure>
+                        <img src="/images/herohomes/@(photo.Item1).jpg" alt="@photo.Item3" loading="lazy" decoding="async">
+                        <figcaption><span>@photo.Item2</span><span class="hh-photo-expand" aria-hidden="true">↗</span></figcaption>
+                    </figure>
+                </a>
+            }
+        </div>
+        <p class="hh-note">Hero Homes reference photographs. These images do not establish the current construction status or amenities of Leafsong Retreat.</p>
+    </div>
+</section>
+
+<section class="editorial-sec hh-cream" id="residences">
+    <div class="wrap">
+        <div class="section-head center"><span class="eyebrow">RESIDENCES &amp; AREAS</span><h2>Space for your way of life.</h2><p>Compare the three residence configurations listed in the project brochure.</p></div>
+        <div class="cards-grid-3">
+            <article class="lux-card"><span class="eyebrow">TOWERS A1 / A2</span><h3>3 BHK + 3 Toilets + Store</h3><p class="hh-area">2,153.72 sq. ft.</p><p>Saleable area · 200.09 sq. m.</p><dl class="hh-facts"><dt>Carpet area</dt><dd>1,184.55 sq. ft. / 110.05 sq. m.</dd><dt>Balcony area</dt><dd>368.03 sq. ft. / 34.19 sq. m.</dd><dt>Built-up area</dt><dd>1,694.11 sq. ft. / 157.39 sq. m.</dd></dl></article>
+            <article class="lux-card"><span class="eyebrow">TOWERS B1 / B2</span><h3>3 BHK + 2 Toilets + Powder Room</h3><p class="hh-area">1,878.4 sq. ft.</p><p>Saleable area · 174.50 sq. m.</p><dl class="hh-facts"><dt>Carpet area</dt><dd>1,033.12 sq. ft. / 95.98 sq. m.</dd><dt>Balcony area</dt><dd>360.93 sq. ft. / 33.53 sq. m.</dd><dt>Built-up area</dt><dd>1,536.68 sq. ft. / 142.76 sq. m.</dd></dl></article>
+            <article class="lux-card"><span class="eyebrow">TOWER C1</span><h3>2 BHK + Study + 2 Toilets</h3><p class="hh-area">1,490 sq. ft.</p><p>Saleable area · 138.42 sq. m.</p><dl class="hh-facts"><dt>Carpet area</dt><dd>835.82 sq. ft. / 77.65 sq. m.</dd><dt>Balcony area</dt><dd>294.64 sq. ft. / 27.37 sq. m.</dd><dt>Built-up area</dt><dd>1,252.11 sq. ft. / 116.32 sq. m.</dd></dl></article>
+        </div>
+        <div class="hh-section-foot"><p>Areas are reproduced from the brochure. Request the current unit plan, pricing, availability, and possession schedule from our team.</p><button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request Floor Plans &amp; Pricing</button></div>
+    </div>
+</section>
+
+<section class="editorial-sec" id="amenities">
+    <div class="wrap">
+        <figure class="hh-feature-photo">
+            <img src="/images/herohomes/club-pool-evening.jpg" alt="Clubhouse and pool reflections at dusk" width="1280" height="958" loading="lazy" decoding="async">
+            <figcaption><span class="eyebrow">SPACES TO COME TOGETHER</span><span>Evenings worth slowing down for.</span><small>Hero Homes reference photograph</small></figcaption>
+        </figure>
+        <div class="section-head center"><span class="eyebrow">99 EXPERIENCES</span><h2>Every day, a little more to discover.</h2><p>From gardens and water features to workspaces and family services, the brochure brings together experiences for every generation.</p></div>
+        <div class="cards-grid-2">
+            @foreach (var amenity in amenities) {
+                <article class="lux-card"><h3>@amenity.Item1</h3><p>@amenity.Item2</p></article>
+            }
+        </div>
+        <p class="hh-note">Amenities and on-call services are described in the brochure; availability, operating arrangements, and applicable charges should be confirmed with the promoter.</p>
+    </div>
+</section>
+
+<section class="editorial-sec dark-section" id="club">
+    <div class="wrap editorial-split">
+        <div class="editorial-body"><span class="eyebrow">THE CHORD CLUB</span><h2>Where life finds its melody.</h2><p class="lead">A shared destination for fitness, leisure, and togetherness.</p><p>The club lobby opens directly into the central green, bringing the landscape into the arrival experience. The brochure presents a double-height skylit lobby and a serene pool area as key features of the club.</p></div>
+        <div class="editorial-body"><span class="eyebrow">A CONNECTED LANDSCAPE</span><h2>Room to pause. Space to connect.</h2><p>The master layout brings together the arrival plaza, basement ramps and drop-off, central lawn, swimming and kids’ pools, sports courts, forest trail, gardens, play areas, and community spaces. It also identifies service areas, surface parking, and an area for future expansion.</p><button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request the Master Layout</button></div>
+    </div>
+</section>
+
+<section class="editorial-sec hh-cream" id="sustainability">
+    <div class="wrap">
+        <figure class="hh-landscape-photo">
+            <img src="/images/herohomes/garden-walk.jpg" alt="Palm-lined garden path beside Hero Homes residences" width="1600" height="1200" loading="lazy" decoding="async">
+            <figcaption>HERO HOMES · GARDEN REFERENCE PHOTOGRAPH</figcaption>
+        </figure>
+        <div class="section-head center"><span class="eyebrow">GREEN LIVING</span><h2>Designed with wellbeing in mind.</h2><p>The brochure describes the project as an IGBC Platinum-rated residential development, supported by the following sustainability features.</p></div>
+        <div class="cards-grid-3">
+            <article class="lux-card"><h3>Energy &amp; mobility</h3><p>On-site renewable energy, green parking facilities, and EV charging.</p></article>
+            <article class="lux-card"><h3>Materials &amp; air quality</h3><p>Certified green products, low-VOC materials, paints and adhesives, and an AQI monitoring system.</p></article>
+            <article class="lux-card"><h3>Physical wellbeing</h3><p>Fitness facilities, landscaped open spaces, walking and cycling routes, and a pedestrian-first surface.</p></article>
+        </div>
+    </div>
+</section>
+
+<section class="editorial-sec" id="specifications">
+    <div class="wrap">
+        <div class="section-head"><span class="eyebrow">FINISHES &amp; SPECIFICATIONS</span><h2>Considered details, throughout.</h2><p>Explore the interior finishes and building features listed in the brochure.</p></div>
+        <div class="hh-specifications">
+            @foreach (var specification in specifications) {
+                <details><summary>@specification.Item1</summary><p>@specification.Item2</p></details>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="editorial-sec hh-cream" id="location">
+    <div class="wrap">
+        <div class="section-head"><span class="eyebrow">SECTOR 99, MOHALI</span><h2>Close to what matters.</h2><p>Located at Wave Estate, SAS Nagar, with connections to Chandigarh, PR-8 Airport Road, the international airport, ISB, IT City, healthcare, education, and shopping destinations.</p></div>
+        <div class="cards-grid-3">
+            <article class="lux-card"><h3>Healthcare</h3><ul class="hh-list"><li>Sohana Hospital</li><li>Grecian Super Speciality Hospital</li><li>ACE Heart &amp; Vascular Institute</li><li>Shalby Multi-Specialty Hospital</li><li>Fortis Hospital Mohali</li><li>Max Super Specialty Hospital</li><li>Indus Super Speciality Hospital</li><li>Civil Hospital, Phase 6</li></ul></article>
+            <article class="lux-card"><h3>Schools &amp; institutions</h3><ul class="hh-list"><li>Bedford School</li><li>Learning Paths School</li><li>Doon International School</li><li>Gurukul World School</li><li>Oakridge International School</li><li>Amity University Punjab</li><li>Manav Mangal Smart School</li><li>CGC University</li><li>Gian Jyoti Institute of Management and Technology</li><li>Khalsa College of Technology &amp; Business Studies</li><li>The Lexicon School</li></ul></article>
+            <article class="lux-card"><h3>Shopping &amp; recreation</h3><ul class="hh-list"><li>Central Plaza</li><li>CP67 Mall</li><li>Bestech Square Mall</li><li>Thunder Zone Amusement and Water Park</li><li>Multipurpose Sports Stadium</li><li>IS Bindra Stadium</li></ul></article>
+        </div>
+        <div class="hh-section-foot"><p>Destinations are listed in the project brochure. Journey times depend on the route and traffic.</p><a class="btn btn-outline-dark" href="https://www.google.com/maps/search/?api=1&amp;query=Leafsong+Retreat+Sector+99+Mohali" target="_blank" rel="noopener noreferrer">Explore the Location &nearr;</a></div>
+    </div>
+</section>
+
+<section class="editorial-sec" id="project-details">
+    <div class="wrap">
+        <div class="section-head"><span class="eyebrow">PROJECT INFORMATION</span><h2>The details behind the address.</h2></div>
+        <div class="cards-grid-2">
+            <article class="lux-card"><h3>Registration &amp; development</h3><dl class="hh-facts">
+                <dt>Registered project name</dt><dd>Leafsong Retreat</dd><dt>Promoter</dt><dd>Vikas Parks Private Limited</dd><dt>Address</dt><dd>Group Housing Chunk Site No. 1, Sector 99, Wave Estate, SAS Nagar, Mohali, Punjab</dd><dt>Site area</dt><dd>35,273.09 sq. metres</dd><dt>Development</dt><dd>Five residential towers, retail shops, clubhouse, and allied facilities as per sanctioned plans</dd><dt>Punjab RERA registration (as provided in brochure)</dt><dd>PBRERA-SAS81-PR1432-092026</dd><dt>GMADA allotment</dt><dd>GMADA/2025-2026/LOA/650 · 25 August 2025</dd><dt>Building plan approval</dt><dd>GMADA/E.O/2026/8906 · 1 July 2026</dd>
+            </dl><a class="btn btn-outline-dark" href="https://www.rera.punjab.gov.in/" target="_blank" rel="noopener noreferrer">Visit Punjab RERA &nearr;</a></article>
+            <article class="lux-card"><h3>Design partners</h3><dl class="hh-facts"><dt>Architect &amp; landscape consultant</dt><dd>ACPL Design Ltd.</dd><dt>Structural consultant</dt><dd>Perceptive Ideas Consulting Engineers</dd><dt>MEP consultant</dt><dd>Sanelac Consultants Pvt. Ltd.</dd></dl><h3>Plan your visit</h3><p>Discuss the latest availability, residence layouts, pricing, and payment terms with Agam Estates.</p><div class="page-hero-actions hh-contact-actions"><button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request a Call Back</button><a class="btn btn-outline-dark" href="tel:@siteSettings.PrimaryPhone">Call Us</a></div></article>
+        </div>
+        <aside class="hh-disclaimer"><h3>Project information notice</h3><p>Information on this page is summarised from the supplied project brochure. Images are illustrative/reference material and are not to scale. Descriptions, plans, areas, amenities, and specifications are indicative and do not constitute a legal offer or a binding agreement. Buyers should independently confirm registration, sanctioned plans, specifications, sale and payment terms, and other relevant details with the promoter before making a purchase decision.</p></aside>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        const heroHomesInterest = document.querySelector('#popup-enquiry-form [name="propertyInterest"]');
+        if (heroHomesInterest) {
+            const project = 'Hero Homes — Leafsong Retreat';
+            heroHomesInterest.replaceChildren(
+                new Option(project + ' — Please advise', project + ' — Please advise', true, true),
+                new Option('3 BHK + 3 Toilets + Store (A1/A2)', project + ' — 3 BHK + 3T + Store (A1/A2)'),
+                new Option('3 BHK + 2 Toilets + Powder Room (B1/B2)', project + ' — 3 BHK + 2T + Powder (B1/B2)'),
+                new Option('2 BHK + Study + 2 Toilets (C1)', project + ' — 2 BHK + Study + 2T (C1)')
+            );
+        }
+    </script>
+}

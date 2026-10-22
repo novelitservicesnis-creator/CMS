@@ -42,6 +42,14 @@ namespace AgamEstates.Web.Controllers
             return View();
         }
 
+        [HttpGet("/herohomes")]
+        public IActionResult HeroHomes()
+        {
+            ViewData["Title"] = "Hero Homes — Sector 99, Mohali | Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
         [HttpGet("/Project")]
         [HttpGet("/Home/Project")]
         public IActionResult Project()
