@@ -1,0 +1,61 @@
+/* Shared popup refinements for home and public pages. */
+#agam-enquiry-modal .agam-modal-brand-panel {
+    background: linear-gradient(180deg, rgba(4,26,51,.55), rgba(4,26,51,.88)), url('/images/propertycardimages/Golden-Hour Wave Tower Skyline.png') center / cover no-repeat;
+}
+#agam-enquiry-modal .brand-panel-pattern,
+#agam-enquiry-modal .brand-panel-trust,
+#agam-enquiry-modal .brand-panel-foot,
+#agam-enquiry-modal .mobile-eyebrow,
+#agam-enquiry-modal .mobile-lead-line,
+#agam-enquiry-modal .success-sub { display: none; }
+#agam-enquiry-modal .brand-panel-mark { width: 80px; height: 80px; object-fit: contain; flex-shrink: 0; }
+#agam-enquiry-modal .brand-panel-hero { margin-top: auto; margin-bottom: 24px; }
+#agam-enquiry-modal .brand-panel-desc { color: #fff; }
+@media (max-width: 800px) {
+    #agam-enquiry-modal .agam-modal-card,
+    #agam-enquiry-modal .agam-modal-form-panel { background: #062545; color: #fff; color-scheme: dark; }
+    #agam-enquiry-modal .mobile-logo-name,
+    #agam-enquiry-modal .form-heading,
+    #agam-enquiry-modal .success-heading { color: #fff; }
+    #agam-enquiry-modal .mobile-logo-name span { color: #f5d98a; }
+    #agam-enquiry-modal .agam-modal-mobile-header { border-bottom-color: rgba(221,174,69,.35); }
+    #agam-enquiry-modal .field label,
+    #agam-enquiry-modal .success-body { color: #e0e7f0; }
+    #agam-enquiry-modal .req-star { color: #f5d98a; }
+    #agam-enquiry-modal .field input,
+    #agam-enquiry-modal .field select,
+    #agam-enquiry-modal .field textarea { background: #0d3560; color: #fff; border-color: #6a7b95; }
+    #agam-enquiry-modal .field input::placeholder,
+    #agam-enquiry-modal .field textarea::placeholder { color: #bdcadd; opacity: 1; }
+    #agam-enquiry-modal .field select option { background: #0d3560; color: #fff; }
+    #agam-enquiry-modal .field input:focus,
+    #agam-enquiry-modal .field select:focus,
+    #agam-enquiry-modal .field textarea:focus { border-color: #f5d98a; outline: 2px solid #f5d98a; outline-offset: 2px; }
+    #agam-enquiry-modal .field .has-error { background: #382b40; border-color: #ffb4b4 !important; }
+    #agam-enquiry-modal .field-error,
+    #agam-enquiry-modal .field-error-msg { color: #ffb4b4; }
+    #agam-enquiry-modal .agam-modal-close { background: #0d3560; color: #fff; border-color: #6a7b95; }
+    #agam-enquiry-modal .agam-modal-close:hover,
+    #agam-enquiry-modal .agam-modal-close:focus-visible { background: #f5d98a; color: #062545; border-color: #f5d98a; }
+    #agam-enquiry-modal .btn-enquiry-submit { background: #ddae45; color: #041a33; }
+    #agam-enquiry-modal .btn-enquiry-submit:hover { background: #f5d98a; }
+    #agam-enquiry-modal .agam-modal-card { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); grid-template-columns: 1fr; overflow-y: auto; }
+    #agam-enquiry-modal .agam-modal-brand-panel { display: none; }
+    #agam-enquiry-modal .agam-modal-form-panel { padding: 18px 20px 22px; overflow: visible; }
+    #agam-enquiry-modal .agam-modal-mobile-header { display: block; margin-bottom: 12px; padding-bottom: 10px; }
+    #agam-enquiry-modal .mobile-logo-row { display: flex; align-items: center; gap: 12px; margin-bottom: 0; padding-right: 30px; }
+    #agam-enquiry-modal .mobile-logo-mark { width: 76px; height: 76px; object-fit: contain; flex-shrink: 0; }
+    #agam-enquiry-modal .mobile-logo-name { font-size: 1.2rem; }
+    #agam-enquiry-modal .form-eyebrow,
+    #agam-enquiry-modal .form-subtext { display: none; }
+    #agam-enquiry-modal .agam-form-head { margin-bottom: 14px; }
+    #agam-enquiry-modal .form-heading { font-size: 1.5rem; margin: 0; }
+    #agam-enquiry-modal .form-row { gap: 12px; margin-bottom: 0; }
+    #agam-enquiry-modal .field { margin-bottom: 10px; }
+    #agam-enquiry-modal .field label { margin-bottom: 4px; }
+    #agam-enquiry-modal .field input,
+    #agam-enquiry-modal .field select { min-height: 44px; padding: 10px 12px; font-size: 16px; }
+    #agam-enquiry-modal .field textarea { min-height: 58px; height: 58px; padding: 10px 12px; font-size: 16px; }
+    #agam-enquiry-modal .field-error:empty { display: none; }
+    #agam-enquiry-modal .btn-enquiry-submit { padding: 12px; }
+}

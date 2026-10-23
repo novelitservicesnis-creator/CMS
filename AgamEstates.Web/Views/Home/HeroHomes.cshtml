@@ -5,12 +5,12 @@
     var siteSettings = await SettingsService.GetPublicSettingsAsync();
     var gallery = new[] {
         ("pool-residences", "Poolside perspectives", "Swimming pool with residential towers beyond"),
-        ("Leafsong-Retreat-5", "Reflections at dusk", "Colourful clubhouse reflected in the pool at dusk"),
-        ("Leafsong-Retreat-4", "A greener everyday", "Garden pathway lined with palms and residential towers"),
-        ("Leafsong-Retreat-3", "Evenings at home", "Illuminated residential courtyard and landscaped paths"),
+        ("Leafsong-Retreat-5", "Towers in daylight", "Architectural rendering of three Leafsong Retreat towers overlooking lawns in daylight"),
+        ("Leafsong-Retreat-4", "Gardens around the pool", "Rendering of landscaped lawns, flowering gardens and a swimming pool between residential towers"),
+        ("Leafsong-Retreat-3", "Evenings at Leafsong Retreat", "Evening rendering of illuminated residential towers surrounding a pool and landscaped courtyard"),
         ("club-landscape", "Space to unwind", "Elevated view of the clubhouse, pool and surrounding gardens"),
-        ("Leafsong-Retreat", "A view of the skyline", "Panoramic view of residential towers beneath a cloudy sky"),
-        ("the-chord-club", "A colourful welcome", "Clubhouse entrance with colourful facade panels"),
+        ("Leafsong-Retreat", "A skyline at dusk", "Architectural rendering of illuminated Leafsong Retreat towers against a deep blue evening sky"),
+        ("the-chord-club", "Welcome to The Chord Club", "Rendering of The Chord Club entrance with a gold-toned canopy, tall glazing and a water feature"),
         ("night-aerial1", "After the sun sets", "Hero Homes Mohali aerial photograph with a tower lit in tricolour")
     };
     var amenities = new[] {
@@ -42,7 +42,7 @@
 }
 
 <section class="page-hero">
-    <div class="page-hero-bg"><img src="/images/herohomes/Leafsong-Retreat.jpg" alt="Hero Homes project illustration" fetchpriority="high"></div>
+    <div class="page-hero-bg"><img src="/images/herohomes/Leafsong-Retreat.jpg" alt="Architectural rendering of illuminated Leafsong Retreat residential towers at dusk" fetchpriority="high"></div>
     <div class="wrap page-hero-content">
         <a href="/#developers" class="eyebrow">&larr; Back to properties</a>
         <h1>Hero Homes<br><em>Leafsong Retreat.</em></h1>
@@ -67,7 +67,7 @@
 <section class="editorial-sec" id="overview">
     <div class="wrap editorial-split">
         <figure class="editorial-frame">
-            <img src="/images/herohomes/Leafsong-Retreat-2.jpg" alt="Hero Homes residential courtyard at dusk" loading="lazy" decoding="async" width="1600" height="1200">
+            <img src="/images/herohomes/Leafsong-Retreat-2.jpg" alt="Aerial rendering of five Leafsong Retreat towers surrounding landscaped grounds, a pool and sports courts" loading="lazy" decoding="async" width="1600" height="1200">
             <figcaption class="editorial-caption">HERO HOMES · LEAFSONG RETREAT</figcaption>
         </figure>
         <div class="editorial-body">
@@ -84,23 +84,23 @@
     <div class="wrap">
         <div class="hh-gallery-heading">
             <div class="section-head"><span class="eyebrow">HERO HOMES IN PICTURES</span><h2>A closer look at life here.</h2></div>
-            <p>Architecture, green spaces, and moments by the water.<br>Select a photograph to explore the full view.</p>
+            <p>Architecture, green spaces, and moments by the water.</p>
         </div>
         <div class="hh-gallery">
             @foreach (var photo in gallery) {
-                <a class="hh-gallery-item" href="/images/herohomes/@(photo.Item1).jpg" target="_blank" rel="noopener" aria-label="@(photo.Item2 + " — open full photograph in a new tab")">
+                <div class="hh-gallery-item">
                     <figure>
                         <img src="/images/herohomes/@(photo.Item1).jpg" alt="@photo.Item3" loading="lazy" decoding="async">
-                        <figcaption><span>@photo.Item2</span><span class="hh-photo-expand" aria-hidden="true">↗</span></figcaption>
+                        <figcaption><span>@photo.Item2</span></figcaption>
                     </figure>
-                </a>
+                </div>
             }
         </div>
-        <p class="hh-note">Hero Homes reference photographs. These images do not establish the current construction status or amenities of Leafsong Retreat.</p>
+        <p class="hh-note">Leafsong Retreat architectural renderings and Hero Homes reference photographs. Images do not establish the current construction status or completed amenities of Leafsong Retreat.</p>
     </div>
 </section>
 
-<section class="editorial-sec hh-cream" id="residences">
+<section class="editorial-sec dark-section" id="residences">
     <div class="wrap">
         <div class="section-head center"><span class="eyebrow">RESIDENCES &amp; AREAS</span><h2>Space for your way of life.</h2><p>Explore three residence configurations designed for different ways of living.</p></div>
         <div class="cards-grid-3">
@@ -115,7 +115,7 @@
 <section class="editorial-sec" id="amenities">
     <div class="wrap">
         <figure class="hh-feature-photo">
-            <img src="/images/herohomes/Luxury Nighttime Courtyard Resort.png" alt="Clubhouse and pool reflections at dusk" width="1280" height="958" loading="lazy" decoding="async">
+            <img src="/images/herohomes/Luxury Nighttime Courtyard Resort.png" alt="Evening rendering of a landscaped courtyard with an illuminated swimming pool and clubhouse, viewed from above" width="1672" height="941" loading="lazy" decoding="async">
             <figcaption><span class="eyebrow">SPACES TO COME TOGETHER</span><span>Evenings worth slowing down for.</span></figcaption>
         </figure>
         <div class="section-head center"><span class="eyebrow">99 EXPERIENCES</span><h2>Every day, a little more to discover.</h2><p>From gardens and water features to workspaces and family services, discover experiences for every generation.</p></div>
@@ -128,16 +128,16 @@
     </div>
 </section>
 
-<section class="editorial-sec dark-section" id="club">
+@* <section class="editorial-sec dark-section" id="club">
     <div class="wrap editorial-split">
         <div class="editorial-body"><span class="eyebrow">THE CHORD CLUB</span><h2>Where life finds its melody.</h2><p class="lead">A shared destination for fitness, leisure, and togetherness.</p><p>The club lobby opens directly into the central green, bringing the landscape into the arrival experience. A double-height skylit lobby and a serene pool area create welcoming spaces to relax and connect.</p></div>
-        <div class="editorial-body"><span class="eyebrow">A CONNECTED LANDSCAPE</span><h2>Room to pause. Space to connect.</h2><p>The master layout brings together the arrival plaza, basement ramps and drop-off, central lawn, swimming and kids’ pools, sports courts, forest trail, gardens, play areas, and community spaces. It also identifies service areas, surface parking, and an area for future expansion.</p><button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request the Master Layout</button></div>
+        <div class="editorial-body"><span class="eyebrow">A CONNECTED LANDSCAPE</span><h2>Room to pause. Space to connect.</h2><p>The master layout brings together the arrival plaza, basement ramps and drop-off, central lawn, swimming and kids’ pools, sports courts, forest trail, gardens, play areas, and community spaces. It also identifies service areas, surface parking, and an area for future expansion.</p></div>
     </div>
-</section>
+</section> *@
 
 
 
-<section class="editorial-sec" id="specifications">
+@* <section class="editorial-sec" id="specifications">
     <div class="wrap">
         <div class="section-head"><span class="eyebrow">FINISHES &amp; SPECIFICATIONS</span><h2>Considered details, throughout.</h2><p>Explore the interior finishes and building features.</p></div>
         <div class="hh-specifications">
@@ -146,9 +146,9 @@
             }
         </div>
     </div>
-</section>
+</section> *@
 
-<section class="editorial-sec hh-cream" id="location">
+<section class="editorial-sec dark-section" id="location">
     <div class="wrap">
         <div class="section-head"><span class="eyebrow">SECTOR 99, MOHALI</span><h2>Close to what matters.</h2><p>Located at Wave Estate, SAS Nagar, with connections to Chandigarh, PR-8 Airport Road, the international airport, ISB, IT City, healthcare, education, and shopping destinations.</p></div>
         <div class="cards-grid-3">
@@ -156,7 +156,7 @@
             <article class="lux-card"><h3>Schools &amp; institutions</h3><ul class="hh-list"><li>Bedford School</li><li>Learning Paths School</li><li>Doon International School</li><li>Gurukul World School</li><li>Oakridge International School</li><li>Amity University Punjab</li><li>Manav Mangal Smart School</li><li>CGC University</li><li>Gian Jyoti Institute of Management and Technology</li><li>Khalsa College of Technology &amp; Business Studies</li><li>The Lexicon School</li></ul></article>
             <article class="lux-card"><h3>Shopping &amp; recreation</h3><ul class="hh-list"><li>Central Plaza</li><li>CP67 Mall</li><li>Bestech Square Mall</li><li>Thunder Zone Amusement and Water Park</li><li>Multipurpose Sports Stadium</li><li>IS Bindra Stadium</li></ul></article>
         </div>
-        <div class="hh-section-foot"><p>Journey times depend on the route and traffic.</p><a class="btn btn-outline-dark" href="https://www.google.com/maps/search/?api=1&amp;query=Leafsong+Retreat+Sector+99+Mohali" target="_blank" rel="noopener noreferrer">Explore the Location &nearr;</a></div>
+        <div class="hh-section-foot"><a class="btn btn-outline-light" href="https://www.google.com/maps/search/?api=1&amp;query=Leafsong+Retreat+Sector+99+Mohali" target="_blank" rel="noopener noreferrer">Explore the Location &nearr;</a></div>
     </div>
 </section>
 
@@ -165,9 +165,9 @@
         <div class="section-head"><span class="eyebrow">PROJECT INFORMATION</span><h2>The details behind the address.</h2></div>
         <div class="cards-grid-2">
             <article class="lux-card"><h3>Registration &amp; development</h3><dl class="hh-facts">
-                <dt>Registered project name</dt><dd>Leafsong Retreat</dd><dt>Promoter</dt><dd>Vikas Parks Private Limited</dd><dt>Address</dt><dd>Group Housing Chunk Site No. 1, Sector 99, Wave Estate, SAS Nagar, Mohali, Punjab</dd><dt>Site area</dt><dd>35,273.09 sq. metres</dd><dt>Development</dt><dd>Five residential towers, retail shops, clubhouse, and allied facilities as per sanctioned plans</dd><dt>Punjab RERA registration</dt><dd>PBRERA-SAS81-PR1432-092026</dd><dt>GMADA allotment</dt><dd>GMADA/2025-2026/LOA/650 · 25 August 2025</dd><dt>Building plan approval</dt><dd>GMADA/E.O/2026/8906 · 1 July 2026</dd>
-            </dl></article>
-            <article class="lux-card"><h3>Design partners</h3><dl class="hh-facts"><dt>Architect &amp; landscape consultant</dt><dd>ACPL Design Ltd.</dd><dt>Structural consultant</dt><dd>Perceptive Ideas Consulting Engineers</dd><dt>MEP consultant</dt><dd>Sanelac Consultants Pvt. Ltd.</dd></dl><h3>Plan your visit</h3><p>Discuss the latest availability, residence layouts, pricing, and payment terms with Agam Estates.</p><div class="page-hero-actions hh-contact-actions"><button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request a Call Back</button><a class="btn btn-outline-dark" href="tel:@siteSettings.PrimaryPhone">Call Us</a></div></article>
+                <dt>Registered project name</dt><dd>Leafsong Retreat</dd><dt>Address</dt><dd>Group Housing Chunk Site No. 1, Sector 99, Wave Estate, SAS Nagar, Mohali, Punjab</dd><dt>Site area</dt><dd>8.71 Acres</dd><dt>Punjab RERA registration</dt><dd>PBRERA-SAS81-PR1432-092026</dd></dl>
+                <button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request the Master Layout</button></article>
+            <article class="lux-card"><h3>Design partners</h3><dl class="hh-facts"><dt>Architect &amp; landscape consultant</dt><dd>ACPL Design Ltd.</dd></dl><h3>Plan your visit</h3><p>Discuss the latest availability, residence layouts, pricing, and payment terms with Agam Estates.</p><div class="page-hero-actions hh-contact-actions"><button type="button" class="btn btn-gold" onclick="openEnquiryModal()">Request a Call Back</button><a class="btn btn-outline-dark" href="tel:@siteSettings.PrimaryPhone">Call Us</a></div></article>
         </div>
         <aside class="hh-disclaimer"><h3>Project information notice</h3><p>Images are illustrative/reference material and are not to scale. Descriptions, plans, areas, amenities, and specifications are indicative and do not constitute a legal offer or a binding agreement. Buyers should independently confirm registration, sanctioned plans, specifications, sale and payment terms, and other relevant details with the promoter before making a purchase decision.</p></aside>
     </div>

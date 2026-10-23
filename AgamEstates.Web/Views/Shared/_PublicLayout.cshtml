@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/css/public-pages.css" asp-append-version="true">
     <link rel="stylesheet" href="/css/announcement-marquee.css" asp-append-version="true">
     @await RenderSectionAsync("Styles", required: false)
+<link rel="stylesheet" href="/css/enquiry-popup.css" asp-append-version="true">
 </head>
 <body>
 
@@ -56,19 +57,15 @@
             </div>
 
             <div class="brand-panel-content">
-                <div class="brand-panel-logo">
-                    <img src="@(siteSettings?.LogoPath ?? "/images/logo.png")" alt="@(siteSettings?.CompanyName ?? "Agam Estates") logo" class="brand-panel-mark">
-                    <span class="brand-panel-name">Agam <span>Estates</span></span>
-                </div>
 
                 <div class="brand-panel-hero">
                     <span class="brand-panel-eyebrow">PRIVATE ENQUIRY</span>
                     <h2 class="brand-panel-heading">
-                        Find the right home, <br>
-                        <span class="highlight-gold">before everyone else.</span>
+                        Find your <br>
+                        <span class="highlight-gold">next home.</span>
                     </h2>
                     <p class="brand-panel-desc">
-                        Explore premium residences with direct project guidance, private site visit coordination, and personal assistance from our team.
+                        Personal guidance. Private site visits.
                     </p>
                 </div>
 
@@ -101,19 +98,11 @@
 
         <!-- RIGHT PANEL: Form -->
         <div class="agam-modal-form-panel">
-            <div class="agam-modal-mobile-header">
-                <div class="mobile-logo-row">
-                    <img src="@(siteSettings?.LogoPath ?? "/images/logo.png")" alt="@(siteSettings?.CompanyName ?? "Agam Estates") logo" class="mobile-logo-mark">
-                    <span class="mobile-logo-name">@(siteSettings?.CompanyNameFirst ?? "Agam") <span>@(siteSettings?.CompanyNameSecond ?? "Estates")</span></span>
-                </div>
-                <span class="mobile-eyebrow">PRIVATE ENQUIRY</span>
-                <p class="mobile-lead-line">Private guidance for your next home.</p>
-            </div>
 
             <div class="agam-form-head" id="agam-form-header-block">
                 <span class="form-eyebrow">REQUEST A CALL BACK</span>
                 <h2 class="form-heading" id="agam-enquiry-title">Let’s plan your visit.</h2>
-                <p class="form-subtext">Share your details and our team will get in touch shortly.</p>
+                <p class="form-subtext">Leave your details for a call back.</p>
             </div>
 
             <div id="agam-popup-form-wrapper">

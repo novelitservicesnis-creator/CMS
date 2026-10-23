@@ -1,6 +1,17 @@
 /* Leafsong Retreat project detail additions to the shared public design system. */
 .hh-cream { background: var(--light-cream); }
 #club .editorial-body:first-child p { color: #fff; }
+#location .btn-outline-light {
+    color: #fff;
+    border-color: rgba(255, 255, 255, .75);
+    background: transparent;
+}
+#location .btn-outline-light:hover,
+#location .btn-outline-light:focus-visible {
+    color: var(--primary);
+    background: #fff;
+    border-color: #fff;
+}
 .hh-section-nav { background: var(--primary); border-top: 1px solid var(--gold-border); }
 .hh-section-nav .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; padding-top: 20px; padding-bottom: 20px; }
 .hh-section-nav a { color: var(--gold-soft); font-size: .85rem; }
@@ -8,6 +19,8 @@
 .hh-facts { margin: 22px 0; }
 .hh-facts dt { font-size: .78rem; color: var(--fade); margin-top: 16px; }
 .hh-facts dd { margin: 4px 0 0; overflow-wrap: anywhere; }
+#residences .hh-facts dt,
+#residences .hh-facts dd { color: #000; }
 .lux-card .hh-area { font-family: var(--serif); color: var(--primary); font-size: 1.7rem; margin: 18px 0 0; }
 .hh-section-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; margin-top: 32px; }
 .hh-section-foot p { max-width: 620px; color: var(--fade); font-size: .9rem; }
@@ -38,9 +51,6 @@
 .hh-gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
 .hh-gallery-item:last-child img { object-fit: contain; background: #080d10; }
 .hh-gallery-item figcaption { position: absolute; inset: auto 0 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 48px 22px 20px; color: white; font-family: var(--serif); font-size: 1.15rem; background: linear-gradient(transparent, rgba(4,26,51,.9)); }
-.hh-photo-expand { display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid rgba(255,255,255,.5); border-radius: 50%; flex-shrink: 0; }
-.hh-gallery-item:hover img { transform: scale(1.035); }
-.hh-gallery-item:focus-visible { outline: 3px solid var(--gold-dark); outline-offset: 4px; }
 .hh-feature-photo { position: relative; margin: 0 0 64px; overflow: hidden; background: var(--primary); }
 .hh-feature-photo img { width: 100%; height: 490px; object-fit: cover; }
 .hh-feature-photo figcaption { position: absolute; inset: auto 0 0; padding: 70px 36px 32px; color: white; background: linear-gradient(transparent, rgba(4,26,51,.92)); }
@@ -66,5 +76,4 @@
 }
 @media (prefers-reduced-motion: reduce) {
     .hh-gallery-item img { transition: none; }
-    .hh-gallery-item:hover img { transform: none; }
 }
