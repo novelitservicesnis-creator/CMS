@@ -1,5 +1,6 @@
 /* Leafsong Retreat project detail additions to the shared public design system. */
 .hh-cream { background: var(--light-cream); }
+#club .editorial-body:first-child p { color: #fff; }
 .hh-section-nav { background: var(--primary); border-top: 1px solid var(--gold-border); }
 .hh-section-nav .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; padding-top: 20px; padding-bottom: 20px; }
 .hh-section-nav a { color: var(--gold-soft); font-size: .85rem; }
