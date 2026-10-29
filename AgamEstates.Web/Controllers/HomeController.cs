@@ -66,6 +66,14 @@ namespace AgamEstates.Web.Controllers
             return View();
         }
 
+        [HttpGet("/bollywoodgreens")]
+        public IActionResult BollywoodGreens()
+        {
+            ViewData["Title"] = "Bollywood Greens — Sector 113, Mohali | Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
         [HttpGet("/Project")]
         [HttpGet("/Home/Project")]
         public IActionResult Project()

@@ -1,0 +1,19 @@
+.bgc-page section[id] { scroll-margin-top: 110px; }
+.bgc-page .bgc-hero-title { font-size: clamp(2.4rem, 6vw, 5rem); line-height: 1.12; }
+.bgc-hero-title strong { font-weight: 700; }
+.bgc-hero-title span { color: var(--gold-soft); }
+.bgc-cream { background: #f2eee5; }
+.bgc-page .hh-gallery-item:last-child img { object-fit: cover; }
+.bgc-page .dark-section .hh-section-foot p { color: #e0e5ed; }
+.bgc-page .dark-section .btn-outline-light { color: white; border-color: rgba(255,255,255,.75); }
+.bgc-page .dark-section .btn-outline-light:hover { color: var(--primary); background: white; }
+.bgc-plan { margin: 0; background: white; border: 1px solid var(--gold-border); }
+.bgc-plan img { display: block; width: 100%; height: auto; }
+.bgc-plan figcaption { padding: 16px 20px; color: var(--primary); font-size: .82rem; }
+.bgc-final-actions { justify-content: center; margin-top: 28px; }
+.bgc-page .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+@media (max-width: 600px) {
+ .bgc-page .page-hero-actions .btn { white-space: normal; }
+ .bgc-plan { overflow-x: auto; }
+ .bgc-plan img { min-width: 850px; }
+}

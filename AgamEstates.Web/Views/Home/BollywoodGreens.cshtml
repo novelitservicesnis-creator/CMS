@@ -1,0 +1,101 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+    var gallery = new[] {
+        (15, "Low-rise living, open perspectives", "Rendering of residences overlooking landscaped lawns"),
+        (2, "A welcoming neighbourhood", "Daylight rendering of apartment buildings and their shared arrival area"),
+        (1, "Room for little adventures", "Concept rendering of a children’s play area with slides and swings"),
+        (6, "A greener way home", "Rendering of a palm-lined internal road and residential balconies"),
+        (11, "Evenings at home", "Rendering of illuminated apartments around a courtyard at night"),
+        (12, "The neighbourhood from above", "Aerial evening rendering of the residential buildings and landscaped areas"),
+        (4, "Everyday convenience", "Rendering of covered stilt parking beneath the residences"),
+        (13, "A peaceful end to the day", "Evening rendering of a landscaped residential street")
+    };
+    var amenities = new[] {
+        ("Clubhouse & fitness", "A clubhouse with gymnasium, fitness studio and a semi-Olympic swimming pool, as described in the brochure."),
+        ("Gardens & wellbeing", "Landscaped botanical gardens, a dedicated jogging track and a yoga zone for time outdoors."),
+        ("Family & community", "Children’s play areas, indoor games for different ages and sit-out spaces for elders."),
+        ("Convenience & access", "Boutique retail spaces, 40-foot internal roads, LED streetlights and parking areas for residents and visitors."),
+        ("Security & services", "Gated security around the clock and lifts with power backup, according to the supplied project material."),
+        ("Green surroundings", "The township brochure describes five acres of landscaped gardens, providing space for walks, play and family time.")
+    };
+    var specifications = new[] {
+        ("Living & dining", "Vitrified tile flooring and skirting, polished teak-ply flush doors and a main door with digital lock. Modular switches, acrylic emulsion paint, false ceilings with LED lighting, imported aluminium window frames, and provision for DTH, split AC and fibre internet cabling."),
+        ("Bedrooms", "Vitrified tile flooring and skirting, polished teak-ply flush doors, acrylic emulsion walls, modular switches and false ceilings with LED lighting. Imported aluminium window frames, laminated-ply shutter wardrobes, and provision for DTH and split AC."),
+        ("Washrooms", "Anti-skid tile floors, vitrified tile walls, polished teak-ply flush doors, modular switches and false ceilings with LED lighting. Aluminium window frames, Jaquar/Grohe/American Standard CP fittings and chinaware, ceramic washbasin counter, shower cubicle, pre-installed mirror and exhaust fan."),
+        ("Modular kitchen", "Anti-skid tile floors, vitrified tile and paint wall finishes, modular switches and false ceilings with LED lighting. Imported aluminium frames, waterfall ceramic countertop, double-bowl stainless steel sink, chimney, water purifier and exhaust fan."),
+        ("Balconies", "Anti-skid tile flooring and skirting, MS railing with granite railing sill, modular switches and exterior texture paint."),
+        ("Staircase & building", "Granite flooring, stainless steel railings, lifts with power backup and exterior texture paint. The specifications describe earthquake-resistant construction.")
+    };
+}
+@section Styles {
+    <link rel="stylesheet" href="/css/herohomes.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/bollywoodgreens.css" asp-append-version="true">
+}
+<div class="bgc-page">
+<section class="page-hero">
+    <div class="page-hero-bg"><img src="/images/bollywood-greens/view-15.jpg" alt="Architectural rendering of Bollywood Greens residences overlooking a garden" fetchpriority="high"></div>
+    <div class="wrap page-hero-content">
+        <a class="eyebrow" href="/Project">&larr; Back to properties</a>
+        <h1 class="bgc-hero-title"><strong>Bollywood<br><span>Greens</span></strong></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">Discover Bollywood Green City in Sector 113, Mohali. Spacious low-rise homes, landscaped gardens and everyday conveniences come together in a neighbourhood designed around family life.</p>
+        <div class="page-hero-actions"><button type="button" class="btn btn-gold" data-bgc-enquiry="Bollywood Greens — Please advise">Request a Site Visit</button><a href="#residences" class="btn btn-outline-gold">Explore Residences &darr;</a></div>
+        <div class="hero-meta-strip">
+            <div class="hero-meta-item"><span class="hero-meta-label">Address</span><span class="hero-meta-val">Sector 113, Mohali</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Residences</span><span class="hero-meta-val">3 &amp; 4 BHK</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Township</span><span class="hero-meta-val">32 acres</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Phase IV expansion</span><span class="hero-meta-val">5 acres</span></div>
+        </div>
+    </div>
+</section>
+<nav class="hh-section-nav" aria-label="Bollywood Greens project sections"><div class="wrap"><a href="#overview">Overview</a><a href="#residences">Residences</a><a href="#gallery">Gallery</a><a href="#amenities">Amenities</a><a href="#layout">Layout</a><a href="#specifications">Specifications</a><a href="#location">Location</a></div></nav>
+<section class="editorial-sec" id="overview"><div class="wrap editorial-split">
+    <figure class="editorial-frame"><img src="/images/bollywood-greens/view-5.jpg" alt="Aerial architectural rendering of Bollywood Greens with low-rise buildings, lawns and play spaces" loading="lazy"><figcaption class="editorial-caption">BOLLYWOOD GREEN CITY · ARTIST’S IMPRESSION</figcaption></figure>
+    <div class="editorial-body"><span class="eyebrow">A HOME AMIDST SERENITY</span><h2>Space for family.<br>Room to breathe.</h2><p class="lead">Low-rise residences in a township that brings comfort, greenery and practical everyday living together.</p><p>The brochure describes a 32-acre township with 40-foot internal roads, landscaped botanical gardens and boutique retail spaces. Phase IV introduces a five-acre expansion with refreshed architecture and 3 and 4 BHK homes.</p><p>A project by Lark Projects Pvt. Ltd., Bollywood Green City is located on the Banur–Kharar Road in Sector 113, Mohali.</p><button type="button" class="btn btn-gold" data-bgc-enquiry="Bollywood Greens — Please advise">Enquire About Bollywood Greens</button></div>
+</div></section>
+<section class="editorial-sec dark-section" id="residences"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">PHASE IV RESIDENCES</span><h2>Find your family’s next chapter.</h2><p>Explore spacious 3 and 4 BHK homes with balconies and considered interior finishes.</p></div>
+    <div class="cards-grid-2">
+        <article class="lux-card"><span class="eyebrow">LOW-RISE RESIDENCE</span><h3>3 BHK</h3><p>The illustrated brochure layout includes three bedrooms, three washrooms, a drawing room, dining/lobby, modular kitchen and store room.</p><dl class="hh-facts"><dt>Layout label in brochure</dt><dd>227 sq. yds.</dd><dt>Area clarification</dt><dd>Confirm the area basis and current unit measurements with the project team.</dd></dl><button type="button" class="btn btn-gold" data-bgc-enquiry="Bollywood Greens — 3 BHK">Enquire About 3 BHK</button></article>
+        <article class="lux-card"><span class="eyebrow">LOW-RISE RESIDENCE</span><h3>4 BHK</h3><p>A larger residence option listed for Phase IV, for families looking for an additional bedroom and more flexibility at home.</p><dl class="hh-facts"><dt>Unit areas &amp; layout</dt><dd>Details on request</dd><dt>Pricing &amp; availability</dt><dd>Request a current unit-specific quotation.</dd></dl><button type="button" class="btn btn-gold" data-bgc-enquiry="Bollywood Greens — 4 BHK">Enquire About 4 BHK</button></article>
+    </div><div class="hh-section-foot"><p>Speak with our team for current availability, approved floor plans, pricing and payment terms.</p><button type="button" class="btn btn-outline-light" data-bgc-enquiry="Bollywood Greens — Please advise">Request Pricing</button></div>
+</div></section>
+<section class="editorial-sec hh-gallery-section" id="gallery"><div class="wrap">
+    <div class="hh-gallery-heading"><div class="section-head"><span class="eyebrow">BOLLYWOOD GREENS IN PICTURES</span><h2>A neighbourhood to make your own.</h2></div><p>Architecture, landscaped streets and spaces for family life.</p></div>
+    <div class="hh-gallery">@foreach (var photo in gallery) { <div class="hh-gallery-item"><figure><img src="/images/bollywood-greens/view-@(photo.Item1).jpg" alt="@photo.Item3" loading="lazy" decoding="async"><figcaption><span>@photo.Item2</span></figcaption></figure></div> }</div>
+    <p class="hh-note">Supplied architectural renderings are illustrative and do not establish current construction status or completed amenities.</p>
+</div></section>
+<section class="editorial-sec" id="amenities"><div class="wrap">
+    <figure class="hh-feature-photo"><img src="/images/bollywood-greens/view-1.jpg" alt="Concept rendering of a landscaped children’s play area" loading="lazy"><figcaption><span class="eyebrow">TIME FOR THE THINGS THAT MATTER</span><span>Play, unwind and come together.</span></figcaption></figure>
+    <div class="section-head center"><span class="eyebrow">CLUBHOUSE &amp; OUTDOOR LIVING</span><h2>More to enjoy, close to home.</h2><p>Discover the facilities described in the project brochure.</p></div>
+    <div class="cards-grid-2">@foreach (var item in amenities) { <article class="lux-card"><h3>@item.Item1</h3><p>@item.Item2</p></article> }</div>
+    <p class="hh-note">Confirm phase-wise access, facility availability, membership terms and applicable charges with the promoter.</p>
+</div></section>
+<section class="editorial-sec bgc-cream" id="layout"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">A CLOSER LOOK AT YOUR HOME</span><h2>Thoughtfully arranged, room by room.</h2><p>The brochure’s illustrated three-bedroom layout includes separate drawing and dining spaces, a modular kitchen, a store and balconies.</p></div>
+    <figure class="bgc-plan"><img src="/images/bollywood-greens/layout.jpg" alt="Brochure layout marked 227 square yards, with three bedrooms, three washrooms, drawing room, dining lobby, kitchen, store and balconies" loading="lazy" width="1500" height="590"><figcaption>Illustrative 3 BHK layout · Brochure label: 227 sq. yds. · Confirm current dimensions and area classification.</figcaption></figure>
+    <div class="hh-section-foot"><p>Our team can help you compare the latest 3 and 4 BHK plans.</p><button type="button" class="btn btn-gold" data-bgc-enquiry="Bollywood Greens — Please advise">Discuss Your Floor Plan</button></div>
+</div></section>
+<section class="editorial-sec" id="specifications"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">FINISHES &amp; SPECIFICATIONS</span><h2>The details that make it home.</h2><p>Interior and building features from the supplied technical specifications sheet.</p></div>
+    <div class="hh-specifications">@foreach (var item in specifications) { <details><summary>@item.Item1</summary><p>@item.Item2</p></details> }</div>
+    <p class="hh-note">Specifications are indicative. Confirm final materials, makes and inclusions for the selected unit.</p>
+</div></section>
+<section class="editorial-sec dark-section" id="location"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">SECTOR 113, MOHALI</span><h2>Connected to your everyday.</h2><p>Located on Banur–Kharar Road, with connections to Mohali’s educational institutions, healthcare and Airport Road.</p></div>
+    <div class="cards-grid-3">
+        <article class="lux-card"><h3>Education</h3><ul class="hh-list"><li>CGC Landran and CGC Jhanjeri</li><li>Oakridge International School</li><li>Quest Group of Institutions</li><li>Delhi Public School, Mohali</li></ul></article>
+        <article class="lux-card"><h3>Healthcare &amp; leisure</h3><ul class="hh-list"><li>Fortis Hospital</li><li>Max Hospital</li><li>IVY Hospital</li><li>PCA Cricket Stadium</li></ul></article>
+        <article class="lux-card"><h3>Travel &amp; work</h3><ul class="hh-list"><li>Mohali railway station</li><li>Mohali ISBT</li><li>International airport</li><li>Quark City / IT area</li></ul></article>
+    </div><div class="hh-section-foot"><p>Destinations shown in the brochure. Travel times depend on route and traffic.</p><a class="btn btn-outline-light" href="https://www.google.com/maps/search/?api=1&amp;query=Bollywood+Green+City+Sector+113+Mohali" target="_blank" rel="noopener noreferrer">Explore the Location &nearr;</a></div>
+</div></section>
+<section class="editorial-sec"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">PLAN YOUR VISIT</span><h2>Find your place at Bollywood Greens.</h2><p>Talk to Agam Estates about residence options, pricing, current project details and a guided site visit.</p><div class="page-hero-actions bgc-final-actions"><button type="button" class="btn btn-gold" data-bgc-enquiry="Bollywood Greens — Please advise">Request a Call Back</button><a class="btn btn-outline-dark" href="tel:@siteSettings.PrimaryPhone">Call Us</a></div></div>
+    <aside class="hh-disclaimer"><h3>Project information</h3><p>Content is based on the supplied brochure and specifications. Township and phase figures refer to different scopes. Layouts and images are illustrative; confirm registration, approved plans, current areas, specifications, amenities and contractual terms with the promoter.</p></aside>
+</div></section>
+</div>
+@section Scripts {
+    <script src="/js/bollywoodgreens.js" asp-append-version="true"></script>
+}
