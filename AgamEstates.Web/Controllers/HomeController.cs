@@ -50,6 +50,22 @@ namespace AgamEstates.Web.Controllers
             return View();
         }
 
+        [HttpGet("/noble")]
+        public IActionResult Noble()
+        {
+            ViewData["Title"] = "Noble Aurellia & Magnollia — Sector 88, Mohali | Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
+        [HttpGet("/sbp")]
+        public IActionResult Sbp()
+        {
+            ViewData["Title"] = "SBP Leroy Towers — Sector 99, Mohali | Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
         [HttpGet("/Project")]
         [HttpGet("/Home/Project")]
         public IActionResult Project()

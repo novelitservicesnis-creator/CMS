@@ -1,0 +1,87 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+    var aurellia = new[] { ("3 BHK", "2,651", "1,489", "2,203"), ("3+1 BHK", "2,901", "1,555", "2,385") };
+    var magnollia = new[] { ("3+1 BHK MAX", "3,351", "1,851", "2,551"), ("4+1 BHK", "4,451", "2,501", "3,551"), ("5+1 BHK", "5,851", "3,251", "4,501") };
+    var gallery = new[] { (5, "Room to come together", "Living room with curved seating and warm neutral finishes"), (1, "A quiet retreat", "Bedroom with upholstered bed and warm lighting"), (2, "Warmth in every detail", "Bedroom with wood-panelled walls and full-height curtains"), (3, "Made for everyday living", "Modular kitchen with built-in appliances"), (4, "Your own peaceful corner", "Bedroom opening onto a balcony"), (6, "Space to slow down", "Bedroom with a softly illuminated ceiling") };
+    var amenities = new[] {
+        ("Water & leisure", "Swimming pool and deck, a lazy river with a crossing bridge, and shaded spaces to pause by the water."),
+        ("Sports & movement", "Basketball and badminton courts, a cricket pitch, outdoor gym and jogging trail."),
+        ("Family & community", "Children’s play spaces, an amphitheatre, tree courts and seating under trellises."),
+        ("A landscaped everyday", "Club spaces, arrival plazas and retail areas woven into the landscape plans.")
+    };
+}
+@section Styles {
+    <link rel="stylesheet" href="/css/herohomes.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/noble.css" asp-append-version="true">
+}
+<div class="noble-page">
+<section class="page-hero">
+    <div class="page-hero-bg"><img src="/images/noble/aurellia-exterior.jpg" alt="Architectural rendering of Noble Aurellia towers and landscaped courtyard" fetchpriority="high"></div>
+    <div class="wrap page-hero-content">
+        <a href="/Project" class="eyebrow">&larr; Back to properties</a>
+        <h1 class="noble-hero-title"><strong>Noble Aurellia</strong><br><strong>Noble Magnollia</strong></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">Discover Noble Aurellia and Noble Magnollia in Sector 88, Mohali. Generous residences, thoughtfully planned landscapes and room for every chapter of life.</p>
+        <div class="page-hero-actions"><button type="button" class="btn btn-gold" data-noble-enquiry="Noble — Please advise">Request a Site Visit</button><a class="btn btn-outline-gold" href="#projects">Explore Both Projects &darr;</a></div>
+        <div class="hero-meta-strip">
+            <div class="hero-meta-item"><span class="hero-meta-label">Location</span><span class="hero-meta-val">Sector 88, Mohali</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Aurellia</span><span class="hero-meta-val">3 &amp; 3+1 BHK</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Magnollia</span><span class="hero-meta-val">3+1, 4+1 &amp; 5+1 BHK</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Pricing</span><span class="hero-meta-val">On request</span></div>
+        </div>
+    </div>
+</section>
+<nav class="hh-section-nav" aria-label="Noble project sections"><div class="wrap"><a href="#projects">Two projects</a><a href="#aurellia">Aurellia</a><a href="#magnollia">Magnollia</a><a href="#gallery">Gallery</a><a href="#amenities">Amenities</a><a href="#specifications">Specifications</a><a href="#location">Location</a></div></nav>
+<section class="editorial-sec" id="projects"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">THE NOBLE COLLECTION</span><h2>Find the space that feels like you.</h2><p>Two neighbouring addresses. Explore the homes, compare the areas and choose your next chapter.</p></div>
+    <div class="cards-grid-2 noble-projects">
+        <article class="lux-card"><span class="eyebrow">01 / SITE #04</span><h3>Noble Aurellia</h3><p>3 and 3+1 BHK residences with a landscape shaped around water, play and shared outdoor spaces.</p><p class="hh-area">2,651–2,901 sq. ft.</p><p>Approximate super area</p><a href="#aurellia" class="btn btn-outline-dark">Discover Aurellia &darr;</a></article>
+        <article class="lux-card"><span class="eyebrow">02 / SITE #05</span><h3>Noble Magnollia</h3><p>A wider choice of 3+1, 4+1 and 5+1 BHK homes, with expansive layouts for growing households.</p><p class="hh-area">3,351–5,851 sq. ft.</p><p>Approximate super area · September 2026 schedule</p><a href="#magnollia" class="btn btn-outline-dark">Discover Magnollia &darr;</a></article>
+    </div>
+</div></section>
+<section class="editorial-sec noble-cream" id="aurellia"><div class="wrap">
+    <div class="editorial-split">
+        <figure class="editorial-frame"><img src="/images/noble/aurellia-exterior.jpg" alt="Noble Aurellia architectural rendering showing four towers around landscaped outdoor spaces" loading="lazy"><figcaption class="editorial-caption">NOBLE AURELLIA · ARTIST’S IMPRESSION</figcaption></figure>
+        <div class="editorial-body"><span class="eyebrow">NOBLE AURELLIA / SITE #04</span><h2>A little closer to<br>the life you imagined.</h2><p class="lead">Generous three-bedroom homes, with an additional utility room in the 3+1 BHK configuration.</p><p>The landscape concept brings together a swimming pool, lazy river, sports courts and shaded seating, with a jogging trail connecting spaces for leisure and everyday movement.</p><dl class="hh-facts"><dt>Address</dt><dd>Site #04, Sector 88, S.A.S. Nagar (Mohali), Punjab</dd><dt>RERA number in supplied schedule</dt><dd>PBRERA-SAS81-PR1136</dd></dl><button class="btn btn-gold" type="button" data-noble-enquiry="Noble Aurellia">Enquire About Aurellia</button></div>
+    </div>
+    <div class="section-head noble-residence-heading"><span class="eyebrow">AURELLIA RESIDENCES</span><h2>Space, thoughtfully considered.</h2></div>
+    <div class="cards-grid-2">@foreach (var home in aurellia) {
+        <article class="lux-card"><h3>@home.Item1</h3><p class="hh-area">@home.Item2 sq. ft.</p><p>Approximate super area</p><dl class="hh-facts"><dt>Carpet area</dt><dd>@home.Item3 sq. ft.</dd><dt>Built-up area</dt><dd>@home.Item4 sq. ft.</dd></dl><button type="button" class="btn btn-outline-dark" data-noble-enquiry="Noble Aurellia — @home.Item1">Request Pricing</button></article>
+    }</div><p class="hh-note">Areas from the June 2025 schedule. Duplex sky villas / penthouses: details on request.</p>
+</div></section>
+<section class="editorial-sec" id="magnollia"><div class="wrap">
+    <div class="editorial-split">
+        <div class="editorial-body"><span class="eyebrow">NOBLE MAGNOLLIA / SITE #05</span><h2>More room.<br>More possibilities.</h2><p class="lead">Explore three, four and five-bedroom configurations, each with an additional utility room.</p><p>The supplied master plan arranges residential towers around landscaped leisure spaces, with club areas, sports courts, water features and retail along the edges.</p><dl class="hh-facts"><dt>Address</dt><dd>Site #05, Sector 88, S.A.S. Nagar (Mohali), Punjab</dd><dt>RERA number in supplied schedule</dt><dd>PBRERA-SAS81-PR1294</dd></dl><button class="btn btn-gold" type="button" data-noble-enquiry="Noble Magnollia">Enquire About Magnollia</button></div>
+        <figure class="editorial-frame noble-plan-frame"><img src="/images/noble/magnollia-layout.jpg" alt="Noble Magnollia landscape plan with towers, clubs, retail and recreation areas" loading="lazy"><figcaption class="editorial-caption">NOBLE MAGNOLLIA · LANDSCAPE PLAN · JULY 2026</figcaption></figure>
+    </div>
+    <div class="section-head noble-residence-heading"><span class="eyebrow">MAGNOLLIA RESIDENCES</span><h2>Choose your scale of living.</h2></div>
+    <div class="cards-grid-3">@foreach (var home in magnollia) {
+        <article class="lux-card"><h3>@home.Item1</h3><p class="hh-area">@home.Item2 sq. ft.</p><p>Approximate super area</p><dl class="hh-facts"><dt>Carpet area</dt><dd>@home.Item3 sq. ft.</dd><dt>Built-up area</dt><dd>@home.Item4 sq. ft.</dd></dl><button type="button" class="btn btn-outline-dark" data-noble-enquiry="Noble Magnollia — @home.Item1">Request Pricing</button></article>
+    }</div><p class="hh-note">Areas follow the September 2026 schedule. The July 2026 plans show 1,801 sq. ft. carpet area for the 3-bedroom layout and 5,551 sq. ft. super area for the 5-bedroom layout, differing from the newer schedule above. Confirm the current unit-specific plan with the promoter. Penthouses: details on request.</p>
+</div></section>
+<section class="editorial-sec hh-gallery-section" id="gallery"><div class="wrap">
+    <div class="hh-gallery-heading"><div class="section-head"><span class="eyebrow">A LOOK INSIDE</span><h2>Warm spaces. Quiet luxury.</h2></div><p>Explore the supplied interior photographs, from restful bedrooms to spaces for gathering.</p></div>
+    <div class="hh-gallery">@foreach (var photo in gallery) {
+        <div class="hh-gallery-item"><figure class="@(photo.Item1 >= 5 ? "noble-rotated" : "")"><img src="/images/noble/interior-@(photo.Item1).jpg" alt="@photo.Item3" loading="lazy" decoding="async"><figcaption><span>@photo.Item2</span></figcaption></figure></div>
+    }</div><p class="hh-note">Interior reference photographs supplied for Noble. Project and unit attribution is not specified; furniture, styling and appliances shown are not a statement of included specifications.</p>
+</div></section>
+<section class="editorial-sec dark-section" id="amenities"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">LIFE BEYOND YOUR FRONT DOOR</span><h2>Room to play. Space to unwind.</h2><p>Explore the amenities illustrated in the supplied landscape plans for both projects.</p></div>
+    <div class="cards-grid-2">@foreach (var amenity in amenities) { <article class="lux-card"><h3>@amenity.Item1</h3><p>@amenity.Item2</p></article> }</div>
+    <p class="hh-note">Concept amenities are indicative. Refer to the individual project plans for locations and confirm the final scope and availability.</p>
+</div></section>
+<section class="editorial-sec" id="specifications"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">CONSIDERED DETAILS</span><h2>Comfort in every detail.</h2><p>Explore interior finishes and payment options for your preferred Noble residence.</p></div>
+    <div class="hh-specifications"><details><summary>Interior finishes &amp; specifications</summary><p>The supplied schedules describe keyless entry, video door phones, modular kitchens with built-in appliances, full-height bedroom wardrobes, false ceilings with ambient lighting, and fitted washrooms. These are described as limited-period offerings; confirm current inclusions for your selected unit. Aurellia’s schedule includes kitchen air conditioning; Magnollia’s schedule specifies kitchen air-conditioning provision.</p></details><details><summary>Pricing &amp; payment options</summary><p>Both schedules list apartment prices on request. Aurellia lists construction-linked, development-linked and time-linked plans; Magnollia lists development-linked, hybrid and time-linked plans. Additional charges, PLC and applicable taxes are detailed in the respective schedules. Request an updated quotation and payment schedule for your chosen home.</p></details></div>
+</div></section>
+<section class="editorial-sec dark-section" id="location"><div class="wrap editorial-split">
+    <div class="editorial-body"><span class="eyebrow">SECTOR 88, MOHALI</span><h2>Two addresses.<br>One neighbourhood.</h2><p class="lead">Noble Aurellia at Site #04 and Noble Magnollia at Site #05, Sector 88, S.A.S. Nagar, Punjab.</p><a class="btn btn-outline-light" href="https://www.google.com/maps/search/?api=1&amp;query=Noble+Ventures+Sector+88+Mohali" target="_blank" rel="noopener noreferrer">Explore the Location &nearr;</a></div>
+    <div class="editorial-body"><span class="eyebrow">LET’S FIND YOUR HOME</span><h2>Experience Noble<br>in person.</h2><p>Speak with Agam Estates about current availability, layouts and a visit to your preferred project.</p><div class="page-hero-actions"><button class="btn btn-gold" type="button" data-noble-enquiry="Noble — Please advise">Plan Your Visit</button><a class="btn btn-outline-light" href="tel:@siteSettings.PrimaryPhone">Call Us</a></div></div>
+</div></section>
+<div class="wrap"><aside class="hh-disclaimer noble-disclaimer"><h3>Project information</h3><p>Information is based on the supplied project documents dated April 2025 / June 2025 for Aurellia and July 2026 / September 2026 for Magnollia. Areas are approximate; renderings and landscape plans are illustrative. Confirm current registration details, approved plans, specifications, availability and contractual terms with the promoter.</p></aside></div>
+</div>
+@section Scripts {
+    <script src="/js/noble.js" asp-append-version="true"></script>
+}

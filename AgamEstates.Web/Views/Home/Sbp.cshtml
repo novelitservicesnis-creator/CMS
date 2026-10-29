@@ -1,0 +1,101 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+    var gallery = new[] {
+        ("entrance", "A welcoming arrival", "Rendering of the SBP entrance framed by palms and flowering gardens"),
+        ("towers-day", "A new perspective", "Daylight architectural rendering of Leroy Towers"),
+        ("club-day", "Welcome to Club Leroy", "Rendering of the Club Leroy entrance in daylight"),
+        ("towers-night", "Evenings at Leroy", "Rendering of illuminated residential towers at dusk"),
+        ("aerial", "The bigger picture", "Aerial rendering of the residential development and surrounding landscape"),
+        ("club-evening", "A place to come together", "Evening rendering of Club Leroy with an illuminated entrance")
+    };
+    var amenities = new[] {
+        ("Fitness & wellbeing", "Gymnasium, aerobics and Pilates spaces, a swimming pool and badminton court."),
+        ("Dining & hospitality", "Café with all-day dining, a world-cuisine restaurant and guest suites."),
+        ("Games & quiet moments", "Billiards, table tennis, carrom and chess, alongside a library for time away from the everyday rush."),
+        ("A considered arrival", "Double-height club entrance lobby with reception and concierge, complemented by a drop-off porch."),
+        ("Outdoor living", "Walking paths, shaded seating, a gazebo, children’s play area, senior citizen area and an open-air theatre in the proposed site plan."),
+        ("Everyday convenience", "Basement parking, high-speed passenger lifts, separate service lifts, 24-hour security, sprinklers and smoke detection in the project concept.")
+    };
+    var specifications = new[] {
+        ("Doors & windows", "Keyless entry, video door phone, teakwood veneer flush doors, and UPVC doors and windows with mesh doors."),
+        ("Flooring & balconies", "Imported tiles in the kitchen, bedrooms and living areas. Premium anti-skid tiles in washrooms and leisure balconies."),
+        ("Paint & ceilings", "Premium emulsion paint inside the apartments. The offer lists false ceilings with ambient lighting in the dining and living areas for 2 and 3 BHK homes; confirm applicability to the selected 3+1 BHK unit."),
+        ("Air conditioning", "Three 1.5-ton split air conditioners for 2 BHK homes. The offer lists four 1.5-ton split air conditioners for 3 BHK homes; confirm the package for the selected 3+1 BHK unit."),
+        ("Kitchen", "Modular kitchen with branded chimney, geyser, built-in hob and OTG."),
+        ("Washrooms", "Fully equipped washrooms with luxury branded fittings, false ceilings and ambient lighting."),
+        ("Wardrobes", "Full-height, wall-to-wall modular wardrobes."),
+        ("Safety & electricals", "Fire-fighting system as per bylaws, branded electrical fittings and wiring for DTH, telephone and internet."),
+        ("Smart home & parking", "Home automation package. One covered car parking space for 2 BHK homes and two for 3+1 BHK homes.")
+    };
+}
+@section Styles {
+    <link rel="stylesheet" href="/css/herohomes.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/sbp.css" asp-append-version="true">
+}
+<div class="sbp-page">
+<section class="page-hero">
+    <div class="page-hero-bg"><img src="/images/sbp/towers-sunset.jpg" alt="Architectural rendering of SBP Leroy Towers at sunset" fetchpriority="high" width="1280" height="956"></div>
+    <div class="wrap page-hero-content">
+        <a href="/Project" class="eyebrow">&larr; Back to properties</a>
+        <h1 class="sbp-hero-title"><strong>SBP<br><span>Leroy Towers</span></strong></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">Luxury apartments offering all the royal comforts. Discover 2 and 3+1 BHK residences in Sector 99, Mohali, with spaces designed for leisure, connection and everyday ease.</p>
+        <div class="page-hero-actions"><button type="button" class="btn btn-gold" data-sbp-enquiry="SBP Leroy Towers — Please advise">Request a Site Visit</button><a href="#residences" class="btn btn-outline-gold">Explore Residences &darr;</a></div>
+        <div class="hero-meta-strip">
+            <div class="hero-meta-item"><span class="hero-meta-label">Address</span><span class="hero-meta-val">Sector 99, Mohali</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Land area</span><span class="hero-meta-val">3.52 acres</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Residences</span><span class="hero-meta-val">2 &amp; 3+1 BHK</span></div>
+            <div class="hero-meta-item"><span class="hero-meta-label">Super built-up area</span><span class="hero-meta-val">1,325 &amp; 2,460 sq. ft.</span></div>
+        </div>
+    </div>
+</section>
+<nav class="hh-section-nav" aria-label="SBP project sections"><div class="wrap"><a href="#overview">Overview</a><a href="#residences">Residences</a><a href="#gallery">Gallery</a><a href="#amenities">Club &amp; amenities</a><a href="#layouts">Layouts</a><a href="#specifications">Specifications</a><a href="#location">Location</a></div></nav>
+<section class="editorial-sec" id="overview"><div class="wrap editorial-split">
+    <figure class="editorial-frame"><img src="/images/sbp/aerial.jpg" alt="Aerial architectural rendering of Leroy Towers surrounded by greenery" loading="lazy" width="1280" height="948"><figcaption class="editorial-caption">SBP LEROY TOWERS · ARTIST’S IMPRESSION</figcaption></figure>
+    <div class="editorial-body"><span class="eyebrow">A LIFE WITH ROOM FOR MORE</span><h2>Royal comforts.<br>A place to call your own.</h2><p class="lead">A boutique residential concept that brings generous homes, greenery and shared leisure spaces together.</p><p>Leroy Towers is envisioned around resort-style living, with walking trails, shaded sitting decks, seasonal gardens and water features creating places to pause and connect.</p><p>Set across 3.52 acres in Sector 99, Mohali, the proposed development offers two residence choices for different ways of living.</p><button type="button" class="btn btn-gold" data-sbp-enquiry="SBP Leroy Towers — Please advise">Enquire About Leroy Towers</button></div>
+</div></section>
+<section class="editorial-sec dark-section" id="residences"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">YOUR SPACE, YOUR WAY</span><h2>Two ways to come home.</h2><p>Explore the apartment sizes and proposed floor configurations.</p></div>
+    <div class="cards-grid-2">
+        <article class="lux-card"><span class="eyebrow">LUXURY APARTMENT</span><h3>2 BHK</h3><p class="hh-area">1,325 sq. ft.</p><p>Super built-up area</p><dl class="hh-facts"><dt>Proposed floors</dt><dd>Basement + Stilt + 24 storeys</dd><dt>Covered car parking</dt><dd>1 space</dd><dt>Air-conditioning offer</dt><dd>3 split AC units · 1.5 ton each</dd></dl><button type="button" class="btn btn-gold" data-sbp-enquiry="SBP Leroy Towers — 2 BHK">Enquire About 2 BHK</button></article>
+        <article class="lux-card"><span class="eyebrow">LUXURY APARTMENT</span><h3>3+1 BHK</h3><p class="hh-area">2,460 sq. ft.</p><p>Super built-up area</p><dl class="hh-facts"><dt>Proposed floors</dt><dd>Basement + Stilt + 25 storeys</dd><dt>Covered car parking</dt><dd>2 spaces</dd><dt>Additional room</dt><dd>Staff room in the supplied Block C layout</dd></dl><button type="button" class="btn btn-gold" data-sbp-enquiry="SBP Leroy Towers — 3+1 BHK">Enquire About 3+1 BHK</button></article>
+    </div><div class="hh-section-foot"><p>Request current pricing, availability and the unit-specific floor plan. Areas are approximate; floor counts are proposed.</p><button type="button" class="btn btn-outline-light" data-sbp-enquiry="SBP Leroy Towers — Please advise">Request Pricing &amp; Availability</button></div>
+</div></section>
+<section class="editorial-sec hh-gallery-section" id="gallery"><div class="wrap">
+    <div class="hh-gallery-heading"><div class="section-head"><span class="eyebrow">LEROY IN PICTURES</span><h2>A vision of life here.</h2></div><p>Explore the architecture, landscaped arrival and Club Leroy through the supplied project renderings.</p></div>
+    <div class="hh-gallery">@foreach (var photo in gallery) {
+        <div class="hh-gallery-item"><figure><img src="/images/sbp/@(photo.Item1).jpg" alt="@photo.Item3" loading="lazy" decoding="async"><figcaption><span>@photo.Item2</span></figcaption></figure></div>
+    }</div><p class="hh-note">Architectural renderings are illustrative and do not represent current construction status or completed facilities.</p>
+</div></section>
+<section class="editorial-sec" id="amenities"><div class="wrap">
+    <figure class="hh-feature-photo"><img src="/images/sbp/club-evening.jpg" alt="Artist’s impression of the illuminated Club Leroy entrance" loading="lazy" width="1032" height="563"><figcaption><span class="eyebrow">CLUB LEROY</span><span>Make time for the things you love.</span></figcaption></figure>
+    <div class="section-head center"><span class="eyebrow">PROPOSED CLUB &amp; AMENITIES</span><h2>Something for every part of your day.</h2><p>Spaces for movement, meals, quiet moments and time with family.</p></div>
+    <div class="cards-grid-2">@foreach (var amenity in amenities) { <article class="lux-card"><h3>@amenity.Item1</h3><p>@amenity.Item2</p></article> }</div>
+    <p class="hh-note">Amenities are proposed in the concept material. Confirm final facilities, operating arrangements and applicable charges with the project team.</p>
+</div></section>
+<section class="editorial-sec sbp-cream" id="layouts"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">PLANNED AROUND YOUR LIFE</span><h2>See how it comes together.</h2><p>Explore the proposed site layout and the 2,460 sq. ft. 3 BHK + staff-room apartment in Block C.</p></div>
+    <figure class="sbp-plan sbp-site-plan"><img src="/images/sbp/site-plan.jpg" alt="Proposed Leroy Towers site plan showing buildings, parking, pool, badminton court and landscaped recreation spaces" loading="lazy" width="1040" height="694"><figcaption>Proposed site plan · Indicative, not to scale</figcaption></figure>
+    <div class="cards-grid-2">
+        <figure class="sbp-plan"><img src="/images/sbp/floor-plan.jpg" alt="Proposed Block C 3 BHK plus staff-room floor plan, 2,460 square feet super built-up area" loading="lazy" width="1040" height="694"><figcaption>3+1 BHK · Block C · Proposed floor plan</figcaption></figure>
+        <figure class="sbp-plan"><img src="/images/sbp/isometric.jpg" alt="Isometric view of the proposed 2,460 square feet Block C apartment" loading="lazy" width="1040" height="694"><figcaption>3+1 BHK · Block C · Proposed isometric view</figcaption></figure>
+    </div><div class="hh-section-foot"><p>Speak to our team for the latest approved layout and the 2 BHK unit plan.</p><button type="button" class="btn btn-gold" data-sbp-enquiry="SBP Leroy Towers — Please advise">Discuss Your Floor Plan</button></div>
+</div></section>
+<section class="editorial-sec" id="specifications"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">LIMITED-PERIOD OFFER</span><h2>Considered details, throughout.</h2><p>Explore the listed interior finishes, appliances and smart-home features. Confirm offer validity and inclusions for your selected home.</p></div>
+    <div class="hh-specifications">@foreach (var specification in specifications) { <details><summary>@specification.Item1</summary><p>@specification.Item2</p></details> }</div>
+</div></section>
+<section class="editorial-sec dark-section" id="location"><div class="wrap editorial-split">
+    <div class="editorial-body"><span class="eyebrow">SECTOR 99, MOHALI</span><h2>A connected address.<br>A place of your own.</h2><p class="lead">Leroy Towers is proposed in Sector 99, Mohali.</p><p>The indicative location map places the project in relation to Airport Road, CP67, Fortis Hospital, IISER Mohali and Amity University Mohali.</p><div class="page-hero-actions"><a class="btn btn-outline-light" href="https://www.google.com/maps/search/?api=1&amp;query=SBP+Leroy+Towers+Sector+99+Mohali" target="_blank" rel="noopener noreferrer">Explore the Location &nearr;</a><button type="button" class="btn btn-gold" data-sbp-enquiry="SBP Leroy Towers — Please advise">Plan a Site Visit</button></div></div>
+    <figure class="sbp-plan sbp-location"><img src="/images/sbp/location.jpg" alt="Indicative location map of Leroy Towers in Sector 99 relative to Mohali, Chandigarh and the airport; not to scale" loading="lazy" width="1080" height="1527"><figcaption>Indicative location map · Not to scale</figcaption></figure>
+</div></section>
+<section class="editorial-sec"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">YOUR NEXT CHAPTER</span><h2>Let’s find your home at Leroy.</h2><p>Contact Agam Estates for current pricing, availability, project registration details and a guided visit.</p><div class="page-hero-actions sbp-final-actions"><button type="button" class="btn btn-gold" data-sbp-enquiry="SBP Leroy Towers — Please advise">Request a Call Back</button><a href="tel:@siteSettings.PrimaryPhone" class="btn btn-outline-dark">Call Us</a></div></div>
+    <aside class="hh-disclaimer"><h3>Project information</h3><p>Areas, proposed floors and offer details reflect the supplied project update. Renderings, layouts and concept amenities are indicative and subject to final approval and revision. Confirm current specifications, registration, approved plans, offer validity, pricing and contractual terms with the promoter.</p></aside>
+</div></section>
+</div>
+@section Scripts {
+    <script src="/js/sbp.js" asp-append-version="true"></script>
+}

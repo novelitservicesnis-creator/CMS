@@ -1,0 +1,19 @@
+.sbp-page section[id] { scroll-margin-top: 110px; }
+.sbp-page .sbp-hero-title { font-size: clamp(2.4rem, 6vw, 5rem); line-height: 1.12; }
+.sbp-hero-title strong { font-weight: 700; }
+.sbp-hero-title span { color: var(--gold-soft); }
+.sbp-cream { background: #f2eee5; }
+.sbp-page .hh-gallery-item:last-child img { object-fit: cover; }
+.sbp-page .hh-section-foot .btn-outline-light { color: white; border-color: rgba(255,255,255,.75); }
+.sbp-page .dark-section .hh-section-foot p, .sbp-page .dark-section .editorial-body p { color: #e0e5ed; }
+.sbp-plan { margin: 0; background: #f7f2e5; border: 1px solid var(--gold-border); }
+.sbp-plan img { display: block; width: 100%; height: auto; object-fit: contain; }
+.sbp-plan figcaption { padding: 16px 20px; color: var(--primary); font-size: .82rem; }
+.sbp-site-plan { max-width: 1040px; margin: 0 auto 32px; }
+.sbp-location { max-width: 500px; justify-self: center; }
+.sbp-final-actions { justify-content: center; margin-top: 28px; }
+.sbp-page .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+@media (max-width: 600px) {
+    .sbp-page .page-hero-actions .btn { white-space: normal; }
+    .sbp-plan figcaption { padding: 12px; }
+}

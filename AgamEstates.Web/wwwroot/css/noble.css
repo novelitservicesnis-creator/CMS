@@ -1,0 +1,22 @@
+.noble-cream { background: #f2eee5; }
+.noble-page .noble-hero-title { font-size: clamp(2rem, 5.5vw, 4.75rem); line-height: 1.15; }
+.noble-page .noble-hero-title strong { font-weight: 700; }
+.noble-page .noble-hero-title strong:last-child { color: var(--gold-soft); }
+.noble-page section[id] { scroll-margin-top: 110px; }
+.noble-residence-heading { margin-top: 64px; }
+.noble-projects .btn { margin-top: 24px; }
+.noble-page .editorial-frame img { width: 100%; }
+.noble-page .noble-plan-frame img { height: auto; object-fit: contain; }
+.noble-page .noble-plan-frame { background: white; }
+.noble-page .noble-plan-frame .editorial-caption { position: static; margin: 0; }
+.noble-page .dark-section .hh-note { color: #ddd4c4; }
+.noble-page .dark-section .editorial-body p { color: #eee9df; }
+.noble-disclaimer { margin-top: 0; padding: 32px 0; }
+.noble-page .hh-gallery-item:last-child img { object-fit: cover; }
+.noble-page .hh-gallery-item .noble-rotated { height: auto; aspect-ratio: 3 / 2; }
+.noble-page .noble-rotated img { position: absolute; width: 66.667%; height: 150%; max-width: none; left: 16.667%; top: -25%; transform: rotate(90deg); object-fit: cover; }
+.noble-page .hh-gallery-item:has(.noble-rotated) { align-self: start; }
+@media(max-width: 600px) {
+    .noble-page .page-hero-actions .btn { white-space: normal; }
+    .noble-page .hh-gallery-item .noble-rotated { aspect-ratio: 3 / 2; }
+}
