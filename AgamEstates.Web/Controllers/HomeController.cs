@@ -74,6 +74,14 @@ namespace AgamEstates.Web.Controllers
             return View();
         }
 
+        [HttpGet("/jubilee")]
+        public IActionResult Jubilee()
+        {
+            ViewData["Title"] = "Jubilee Projects — Mohali & New Chandigarh | Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
         [HttpGet("/Project")]
         [HttpGet("/Home/Project")]
         public IActionResult Project()
