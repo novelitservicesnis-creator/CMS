@@ -82,6 +82,30 @@ namespace AgamEstates.Web.Controllers
             return View();
         }
 
+        [HttpGet("/dholera-projects")]
+        public IActionResult DholeraProjects()
+        {
+            ViewData["Title"] = "Royal Vista — Plotted Development, Dholera, Gujarat | Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
+        [HttpGet("/projects/kumharhatti-villas")]
+        public IActionResult KumharhattiVillas()
+        {
+            ViewData["Title"] = "Kumharhatti Villas | Pinnacle Pines & Samsaara — Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
+        [HttpGet("/dream-homes-icon")]
+        public IActionResult DreamHomesIkon()
+        {
+            ViewData["Title"] = "Dream Homes IKON — Sector 126, Mohali | Agam Estates";
+            ViewData["ActiveNav"] = "Project";
+            return View();
+        }
+
         [HttpGet("/Project")]
         [HttpGet("/Home/Project")]
         public IActionResult Project()

@@ -1,0 +1,98 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Kumharhatti Villas | Pinnacle Pines & Samsaara — Agam Estates";
+    var pinnacleGallery = new[] {
+        ("pinnacle-landscape", "Hillside setting", "Architectural illustration of Pinnacle Pines residences on a wooded hillside"),
+        ("pinnacle-clubhouse", "Atrium clubhouse", "Architectural rendering of the Pinnacle Pines atrium clubhouse"),
+        ("pinnacle-trails", "Landscaped trails", "Pinnacle Pines illustration of villas, walking paths and hillside landscaping"),
+        ("pinnacle-villa-exterior", "Villa exterior", "Architectural rendering of a Pinnacle Pines hillside villa"),
+        ("pinnacle-interior", "Villa interiors", "Pinnacle Pines illustration of a bedroom with a mountain view")
+    };
+    var samsaaraGallery = new[] {
+        ("samsaara-exterior", "Hillside villa", "Samsaara architectural rendering of a hillside villa"),
+        ("samsaara-garden", "Garden setting", "Samsaara landscape illustration with lawn, planting and pavilion"),
+        ("samsaara-golf", "Golf landscape", "Samsaara illustration of the golf course beside hillside villas"),
+        ("samsaara-living", "Living room", "Samsaara illustrated living room with mountain view"),
+        ("samsaara-kitchen", "Interior spaces", "Samsaara illustrated kitchen and staircase"),
+        ("samsaara-bedroom", "Bedroom retreat", "Samsaara illustrated bedroom with balcony and hills beyond")
+    };
+    var pinnaclePlans = new[] {
+        ("pinnacle-200-above", "200 sq. yd. · above road", "3 BHK · ground floor plan"),
+        ("pinnacle-200-above-first", "200 sq. yd. · above road", "3 BHK · first floor plan"),
+        ("pinnacle-200-below", "200 sq. yd. · below road", "3 BHK · ground floor plan"),
+        ("pinnacle-200-below-lower", "200 sq. yd. · below road", "3 BHK · lower ground floor plan"),
+        ("pinnacle-250-above", "250 sq. yd. · above road", "3 BHK · ground and first floor plans"),
+        ("pinnacle-250-below", "250 sq. yd. · below road", "3 BHK · ground and lower ground floor plans"),
+        ("pinnacle-300-above-a", "300 sq. yd. · above road · layout A", "3 BHK · ground and first floor plans"),
+        ("pinnacle-300-above-b", "300 sq. yd. · above road · layout B", "3 BHK · ground and first floor plans"),
+        ("pinnacle-300-below", "300 sq. yd. · below road", "3 BHK · ground and lower ground floor plans"),
+        ("pinnacle-300-below-terrace", "300 sq. yd. · below road", "3 BHK · terrace plan")
+    };
+    var pinnacleAmenities = new[] {("♨", "Spa & sauna"), ("◌", "Swimming pool"), ("⌁", "Gym & meditation"), ("◇", "Pickleball court"), ("♣", "Bamboo forest"), ("↗", "Jogging track"), ("✦", "Kids’ play area"), ("☕", "Restaurant & café"), ("✿", "Zen garden")};
+    var samsaaraAmenities = new[] {("◌", "Private pool"), ("◇", "Golf course"), ("♨", "Spa cottages"), ("⌁", "Yoga deck"), ("♣", "Kitchen garden"), ("✦", "Clubhouse"), ("↗", "Gym"), ("▣", "Home theatre"), ("☼", "Kids’ play area")};
+}
+@section Styles {
+    <link rel="stylesheet" href="/css/herohomes.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/kumharhatti-villas.css" asp-append-version="true">
+}
+<div class="kv-page">
+<section class="page-hero kv-hero">
+    <div class="page-hero-bg"><img src="/images/kumharhatti/pinnacle-hero.webp" alt="Pinnacle Pines brochure artwork showing a wooded mountain valley at sunset" width="2400" height="1587" fetchpriority="high"></div>
+    <div class="wrap page-hero-content">
+        <nav class="kv-breadcrumb" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/Project">Projects</a><span>/</span><span aria-current="page">Kumharhatti Villas</span></nav>
+        <span class="eyebrow">HILLSIDE LIVING · HIMACHAL PRADESH</span>
+        <h1>Kumharhatti<br><em>Villas.</em></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">Explore Pinnacle Pines in Kumarhatti, Solan, and Samsaara in Iwasa, Sirmaur. Two distinct addresses, each presented from its own project brochure.</p>
+        <div class="page-hero-actions"><a href="#projects" class="btn btn-gold">Explore Projects</a><button type="button" class="btn btn-outline-gold" data-enquire="">Enquire Now</button></div>
+        <div class="hero-meta-strip"><div class="hero-meta-item"><span class="hero-meta-label">Pinnacle Pines</span><span class="hero-meta-val">Kumarhatti · Solan</span></div><div class="hero-meta-item"><span class="hero-meta-label">Samsaara</span><span class="hero-meta-val">Iwasa · Sirmaur</span></div></div>
+    </div>
+</section>
+<nav class="hh-section-nav kv-section-nav" aria-label="Project sections"><div class="wrap"><a href="#overview">Overview</a><a href="#projects">Two Projects</a><a href="#pinnacle">Pinnacle Pines</a><a href="#samsaara">Samsaara</a><a href="/#contact" data-enquire="">Enquire</a></div></nav>
+
+<section class="editorial-sec" id="overview"><div class="wrap editorial-split">
+    <figure class="editorial-frame"><img src="/images/kumharhatti/pinnacle-hillside.webp" alt="Pinnacle Pines brochure rendering of hillside residences among pine forest" width="2400" height="1351" loading="lazy" decoding="async"><figcaption class="editorial-caption">PINNACLE PINES · ILLUSTRATIVE RENDERING</figcaption></figure>
+    <div class="editorial-body"><span class="eyebrow">TWO HIMALAYAN ADDRESSES</span><h2>Discover hillside living in Kumarhatti.</h2><p class="lead">Pinnacle Pines places villas and shared spaces amid the pine covered hills of Kumarhatti in Solan.</p><p>The collection also introduces Samsaara, a separate estate in Iwasa, Sirmaur. Explore each project’s own setting, plans and amenities below.</p><a href="#projects" class="btn btn-outline-dark">Discover the Projects &darr;</a></div>
+</div></section>
+
+<section class="editorial-sec hh-cream" id="projects"><div class="wrap"><div class="section-head center"><span class="eyebrow">EXPLORE OUR TWO PROJECTS</span><h2>Two places to find your pace.</h2><p>Each brochure describes a distinct development. Explore the details independently.</p></div>
+    <div class="kv-project-grid">
+        <article class="kv-project-card"><img src="/images/kumharhatti/pinnacle-villas.webp" alt="Architectural rendering of Pinnacle Pines hillside villas" width="1640" height="1035" loading="lazy" decoding="async"><div><span class="eyebrow">KUMARHATTI · SOLAN</span><h3>Pinnacle Pines</h3><p>Hillside villas and residences with an atrium clubhouse, landscaped routes and wellness spaces. The brochure presents 3 BHK villa plans on 200, 250 and 300 sq. yd. plots, with above and below road variants.</p><a href="#pinnacle" class="btn btn-outline-dark">View Project Details &nearr;</a></div></article>
+        <article class="kv-project-card"><img src="/images/kumharhatti/samsaara-villa.webp" alt="Architectural rendering of a Samsaara villa beside a private pool" width="2000" height="1254" loading="lazy" decoding="async"><div><span class="eyebrow">IWASA · SIRMAUR</span><h3>Samsaara</h3><p>A hillside estate by MMM Infra. Its brochure presents 33 exclusive residences across 72 bighas, a site layout and ground and first floor illustrations, alongside gardens, golf and shared leisure spaces.</p><a href="#samsaara" class="btn btn-outline-dark">View Project Details &nearr;</a></div></article>
+    </div>
+</div></section>
+
+<section class="editorial-sec kv-project-heading" id="pinnacle"><div class="wrap"><span class="eyebrow">PROJECT ONE · KUMARHATTI, SOLAN</span><h2>Pinnacle Pines.</h2><p class="lead">Villas, mountain views and shared spaces in a pine forest setting. Its brochure places the development along the Kumarhatti–Nahan road and illustrates an atrium clubhouse, landscaped paths and several villa configurations.</p><div class="kv-quick-facts"><span>3 BHK villa plans</span><span>200 / 250 / 300 sq. yd.</span><span>Above &amp; below road variants</span></div></div></section>
+<section class="editorial-sec hh-gallery-section"><div class="wrap"><div class="hh-gallery-heading"><div class="section-head"><span class="eyebrow">PINNACLE PINES GALLERY</span><h2>Among the pines.</h2></div><p>Exterior, clubhouse, landscape and interior illustrations from the Pinnacle Pines brochure.</p></div><div class="hh-gallery kv-gallery">@foreach (var photo in pinnacleGallery) { <figure class="hh-gallery-item"><a href="/images/kumharhatti/@(photo.Item1).webp" target="_blank" rel="noopener noreferrer" aria-label="Open @photo.Item2 image at full size"><img src="/images/kumharhatti/@(photo.Item1).webp" alt="@photo.Item3" loading="lazy" decoding="async" width="1600" height="1000"><figcaption><span>@photo.Item2</span></figcaption></a></figure> }</div><p class="hh-note">Architectural and landscape renderings are illustrative; they do not establish current construction status.</p></div></section>
+<section class="editorial-sec"><div class="wrap"><div class="section-head"><span class="eyebrow">PINNACLE PINES · AMENITIES</span><h2>Space to unwind and move.</h2><p>The brochure lists these lifestyle, recreation and wellness features.</p></div><div class="kv-amenity-grid">@foreach (var amenity in pinnacleAmenities) { <div class="kv-amenity"><span aria-hidden="true">@amenity.Item1</span><strong>@amenity.Item2</strong></div> }</div></div></section>
+<section class="editorial-sec hh-cream"><div class="wrap"><div class="section-head"><span class="eyebrow">PINNACLE PINES · MASTER PLAN</span><h2>Explore the hillside layout.</h2><p>The brochure plan identifies 200, 250 and 300 sq. yd. plots, clubhouses, internal roads and areas marked for future expansion or on hold.</p></div><figure class="kv-plan-feature"><a href="/images/kumharhatti/pinnacle-masterplan.webp" target="_blank" rel="noopener noreferrer"><img src="/images/kumharhatti/pinnacle-masterplan.webp" alt="Pinnacle Pines master plan showing villa plot types, clubhouses, roads and future expansion area" width="2304" height="1296" loading="lazy" decoding="async"></a><figcaption>Open the master plan to inspect the labels at full size.</figcaption></figure></div></section>
+<section class="editorial-sec" id="pinnacle-plans"><div class="wrap"><div class="section-head"><span class="eyebrow">PINNACLE PINES · FLOOR PLANS</span><h2>Find your villa configuration.</h2><p>Original brochure plans are shown with their printed annotations. Open any plan for a larger view.</p></div><div class="kv-plan-grid">@foreach (var plan in pinnaclePlans) { <figure class="kv-plan-card"><a href="/images/kumharhatti/@(plan.Item1).webp" target="_blank" rel="noopener noreferrer" aria-label="Open @plan.Item2 floor plan at full size"><img src="/images/kumharhatti/@(plan.Item1).webp" alt="Pinnacle Pines @plan.Item2 floor plan from the brochure" width="2760" height="1595" loading="lazy" decoding="async"></a><figcaption><strong>@plan.Item2</strong><span>@plan.Item3</span></figcaption></figure> }</div><p class="hh-note">Plans are marked “For Presentation Only” in the brochure. Layout and built-up area vary by configuration; confirm the sanctioned drawing and area schedule with the promoter.</p></div></section>
+<section class="editorial-sec dark-section kv-location"><div class="wrap"><div class="section-head"><span class="eyebrow">PINNACLE PINES · LOCATION</span><h2>Kumarhatti, Solan.</h2><p>The brochure places Pinnacle Pines near the Kumarhatti–Nahan road, with connections towards Chandigarh, Kasauli, Solan and Shimla.</p></div><a href="https://www.google.com/maps/search/?api=1&amp;query=Pinnacle+Pines+Kumarhatti+Solan" target="_blank" rel="noopener noreferrer" class="btn btn-outline-light">Search the Area on Maps &nearr;</a><p class="hh-note">The map search is for orientation; confirm the exact site location before travelling.</p></div></section>
+<section class="editorial-sec kv-project-cta"><div class="wrap"><div><span class="eyebrow">EXPLORE PINNACLE PINES</span><h2>Plan a closer look.</h2><p>Ask about current plans, specifications, availability and site visits.</p></div><button type="button" class="btn btn-gold" data-enquire="Pinnacle Pines">Enquire About Pinnacle Pines</button></div></section>
+
+<section class="editorial-sec kv-project-heading" id="samsaara"><div class="wrap"><span class="eyebrow">PROJECT TWO · IWASA, SIRMAUR</span><h2>Samsaara.</h2><p class="lead">MMM Infra’s Samsaara brochure presents a quiet hillside estate in the village of Iwasa, Sirmaur, with 33 residences set across 72 bighas of land. This is a separate location from Pinnacle Pines.</p><div class="kv-quick-facts"><span>33 residences</span><span>72 bighas</span><span>Ground &amp; first floor illustrations</span></div></div></section>
+<section class="editorial-sec hh-gallery-section"><div class="wrap"><div class="hh-gallery-heading"><div class="section-head"><span class="eyebrow">SAMSAARA GALLERY</span><h2>Nature, close to home.</h2></div><p>Estate, villa, landscape and interior illustrations from the Samsaara brochure.</p></div><div class="hh-gallery kv-gallery">@foreach (var photo in samsaaraGallery) { <figure class="hh-gallery-item"><a href="/images/kumharhatti/@(photo.Item1).webp" target="_blank" rel="noopener noreferrer" aria-label="Open @photo.Item2 image at full size"><img src="/images/kumharhatti/@(photo.Item1).webp" alt="@photo.Item3" loading="lazy" decoding="async" width="2000" height="1254"><figcaption><span>@photo.Item2</span></figcaption></a></figure> }</div><p class="hh-note">The Samsaara brochure uses illustrative visualizations. Confirm current construction and amenity status with the promoter.</p></div></section>
+<section class="editorial-sec"><div class="wrap"><div class="section-head"><span class="eyebrow">SAMSAARA · AMENITIES</span><h2>Leisure at your own pace.</h2><p>The estate brochure illustrates or describes these spaces and experiences.</p></div><div class="kv-amenity-grid">@foreach (var amenity in samsaaraAmenities) { <div class="kv-amenity"><span aria-hidden="true">@amenity.Item1</span><strong>@amenity.Item2</strong></div> }</div><p class="hh-note">Amenity access, operation and any associated charges should be confirmed with the promoter.</p></div></section>
+<section class="editorial-sec hh-cream"><div class="wrap"><div class="section-head"><span class="eyebrow">SAMSAARA · SITE LAYOUT</span><h2>A garden estate plan.</h2><p>The brochure shows the site arrangement, villas, internal routes, gardens and shared areas.</p></div><figure class="kv-plan-feature kv-plan-dark"><a href="/images/kumharhatti/samsaara-masterplan.webp" target="_blank" rel="noopener noreferrer"><img src="/images/kumharhatti/samsaara-masterplan.webp" alt="Samsaara illustrated site layout with labelled residences, roads and landscaped shared spaces" width="2328" height="1329" loading="lazy" decoding="async"></a><figcaption>Open the site layout for a closer look.</figcaption></figure></div></section>
+<section class="editorial-sec"><div class="wrap"><div class="section-head"><span class="eyebrow">SAMSAARA · FLOOR PLANS</span><h2>Explore the illustrated home.</h2><p>The brochure provides a first floor illustration labelled 1,663 sq. ft. and a ground floor illustration labelled 2,058 sq. ft. These are presented as brochure drawings, not a complete specification or confirmed saleable area.</p></div><div class="kv-plan-grid kv-two-plans"><figure class="kv-plan-card"><a href="/images/kumharhatti/samsaara-ground-plan.webp" target="_blank" rel="noopener noreferrer" aria-label="Open Samsaara ground floor illustration at full size"><img src="/images/kumharhatti/samsaara-ground-plan.webp" alt="Samsaara brochure ground floor three-dimensional plan illustration" width="2400" height="1601" loading="lazy" decoding="async"></a><figcaption><strong>Ground floor · 2,058 sq. ft.</strong><span>Brochure floor illustration</span></figcaption></figure><figure class="kv-plan-card"><a href="/images/kumharhatti/samsaara-first-plan.webp" target="_blank" rel="noopener noreferrer" aria-label="Open Samsaara first floor illustration at full size"><img src="/images/kumharhatti/samsaara-first-plan.webp" alt="Samsaara brochure first floor three-dimensional plan illustration" width="2400" height="1601" loading="lazy" decoding="async"></a><figcaption><strong>First floor · 1,663 sq. ft.</strong><span>Brochure floor illustration</span></figcaption></figure></div></div></section>
+<section class="editorial-sec dark-section kv-location"><div class="wrap"><div class="section-head"><span class="eyebrow">SAMSAARA · LOCATION</span><h2>Iwasa, Sirmaur.</h2><p>The brochure identifies the village of Iwasa in Sirmaur, Himachal Pradesh, and describes access from the Chandigarh region via NH 707.</p></div><a href="https://www.google.com/maps/search/?api=1&amp;query=Iwasa+Sirmaur+Himachal+Pradesh" target="_blank" rel="noopener noreferrer" class="btn btn-outline-light">Search Iwasa on Maps &nearr;</a><p class="hh-note">The map search is for the village area; request the exact project pin before visiting.</p></div></section>
+<section class="editorial-sec kv-project-cta"><div class="wrap"><div><span class="eyebrow">EXPLORE SAMSAARA</span><h2>Discover the details.</h2><p>Ask about the home plans, estate features, current availability and visits.</p></div><button type="button" class="btn btn-gold" data-enquire="Samsaara">Enquire About Samsaara</button></div></section>
+
+</div>
+@section Scripts {
+    <script>
+        const projectSelect = document.querySelector('#popup-enquiry-form [name="propertyInterest"]');
+        if (projectSelect) projectSelect.replaceChildren(
+            new Option('Select a project', '', true, true),
+            new Option('Pinnacle Pines', 'Pinnacle Pines'),
+            new Option('Samsaara', 'Samsaara')
+        );
+        document.querySelectorAll('[data-enquire]').forEach(button => button.addEventListener('click', event => {
+            event.preventDefault();
+            const choice = button.dataset.enquire;
+            if (projectSelect && choice) projectSelect.value = choice;
+            if (typeof openEnquiryModal === 'function') openEnquiryModal();
+            else window.location.href = '/#contact';
+        }));
+    </script>
+}

@@ -1,0 +1,63 @@
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Dream Homes IKON — Sector 126, Mohali | Agam Estates";
+    ViewData["Description"] = "Explore Dream Homes IKON in Sector 126, Mohali: project features, club amenities, cluster floor plan and location.";
+    var images = new[] {
+        ("family-living.webp", "Family living", "Brochure lifestyle image of a family spending time together", 1801, 1201),
+        ("outdoor-play.webp", "Outdoor play", "Brochure lifestyle image of children playing outdoors", 621, 1155),
+        ("outdoor-fitness.webp", "Active living", "Brochure lifestyle image of a runner on a wooded path", 621, 1155),
+        ("cctv-security.webp", "Security", "Brochure image of security cameras", 621, 1155),
+        ("community-living.webp", "Community moments", "Brochure lifestyle image of two women greeting each other", 1800, 1200),
+        ("swimming.webp", "Swimming & recreation", "Brochure lifestyle image of a swimmer in a pool", 1801, 1201)
+    };
+    var features = new[] { ("01", "Reserved stilt car parking"), ("02", "Green park"), ("03", "Swimming pool"), ("04", "Open gym"), ("05", "Convenience stores within the society") };
+    var club = new[] { ("01", "Fully air-conditioned"), ("02", "Multi-purpose party hall"), ("03", "Indoor games"), ("04", "Guest rooms"), ("05", "Outdoor terrace"), ("06", "Gymnasium") };
+}
+@section Styles {
+    <link rel="stylesheet" href="/css/herohomes.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/dream-homes-ikon.css" asp-append-version="true">
+}
+<div class="ikon-page">
+<section class="page-hero ikon-hero">
+    <div class="page-hero-bg"><img src="/images/dream-homes-ikon/ikon-exterior-hero.webp" alt="Dream Homes IKON architectural rendering of the residential exterior" width="801" height="1067" fetchpriority="high"></div>
+    <div class="wrap page-hero-content">
+        <a href="/#developers" class="eyebrow">&larr; Back to properties</a>
+        <h1>Dream Homes<br><em>IKON.</em></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">Discover a residential development in Sector 126, Mohali, designed around contemporary living, family comfort, and community-focused amenities.</p>
+        <div class="page-hero-actions"><button type="button" class="btn btn-gold" data-ikon-enquire>Request a Site Visit</button><a href="#overview" class="btn btn-outline-gold">Explore Project &darr;</a></div>
+        <div class="hero-meta-strip"><div class="hero-meta-item"><span class="hero-meta-label">Address</span><span class="hero-meta-val">Sector 126, Mohali</span></div><div class="hero-meta-item"><span class="hero-meta-label">Residences</span><span class="hero-meta-val">4 BHK with lift</span></div><div class="hero-meta-item"><span class="hero-meta-label">Configuration</span><span class="hero-meta-val">Stilt + 4</span></div></div>
+    </div>
+</section>
+<nav class="hh-section-nav ikon-section-nav" aria-label="Project sections"><div class="wrap"><a href="#overview">Overview</a><a href="#features">Features</a><a href="#amenities">Amenities</a><a href="#gallery">Gallery</a><a href="#floor-plan">Floor plan</a><a href="#location">Location</a><a href="#plan-visit">Enquire</a></div></nav>
+
+<section class="editorial-sec" id="overview"><div class="wrap editorial-split">
+    <figure class="editorial-frame ikon-overview-image"><img src="/images/dream-homes-ikon/ikon-exterior-arrival.webp" alt="Dream Homes IKON architectural rendering showing the facade, balconies and arrival area" width="800" height="1067" loading="lazy" decoding="async"><figcaption class="editorial-caption">DREAM HOMES IKON · ARCHITECTURAL RENDERING</figcaption></figure>
+    <div class="editorial-body"><span class="eyebrow">ABOUT THE PROJECT</span><h2>A Contemporary Address for Elevated Living.</h2><p class="lead">The IKON brochure presents 4 BHK residences with lift access in a stilt-plus-four configuration, along the PR-7 200 ft International Airport Road in Sector 126, Mohali.</p><p>Its residential concept combines contemporary design with everyday convenience and community spaces. The brochure highlights a gated society, 24/7 security, CCTV cameras, 24-hour water supply and power backup.</p><button type="button" class="btn btn-gold" data-ikon-enquire>Enquire About IKON</button></div>
+</div></section>
+
+<section class="editorial-sec hh-cream" id="features"><div class="wrap"><div class="section-head"><span class="eyebrow">PROJECT FEATURES</span><h2>Thoughtfully Designed for Everyday Comfort.</h2><p>Every feature below follows the brochure’s Project Features panel.</p></div><div class="ikon-feature-grid">@foreach (var feature in features) { <article class="ikon-feature-card"><span aria-hidden="true">@feature.Item1</span><h3>@feature.Item2</h3></article> }</div></div></section>
+
+<section class="editorial-sec" id="amenities"><div class="wrap"><div class="section-head"><span class="eyebrow">LIFESTYLE &amp; AMENITIES</span><h2>Spaces That Bring Life Together.</h2><p>The brochure describes a clubhouse for recreation, gathering and active living.</p></div><div class="ikon-feature-grid ikon-club-grid">@foreach (var amenity in club) { <article class="ikon-feature-card"><span aria-hidden="true">@amenity.Item1</span><h3>@amenity.Item2</h3></article> }</div><p class="hh-note">Amenities and their operation should be confirmed with the project team.</p></div></section>
+
+<section class="editorial-sec hh-gallery-section" id="gallery"><div class="wrap"><div class="hh-gallery-heading"><div class="section-head"><span class="eyebrow">PROJECT GALLERY</span><h2>A Closer Look at Dream Homes IKON.</h2></div><p>Original lifestyle and feature imagery from the IKON brochure.</p></div><div class="hh-gallery ikon-gallery">@foreach (var photo in images) { <div class="hh-gallery-item"><figure><img src="/images/dream-homes-ikon/@photo.Item1" alt="@photo.Item3" width="@photo.Item4" height="@photo.Item5" loading="lazy" decoding="async"><figcaption><span>@photo.Item2</span></figcaption></figure></div> }</div><p class="hh-note">Lifestyle photography is illustrative brochure material; it does not document completed on-site facilities.</p></div></section>
+
+<section class="editorial-sec" id="floor-plan"><div class="wrap"><div class="section-head"><span class="eyebrow">FLOOR PLAN</span><h2>Explore the Residential Layout.</h2><p>The brochure includes one cluster floor plan. Open the original artwork for a closer look at room and circulation labels.</p></div><figure class="ikon-document"><a href="/images/dream-homes-ikon/cluster-floor-plan.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the cluster floor plan at full size"><img src="/images/dream-homes-ikon/cluster-floor-plan.webp" alt="Dream Homes IKON four-residence cluster floor plan, showing rooms, balconies, stairs and lift" width="1800" height="2142" loading="lazy" decoding="async"></a><figcaption>Open full-size cluster floor plan &nearr;</figcaption></figure><p class="hh-note">This is the brochure’s illustrated cluster plan. Confirm approved drawings and measurements with the project team.</p></div></section>
+
+<section class="editorial-sec dark-section ikon-location" id="location"><div class="wrap"><div class="section-head"><span class="eyebrow">LOCATION ADVANTAGE</span><h2>Connected to the Heart of Mohali.</h2><p>The brochure identifies the address as Sector 126, adjoining Gillco Parkhills, on the 200 ft Airport Road, Mohali, Punjab 140301. Its map marks Kharar, New Chandigarh, Chandigarh, Mohali and the international airport for regional orientation.</p></div><figure class="ikon-document ikon-map"><a href="/images/dream-homes-ikon/ikon-location-map.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the brochure location map at full size"><img src="/images/dream-homes-ikon/ikon-location-map.webp" alt="Dream Homes IKON brochure location map showing its project marker and roads around Mohali, Kharar and Chandigarh" width="1296" height="1728" loading="lazy" decoding="async"></a><figcaption>Open full-size brochure map &nearr;</figcaption></figure></div></section>
+
+<section class="editorial-sec ikon-visit" id="plan-visit"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">PLAN YOUR VISIT</span><h2>Find your place at Dream Homes IKON.</h2><p>Explore Dream Homes IKON in Sector 126, Mohali. Connect with Agam Estates to learn more about the residences, project details, availability, and site visits.</p><div class="page-hero-actions ikon-final-actions"><button type="button" class="btn btn-gold" data-ikon-enquire>Request a Call Back</button><a class="btn btn-outline-dark" href="tel:+919876543210">Call Us</a></div></div>
+    <aside class="hh-disclaimer"><h3>Project information</h3><p>Project information, images, floor plans, and amenity descriptions are based on the supplied Dream Homes IKON brochure. Illustrations are indicative. Please confirm current specifications, approvals, availability, pricing, and development status with the promoter.</p></aside>
+</div></section>
+</div>
+@section Scripts {
+    <script>
+        const projectSelect = document.querySelector('#popup-enquiry-form [name="propertyInterest"]');
+        if (projectSelect) projectSelect.replaceChildren(new Option('Dream Homes IKON', 'Dream Homes IKON', true, true));
+        document.querySelectorAll('[data-ikon-enquire]').forEach(button => button.addEventListener('click', () => {
+            if (typeof openEnquiryModal === 'function') openEnquiryModal();
+            else document.getElementById('plan-visit')?.scrollIntoView({ behavior: 'smooth' });
+        }));
+    </script>
+}
