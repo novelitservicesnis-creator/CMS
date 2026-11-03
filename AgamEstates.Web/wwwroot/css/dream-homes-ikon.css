@@ -1,0 +1,43 @@
+.ikon-page { overflow: clip; }
+.ikon-page [id] { scroll-margin-top: 110px; }
+.ikon-page section.editorial-sec { padding: clamp(64px, 6vw, 80px) 0; }
+.ikon-hero::before { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(90deg, rgba(4,26,51,.6), rgba(4,26,51,.2) 60%, transparent); }
+.ikon-hero .page-hero-bg img { object-position: center 58%; }
+nav.ikon-section-nav { position: relative; top: auto; right: auto; display: block; width: auto; height: auto; padding: 0; transform: none; background: var(--primary); z-index: 2; }
+nav.ikon-section-nav a { width: auto; padding: 0; border: 0; }
+.ikon-overview-image { margin: 0; }
+.ikon-overview-image img { object-position: center 53%; }
+.ikon-page .section-head { margin-bottom: 40px; }
+.ikon-feature-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
+.ikon-feature-grid:not(.ikon-club-grid) .ikon-feature-card:last-child { grid-column: 1 / -1; }
+.ikon-feature-card { display: flex; align-items: center; min-width: 0; gap: 18px; padding: 26px; border: 1px solid var(--gold-border); background: #fff; transition: border-color .2s ease, transform .2s ease; }
+.ikon-feature-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+.ikon-feature-card > span { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid var(--gold-border); color: var(--gold); font-family: var(--serif); font-size: .95rem; }
+.ikon-feature-card h3 { margin: 0; color: var(--primary); font-family: var(--serif); font-size: clamp(1.05rem,1.6vw,1.3rem); font-weight: 400; line-height: 1.3; }
+.ikon-gallery { grid-template-columns: repeat(4,minmax(0,1fr)); }
+.ikon-gallery .hh-gallery-item:first-child, .ikon-gallery .hh-gallery-item:last-child { grid-column: span 2; }
+.ikon-gallery .hh-gallery-item figure { height: 290px; }
+.ikon-gallery .hh-gallery-item img { display: block; object-fit: cover; }
+.ikon-gallery .hh-gallery-item:hover img { transform: scale(1.03); }
+.ikon-gallery img[src$="outdoor-play.webp"] { object-position: center 30%; }
+.ikon-gallery img[src$="outdoor-fitness.webp"] { object-position: center 12%; }
+.ikon-gallery img[src$="cctv-security.webp"] { object-position: center 10%; }
+.ikon-gallery .hh-gallery-item:last-child img { object-fit: cover; background: transparent; }
+.ikon-gallery .hh-gallery-item figcaption { pointer-events: none; }
+.ikon-document { max-width: 720px; margin: 0 auto; border: 1px solid var(--gold-border); background: #f6f4ef; }
+.ikon-document a { display: block; }
+.ikon-document img { display: block; width: 100%; height: auto; object-fit: contain; }
+.ikon-document figcaption { padding: 14px 18px; color: var(--primary); font-size: .85rem; }
+.ikon-document a:hover + figcaption { text-decoration: underline; }
+.ikon-location .section-head { max-width: 900px; }
+.ikon-location .section-head p { color: rgba(255,255,255,.82); }
+.ikon-map { max-width: 760px; background: #151515; border-color: rgba(221,174,69,.45); }
+.ikon-map img { max-height: none; }
+.ikon-map figcaption { color: #fff; }
+.ikon-page section.ikon-visit { padding: clamp(70px, 8vw, 110px) 0; }
+.ikon-visit .section-head { margin-bottom: 56px; }
+.ikon-final-actions { justify-content: center; margin-top: 28px; }
+.ikon-visit .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 4px; }
+@media (max-width: 900px) { .ikon-gallery { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width: 600px) { .ikon-hero::before { background: linear-gradient(180deg, rgba(4,26,51,.3), rgba(4,26,51,.48)); } .ikon-hero .page-hero-bg img { object-position: center 52%; } .ikon-feature-grid { grid-template-columns: 1fr; } .ikon-feature-grid:not(.ikon-club-grid) .ikon-feature-card:last-child { grid-column: auto; } .ikon-feature-card { padding: 20px; } .ikon-gallery { grid-template-columns: 1fr; } .ikon-gallery .hh-gallery-item:first-child, .ikon-gallery .hh-gallery-item:last-child { grid-column: auto; } .ikon-gallery .hh-gallery-item figure { height: auto; aspect-ratio: 4 / 3; } .ikon-gallery .hh-gallery-item:last-child figure { aspect-ratio: 4 / 3; } .ikon-document figcaption { font-size: .8rem; } .ikon-visit .page-hero-actions .btn { white-space: normal; } }
+@media (prefers-reduced-motion: reduce) { .ikon-feature-card, .ikon-gallery .hh-gallery-item img { transition: none; } .ikon-gallery .hh-gallery-item:hover img { transform: none; } }

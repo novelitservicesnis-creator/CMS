@@ -1,0 +1,118 @@
+@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
+@{
+    Layout = "_PublicLayout";
+    ViewData["Title"] = "Royal Vista | Plotted Development in Dholera — Agam Estates";
+    ViewData["ActiveNav"] = "Project";
+    var siteSettings = await SettingsService.GetPublicSettingsAsync();
+    var gallery = new[] {
+        ("royal-vista-gallery-identity", "Royal Vista", "Conceptual Dholera artwork from the Royal Vista brochure", "identity", 2200, 1238),
+        ("royal-vista-site-layout", "Project Layout", "Royal Vista site plan with plotted units, internal roads, and entrance", "plan", 2000, 1046),
+        ("royal-vista-community-amenities", "Community Amenities", "The five amenities illustrated in the Royal Vista brochure", "amenities", 1280, 520),
+        ("royal-vista-project-location", "Project Location", "Brochure schematic marking Royal Vista near Lothal and Dholera", "map", 715, 598),
+        ("dholera-infrastructure", "Dholera Infrastructure", "ABCD Building photograph included in the Royal Vista brochure", "photo", 769, 358),
+        ("regional-connectivity", "Regional Connectivity", "Aerial road corridor visual included in the Royal Vista brochure", "photo", 612, 408)
+    };
+    var amenities = new[] {
+        ("Gated Community", "A gated community is listed in the project brochure.", "⌂"),
+        ("Landscaping", "Landscaping is part of the community plan.", "❧"),
+        ("Kids Play Area", "A kids play area appears among the planned amenities.", "☆"),
+        ("Gazebo", "A gazebo is listed as a community feature.", "◇"),
+        ("Water Supply", "Water supply is included in the brochure's amenity list.", "◉")
+    };
+}
+@section Styles {
+    <link rel="stylesheet" href="/css/herohomes.css" asp-append-version="true">
+    <link rel="stylesheet" href="/css/dholera-projects.css" asp-append-version="true">
+}
+<div id="royal-vista">
+<section class="page-hero" aria-labelledby="rv-title">
+    <div class="page-hero-bg"><img src="/images/dholera/royal-vista-hero.webp" alt="" fetchpriority="high" width="1600" height="900"></div>
+    <div class="wrap page-hero-content">
+        <a href="/Project" class="eyebrow">&larr; Back to properties</a>
+        <span class="rv-hero-eyebrow">ROYAL VISTA | DHOLERA, GUJARAT</span>
+        <h1 id="rv-title">Royal Vista <em>— Redefining Urban Development.</em></h1>
+        <div class="page-hero-divider"></div>
+        <p class="page-hero-lede">Explore Royal Vista, a planned plotted development in Dholera, Gujarat, featuring an organized layout, community amenities, and access to the region's developing infrastructure.</p>
+        <div class="page-hero-actions"><a href="#overview" class="btn btn-gold">Explore Project &darr;</a><a href="#contact" class="btn btn-outline-gold">Request a Site Visit</a></div>
+        <div class="hero-meta-strip"><div class="hero-meta-item"><span class="hero-meta-label">Development</span><span class="hero-meta-val">Plotted community</span></div><div class="hero-meta-item"><span class="hero-meta-label">Units</span><span class="hero-meta-val">118</span></div><div class="hero-meta-item"><span class="hero-meta-label">Project area</span><span class="hero-meta-val">21,913.54 sq. yards</span></div><div class="hero-meta-item"><span class="hero-meta-label">Location</span><span class="hero-meta-val">Dholera, Gujarat</span></div></div>
+    </div>
+</section>
+<nav class="hh-section-nav" aria-label="Project sections"><div class="wrap"><a href="#overview">Overview</a><a href="#gallery">Gallery</a><a href="#specifications">Specifications</a><a href="#amenities">Amenities</a><a href="#location">Location</a><a href="#infrastructure">Infrastructure</a><a href="#contact">Enquire</a></div></nav>
+
+<section class="editorial-sec" id="overview"><div class="wrap editorial-split">
+    <figure class="editorial-frame rv-overview-image"><img src="/images/dholera/royal-vista-overview-location.webp" alt="Aerial location reference with the Royal Vista site marked near Dholera" loading="lazy" decoding="async" width="722" height="598"><figcaption class="editorial-caption">ROYAL VISTA · DHOLERA</figcaption></figure>
+    <div class="editorial-body"><span class="eyebrow">ABOUT ROYAL VISTA</span><h2>A Thoughtfully Planned Community.</h2><p class="lead">Royal Vista is a plotted development in Dholera, Gujarat, with a planned layout and community focused features.</p><p>The project brochure identifies 118 units across approximately 21,913.54 square yards, with internal roads ranging from 7.5 to 12 meters.</p>
+        <div class="rv-key-figures"><div><strong>118</strong><span>Units</span></div><div><strong>21,913.54</strong><span>Sq. yards</span></div><div><strong>7.5–12 m</strong><span>Internal roads</span></div><div><strong>Dholera</strong><span>Gujarat</span></div></div><a href="#contact" class="btn btn-gold">Enquire About Royal Vista</a>
+    </div>
+</div></section>
+
+<section class="editorial-sec hh-gallery-section" id="gallery"><div class="wrap">
+    <div class="hh-gallery-heading"><div class="section-head"><span class="eyebrow">ROYAL VISTA IN PICTURES</span><h2>Discover Royal Vista.</h2></div><p>Project plans, amenities, location references, and regional visuals from the brochure.</p></div>
+    <div class="hh-gallery">@foreach (var photo in gallery) { <div class="hh-gallery-item rv-gallery-item @photo.Item4"><figure><img src="/images/dholera/@(photo.Item1).webp" alt="@photo.Item3" loading="lazy" decoding="async" width="@photo.Item5" height="@photo.Item6"><figcaption><span>@photo.Item2</span></figcaption></figure></div> }</div>
+    <p class="hh-note">The gallery combines project plans, brochure illustrations, and regional reference visuals. The conceptual artwork does not depict completed Royal Vista infrastructure.</p>
+</div></section>
+
+<section class="editorial-sec dark-section" id="specifications"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">PROJECT SPECIFICATIONS</span><h2>Planned with Purpose.</h2><p>Key details presented in the Royal Vista site plan and amenities overview.</p></div>
+    <div class="cards-grid-3">
+        <article class="lux-card"><span class="eyebrow">DEVELOPMENT</span><h3>Royal Vista</h3><dl class="hh-facts"><dt>Type</dt><dd>Plotted development</dd><dt>Location</dt><dd>Dholera, Gujarat</dd><dt>Units</dt><dd>118</dd></dl></article>
+        <article class="lux-card"><span class="eyebrow">SITE PLANNING</span><h3>Organized Plot Layout</h3><dl class="hh-facts"><dt>Project area</dt><dd>21,913.54 sq. yards</dd><dt>Internal roads</dt><dd>7.5–12 meters</dd><dt>Layout</dt><dd>Plotted site plan</dd></dl></article>
+        <article class="lux-card"><span class="eyebrow">COMMUNITY</span><h3>Shared Features</h3><p>Gated community, landscaping, kids play area, gazebo, and water supply are listed in the brochure.</p></article>
+    </div>
+    <p class="hh-note">The brochure describes the project as “N.A., N.O.C., title clear.” These are brochure claims; legal approvals and title have not been independently verified.</p>
+</div></section>
+
+<section class="editorial-sec" id="amenities"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">THE BROCHURE LIST</span><h2>Everyday Living, Thoughtfully Planned.</h2><p>Five community amenities appear in the Royal Vista brochure.</p></div>
+    <div class="rv-amenity-grid">@foreach (var amenity in amenities) { <article class="lux-card rv-amenity-card"><span class="rv-amenity-symbol" aria-hidden="true">@amenity.Item3</span><h3>@amenity.Item1</h3><p>@amenity.Item2</p></article> }</div>
+</div></section>
+
+<section class="editorial-sec dark-section" id="location"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">LOCATION &amp; CONNECTIVITY</span><h2>Connected to Dholera's Future.</h2><p>Royal Vista's brochure positions the project near Dholera's developing regional network.</p></div>
+    <figure class="rv-map"><div class="rv-map-scroll"><a href="/images/dholera/royal-vista-connectivity.webp" target="_blank" rel="noopener noreferrer" aria-label="Open the Royal Vista location map at full size"><img src="/images/dholera/royal-vista-connectivity.webp" alt="Royal Vista brochure map showing the marked site, route, distance legend, and ABCD Building" loading="lazy" decoding="async" width="1840" height="1085"></a></div><figcaption>Brochure location map · open the image for a closer look.</figcaption></figure>
+    <div class="rv-distances"><div><strong>2.5 km</strong><span>Dholera SIR Boundary</span></div><div><strong>15 km</strong><span>ABCD Building</span></div><div><strong>15 km</strong><span>DMI 10-Lane Highway</span></div><div><strong>35 km</strong><span>Dholera International Airport</span></div><div><strong>8 km</strong><span>Metro Rail Station</span></div><div><strong>45 km</strong><span>National Maritime Museum, Lothal</span></div></div>
+    <p class="hh-note">Distances are stated in the brochure and have not been independently measured. The map and routes are illustrative.</p>
+</div></section>
+
+<section class="editorial-sec" id="infrastructure"><div class="wrap">
+    <div class="section-head center"><span class="eyebrow">REGIONAL CONTEXT</span><h2>A Region of Emerging Opportunities.</h2><p>The brochure highlights civic, transport, industrial, energy, and heritage initiatives around Dholera.</p></div>
+    <div class="cards-grid-2 rv-infrastructure-grid">
+        <article class="lux-card"><h3>Dholera Special Investment Region</h3><p>The planned investment region is the wider setting for Royal Vista. Its rollout is described in phases in the brochure.</p></article>
+        <article class="lux-card"><h3>Delhi–Mumbai Industrial Corridor</h3><p>Dholera is presented as an industrial node in the broader corridor program.</p></article>
+        <article class="lux-card"><h3>Ahmedabad–Dholera Expressway</h3><p>The brochure highlights an expressway corridor intended to connect Ahmedabad and Dholera.</p></article>
+        <article class="lux-card"><h3>Dholera International Airport</h3><p>The airport appears in the brochure as a developing regional aviation project.</p></article>
+        <article class="lux-card"><h3>Semiconductor Manufacturing</h3><p>Proposed semiconductor manufacturing forms part of the brochure's industrial outlook.</p></article>
+        <article class="lux-card"><h3>Solar Energy Development</h3><p>The brochure describes a large solar energy initiative planned for the region.</p></article>
+        <article class="lux-card"><h3>Lothal Maritime Heritage Complex</h3><p>The proposed heritage complex at Lothal is presented as a regional cultural destination.</p></article>
+    </div><p class="hh-note">Infrastructure descriptions reflect the brochure's dated overview. Ask the responsible agencies for current schedules and status.</p>
+</div></section>
+
+<section class="editorial-sec hh-cream" id="project-details"><div class="wrap">
+    <div class="section-head"><span class="eyebrow">PROJECT INFORMATION</span><h2>Explore the Plan in Detail.</h2></div>
+    <div class="rv-plan-details"><div class="editorial-body"><p class="lead">See the planned plot arrangement and internal road network in the gallery above.</p><p>For plot dimensions, current availability, documentation, and a site visit, contact the Agam Estates team.</p></div><div class="rv-plan-actions"><a href="/images/dholera/royal-vista-site-layout.webp" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">View Full Site Plan &nearr;</a><a href="#contact" class="btn btn-gold">Request Project Information</a></div></div>
+    <aside class="hh-disclaimer"><h3>Project information notice</h3><p>Plans, amenities, distances, and legal descriptions come from supplied promotional material. Confirm sanctioned plans, title, permissions, availability, terms, and current infrastructure status with the relevant promoter and authorities.</p></aside>
+</div></section>
+
+<section class="contact rv-contact" id="contact"><div class="wrap contact-grid">
+    <div><span class="eyebrow">GET IN TOUCH</span><h2>Explore Royal Vista.</h2><p>Discover more about Royal Vista, its planned layout, community features, and available project information. Contact our team to discuss the development or arrange a site visit.</p>
+        <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">⌖</span><div><strong>Site &amp; Sales Office</strong><span>@siteSettings.FormattedAddress</span></div></div>
+        <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">☎</span><div><strong>Call the Sales Team</strong>@if (siteSettings.ActivePhones != null && siteSettings.ActivePhones.Any()) { foreach (var phone in siteSettings.ActivePhones) { <a href="tel:@phone.NumberClean">@phone.PhoneNumber</a> } } else if (siteSettings.PrimaryPhone != null) { <a href="tel:@siteSettings.PrimaryPhone.NumberClean">@siteSettings.PrimaryPhone.PhoneNumber</a> }</div></div>
+        <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">✉</span><div><strong>Write to Us</strong><a href="mailto:@(string.IsNullOrWhiteSpace(siteSettings.Email) ? "sales@agamestates.in" : siteSettings.Email)">@(string.IsNullOrWhiteSpace(siteSettings.Email) ? "sales@agamestates.in" : siteSettings.Email)</a></div></div>
+        @if (siteSettings.GroupedBusinessHours != null && siteSettings.GroupedBusinessHours.Any()) { <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">◷</span><div><strong>Visit Hours</strong>@foreach (var group in siteSettings.GroupedBusinessHours) { <span>@group.Days · @group.Hours</span> }</div></div> }
+    </div>
+    <div>@await Html.PartialAsync("_EnquiryForm", null, new ViewDataDictionary(ViewData) { { "Prefix", "contact" }, { "FormId", "enquiry-form" }, { "IsPopup", false } })</div>
+</div></section>
+</div>
+@section Scripts {
+    <script src="/js/project-contact.js" asp-append-version="true"></script>
+    <script>
+        for (const form of ['#enquiry-form', '#popup-enquiry-form']) {
+            const interest = document.querySelector(`${form} [name="propertyInterest"]`);
+            if (interest) interest.replaceChildren(
+                new Option('Royal Vista — Please advise', 'Royal Vista — Please advise', true, true),
+                new Option('Royal Vista — Residential Plot', 'Royal Vista — Residential Plot'),
+                new Option('Royal Vista — Site Visit', 'Royal Vista — Site Visit')
+            );
+        }
+    </script>
+}
