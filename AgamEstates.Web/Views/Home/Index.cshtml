@@ -2337,6 +2337,12 @@
     e.preventDefault();
     const form = e.target;
     const prefix = isPopup ? 'popup' : 'contact';
+    const formMsg = form.querySelector(`#${prefix}-form-msg`);
+    if (formMsg) {
+      formMsg.hidden = true;
+      formMsg.classList.remove('show');
+      formMsg.textContent = '';
+    }
 
     if (!validateEnquiryForm(form, prefix)) {
       return;
@@ -2345,8 +2351,6 @@
     const submitBtn = form.querySelector('.btn-enquiry-submit');
     const spinner = form.querySelector('.btn-spinner');
     const btnText = form.querySelector('.btn-text');
-    const formMsg = form.querySelector(`#${prefix}-form-msg`);
-
     const originalBtnText = btnText ? btnText.textContent : 'Request a Call Back';
     if (submitBtn) submitBtn.disabled = true;
     if (spinner) spinner.style.display = 'inline-block';
@@ -2368,7 +2372,7 @@
       });
       const data = await res.json();
 
-      if (data && data.success) {
+      if (res.ok && data && data.success) {
         form.reset();
         if (isPopup) {
           const headerBlock = document.getElementById('agam-form-header-block');
@@ -2385,6 +2389,7 @@
           if (formMsg) {
             formMsg.textContent = data.message || 'Thank you! Your enquiry has been received.';
             formMsg.style.color = '#0D3560';
+            formMsg.hidden = false;
             formMsg.classList.add('show');
           }
         }
@@ -2392,28 +2397,21 @@
         if (formMsg) {
           formMsg.textContent = (data && data.message) ? data.message : 'Please check your information and try again.';
           formMsg.style.color = '#c62828';
+          formMsg.hidden = false;
           formMsg.classList.add('show');
         }
       }
     } catch (err) {
       if (isPopup) {
-        const headerBlock = document.getElementById('agam-form-header-block');
-        const formWrapper = document.getElementById('agam-popup-form-wrapper');
-        const successBox = document.getElementById('agam-popup-success');
-        if (headerBlock) headerBlock.style.display = 'none';
-        if (formWrapper) formWrapper.style.display = 'none';
-        if (successBox) successBox.style.display = 'block';
-        setTimeout(() => {
-          closeEnquiryModal();
-        }, 2000);
+        alert('Unable to send your enquiry. Please try again.');
       } else {
         if (formMsg) {
-          formMsg.textContent = 'Thank you for reaching out. We received your details and our team will get in touch soon.';
-          formMsg.style.color = '#0D3560';
+          formMsg.textContent = 'Unable to send your enquiry. Please try again.';
+          formMsg.style.color = '#c62828';
+          formMsg.hidden = false;
           formMsg.classList.add('show');
         }
       }
-      form.reset();
     } finally {
       if (submitBtn) submitBtn.disabled = false;
       if (spinner) spinner.style.display = 'none';

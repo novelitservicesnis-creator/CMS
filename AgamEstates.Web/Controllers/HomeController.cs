@@ -206,6 +206,11 @@ namespace AgamEstates.Web.Controllers
                     }
                 }
 
+                if (leadId <= 0)
+                {
+                    return Json(new { success = false, message = "Unable to send your enquiry. Please try again." });
+                }
+
                 return Json(new
                 {
                     success = true,
@@ -218,7 +223,7 @@ namespace AgamEstates.Web.Controllers
                 return Json(new
                 {
                     success = false,
-                    message = "Thank you for reaching out. We received your details and our team will get in touch soon."
+                    message = "Unable to send your enquiry. Please try again."
                 });
             }
         }

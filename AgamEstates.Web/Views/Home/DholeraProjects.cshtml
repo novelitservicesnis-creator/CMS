@@ -1,9 +1,7 @@
-@inject AgamEstates.Web.Services.ISystemSettingsService SettingsService
 @{
     Layout = "_PublicLayout";
     ViewData["Title"] = "Royal Vista | Plotted Development in Dholera — Agam Estates";
     ViewData["ActiveNav"] = "Project";
-    var siteSettings = await SettingsService.GetPublicSettingsAsync();
     var gallery = new[] {
         ("royal-vista-gallery-identity", "Royal Vista", "Conceptual Dholera artwork from the Royal Vista brochure", "identity", 2200, 1238),
         ("royal-vista-site-layout", "Project Layout", "Royal Vista site plan with plotted units, internal roads, and entrance", "plan", 2000, 1046),
@@ -33,16 +31,16 @@
         <h1 id="rv-title">Royal Vista <em>— Redefining Urban Development.</em></h1>
         <div class="page-hero-divider"></div>
         <p class="page-hero-lede">Explore Royal Vista, a planned plotted development in Dholera, Gujarat, featuring an organized layout, community amenities, and access to the region's developing infrastructure.</p>
-        <div class="page-hero-actions"><a href="#overview" class="btn btn-gold">Explore Project &darr;</a><a href="#contact" class="btn btn-outline-gold">Request a Site Visit</a></div>
+        <div class="page-hero-actions"><a href="#overview" class="btn btn-gold">Explore Project &darr;</a><a href="/#contact" class="btn btn-outline-gold" data-rv-enquire="Royal Vista — Site Visit">Request a Site Visit</a></div>
         <div class="hero-meta-strip"><div class="hero-meta-item"><span class="hero-meta-label">Development</span><span class="hero-meta-val">Plotted community</span></div><div class="hero-meta-item"><span class="hero-meta-label">Units</span><span class="hero-meta-val">118</span></div><div class="hero-meta-item"><span class="hero-meta-label">Project area</span><span class="hero-meta-val">21,913.54 sq. yards</span></div><div class="hero-meta-item"><span class="hero-meta-label">Location</span><span class="hero-meta-val">Dholera, Gujarat</span></div></div>
     </div>
 </section>
-<nav class="hh-section-nav" aria-label="Project sections"><div class="wrap"><a href="#overview">Overview</a><a href="#gallery">Gallery</a><a href="#specifications">Specifications</a><a href="#amenities">Amenities</a><a href="#location">Location</a><a href="#infrastructure">Infrastructure</a><a href="#contact">Enquire</a></div></nav>
+<nav class="hh-section-nav" aria-label="Project sections"><div class="wrap"><a href="#overview">Overview</a><a href="#gallery">Gallery</a><a href="#specifications">Specifications</a><a href="#amenities">Amenities</a><a href="#location">Location</a><a href="#infrastructure">Infrastructure</a><a href="/#contact" data-rv-enquire="Royal Vista — Please advise">Enquire</a></div></nav>
 
 <section class="editorial-sec" id="overview"><div class="wrap editorial-split">
     <figure class="editorial-frame rv-overview-image"><img src="/images/dholera/royal-vista-overview-location.webp" alt="Aerial location reference with the Royal Vista site marked near Dholera" loading="lazy" decoding="async" width="722" height="598"><figcaption class="editorial-caption">ROYAL VISTA · DHOLERA</figcaption></figure>
     <div class="editorial-body"><span class="eyebrow">ABOUT ROYAL VISTA</span><h2>A Thoughtfully Planned Community.</h2><p class="lead">Royal Vista is a plotted development in Dholera, Gujarat, with a planned layout and community focused features.</p><p>The project brochure identifies 118 units across approximately 21,913.54 square yards, with internal roads ranging from 7.5 to 12 meters.</p>
-        <div class="rv-key-figures"><div><strong>118</strong><span>Units</span></div><div><strong>21,913.54</strong><span>Sq. yards</span></div><div><strong>7.5–12 m</strong><span>Internal roads</span></div><div><strong>Dholera</strong><span>Gujarat</span></div></div><a href="#contact" class="btn btn-gold">Enquire About Royal Vista</a>
+        <div class="rv-key-figures"><div><strong>118</strong><span>Units</span></div><div><strong>21,913.54</strong><span>Sq. yards</span></div><div><strong>7.5–12 m</strong><span>Internal roads</span></div><div><strong>Dholera</strong><span>Gujarat</span></div></div><a href="/#contact" class="btn btn-gold" data-rv-enquire="Royal Vista — Please advise">Enquire About Royal Vista</a>
     </div>
 </div></section>
 
@@ -89,30 +87,24 @@
 
 <section class="editorial-sec hh-cream" id="project-details"><div class="wrap">
     <div class="section-head"><span class="eyebrow">PROJECT INFORMATION</span><h2>Explore the Plan in Detail.</h2></div>
-    <div class="rv-plan-details"><div class="editorial-body"><p class="lead">See the planned plot arrangement and internal road network in the gallery above.</p><p>For plot dimensions, current availability, documentation, and a site visit, contact the Agam Estates team.</p></div><div class="rv-plan-actions"><a href="/images/dholera/royal-vista-site-layout.webp" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">View Full Site Plan &nearr;</a><a href="#contact" class="btn btn-gold">Request Project Information</a></div></div>
+    <div class="rv-plan-details"><div class="editorial-body"><p class="lead">See the planned plot arrangement and internal road network in the gallery above.</p><p>For plot dimensions, current availability, documentation, and a site visit, contact the Agam Estates team.</p></div><div class="rv-plan-actions"><a href="/images/dholera/royal-vista-site-layout.webp" target="_blank" rel="noopener noreferrer" class="btn btn-outline-dark">View Full Site Plan &nearr;</a><a href="/#contact" class="btn btn-gold" data-rv-enquire="Royal Vista — Please advise">Request Project Information</a></div></div>
     <aside class="hh-disclaimer"><h3>Project information notice</h3><p>Plans, amenities, distances, and legal descriptions come from supplied promotional material. Confirm sanctioned plans, title, permissions, availability, terms, and current infrastructure status with the relevant promoter and authorities.</p></aside>
 </div></section>
 
-<section class="contact rv-contact" id="contact"><div class="wrap contact-grid">
-    <div><span class="eyebrow">GET IN TOUCH</span><h2>Explore Royal Vista.</h2><p>Discover more about Royal Vista, its planned layout, community features, and available project information. Contact our team to discuss the development or arrange a site visit.</p>
-        <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">⌖</span><div><strong>Site &amp; Sales Office</strong><span>@siteSettings.FormattedAddress</span></div></div>
-        <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">☎</span><div><strong>Call the Sales Team</strong>@if (siteSettings.ActivePhones != null && siteSettings.ActivePhones.Any()) { foreach (var phone in siteSettings.ActivePhones) { <a href="tel:@phone.NumberClean">@phone.PhoneNumber</a> } } else if (siteSettings.PrimaryPhone != null) { <a href="tel:@siteSettings.PrimaryPhone.NumberClean">@siteSettings.PrimaryPhone.PhoneNumber</a> }</div></div>
-        <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">✉</span><div><strong>Write to Us</strong><a href="mailto:@(string.IsNullOrWhiteSpace(siteSettings.Email) ? "sales@agamestates.in" : siteSettings.Email)">@(string.IsNullOrWhiteSpace(siteSettings.Email) ? "sales@agamestates.in" : siteSettings.Email)</a></div></div>
-        @if (siteSettings.GroupedBusinessHours != null && siteSettings.GroupedBusinessHours.Any()) { <div class="contact-detail"><span class="rv-contact-icon" aria-hidden="true">◷</span><div><strong>Visit Hours</strong>@foreach (var group in siteSettings.GroupedBusinessHours) { <span>@group.Days · @group.Hours</span> }</div></div> }
-    </div>
-    <div>@await Html.PartialAsync("_EnquiryForm", null, new ViewDataDictionary(ViewData) { { "Prefix", "contact" }, { "FormId", "enquiry-form" }, { "IsPopup", false } })</div>
-</div></section>
 </div>
 @section Scripts {
-    <script src="/js/project-contact.js" asp-append-version="true"></script>
     <script>
-        for (const form of ['#enquiry-form', '#popup-enquiry-form']) {
-            const interest = document.querySelector(`${form} [name="propertyInterest"]`);
-            if (interest) interest.replaceChildren(
-                new Option('Royal Vista — Please advise', 'Royal Vista — Please advise', true, true),
-                new Option('Royal Vista — Residential Plot', 'Royal Vista — Residential Plot'),
-                new Option('Royal Vista — Site Visit', 'Royal Vista — Site Visit')
-            );
-        }
+        const royalVistaInterest = document.querySelector('#popup-enquiry-form [name="propertyInterest"]');
+        if (royalVistaInterest) royalVistaInterest.replaceChildren(
+            new Option('Royal Vista — Please advise', 'Royal Vista — Please advise', true, true),
+            new Option('Royal Vista — Residential Plot', 'Royal Vista — Residential Plot'),
+            new Option('Royal Vista — Site Visit', 'Royal Vista — Site Visit')
+        );
+        document.querySelectorAll('[data-rv-enquire]').forEach(link => link.addEventListener('click', event => {
+            if (typeof openEnquiryModal !== 'function') return;
+            event.preventDefault();
+            if (royalVistaInterest) royalVistaInterest.value = link.dataset.rvEnquire;
+            openEnquiryModal();
+        }));
     </script>
 }
