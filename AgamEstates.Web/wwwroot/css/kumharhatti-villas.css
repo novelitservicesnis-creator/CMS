@@ -2,9 +2,8 @@
 .kv-page [id] { scroll-margin-top: 110px; }
 .kv-hero .page-hero-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(4,26,51,.82), rgba(4,26,51,.32) 70%); }
 .kv-hero .page-hero-bg img { object-position: center 54%; }
-nav.kv-breadcrumb { position: relative; top: auto; right: auto; display: flex; flex-direction: row; flex-wrap: wrap; justify-content: flex-start; gap: 10px; align-items: center; width: auto; height: auto; margin-bottom: 26px; padding: 0; background: transparent; color: #fff; font-size: .82rem; transform: none; transition: none; }
-nav.kv-breadcrumb a { width: auto; padding: 0; border: 0; color: #fff; font-size: .82rem; text-decoration: underline; text-underline-offset: 3px; }
-.kv-breadcrumb span { opacity: .85; }
+.kv-back-link { display: block; position: relative; top: 4px; width: fit-content; }
+.kv-hero .page-hero-content > span.eyebrow { margin-top: 19px; }
 nav.kv-section-nav { position: relative; top: auto; right: auto; display: block; width: auto; height: auto; padding: 0; flex-direction: row; background: var(--primary); transform: none; transition: none; z-index: 2; }
 nav.kv-section-nav a { width: auto; border: 0; padding: 0; }
 .kv-page .hh-gallery-item { margin: 0; }

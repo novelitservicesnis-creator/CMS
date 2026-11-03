@@ -46,22 +46,11 @@
 #royal-vista .rv-plan-details { display: flex; justify-content: space-between; align-items: center; gap: 36px; }
 #royal-vista .rv-plan-details .editorial-body { max-width: 620px; }
 #royal-vista .rv-plan-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
-#royal-vista .rv-contact { padding: clamp(60px,7vw,100px) 0; background: #fff; }
-#royal-vista .rv-contact h2 { font-size: clamp(2rem,3.4vw,2.6rem); margin: 12px 0 16px; }
-#royal-vista .rv-contact p { color: var(--fade); max-width: 470px; }
-#royal-vista .contact-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(30px,5vw,65px); align-items: start; }
-#royal-vista .contact-detail { display: flex; align-items: flex-start; gap: 16px; padding: 18px 0; border-bottom: 1px solid rgba(6,37,69,.1); }
-#royal-vista .contact-detail > div { min-width: 0; }
-#royal-vista .rv-contact-icon { display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; color: var(--primary); font-size: 20px; line-height: 1; }
-#royal-vista .contact-detail strong, #royal-vista .contact-detail div > span, #royal-vista .contact-detail a { display: block; overflow-wrap: anywhere; }
-#royal-vista .contact-detail strong { font-size: .92rem; margin-bottom: 4px; }
-#royal-vista .contact-detail div > span, #royal-vista .contact-detail a { color: var(--fade); font-size: .9rem; line-height: 1.55; }
 @media (max-width: 900px) {
   #royal-vista .rv-gallery-item:last-child { grid-column: span 2; }
   #royal-vista .rv-gallery-item.amenities { grid-column: auto; }
   #royal-vista .rv-amenity-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   #royal-vista .rv-distances { grid-template-columns: repeat(2,minmax(0,1fr)); }
-  #royal-vista .contact-grid { grid-template-columns: 1fr; }
   #royal-vista .rv-plan-details { display: block; }
   #royal-vista .rv-plan-actions { justify-content: flex-start; margin-top: 24px; }
 }

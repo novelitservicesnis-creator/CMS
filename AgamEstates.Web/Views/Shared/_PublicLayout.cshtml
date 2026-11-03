@@ -238,7 +238,7 @@
                 });
                 const data = await res.json();
 
-                if (data && data.success) {
+                if (res.ok && data && data.success) {
                     popupForm.reset();
                     const headerBlock = document.getElementById('agam-form-header-block');
                     const formWrapper = document.getElementById('agam-popup-form-wrapper');
@@ -254,16 +254,7 @@
                     alert((data && data.message) ? data.message : 'Please check your information and try again.');
                 }
             } catch (err) {
-                const headerBlock = document.getElementById('agam-form-header-block');
-                const formWrapper = document.getElementById('agam-popup-form-wrapper');
-                const successBox = document.getElementById('agam-popup-success');
-                if (headerBlock) headerBlock.style.display = 'none';
-                if (formWrapper) formWrapper.style.display = 'none';
-                if (successBox) successBox.style.display = 'block';
-                setTimeout(() => {
-                    closeEnquiryModal();
-                }, 2200);
-                popupForm.reset();
+                alert('Unable to send your enquiry. Please try again.');
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
                 if (spinner) spinner.style.display = 'none';
